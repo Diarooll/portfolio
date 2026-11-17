@@ -1,27 +1,38 @@
 "use client";
-// Stack: a árvore "Diego" de pé no chão da paisagem; as raízes crescem com a
-// rolagem até as 10 tecnologias. Em 3D (WebGL) dá para arrastar e girar;
-// sem WebGL, o mesmo desenho em SVG. Os botões das tecnologias são sempre
-// botões de verdade (teclado, leitor de tela), por cima do desenho.
+// Stack: as 10 tecnologias como broches 3D (fatias de pão com o logo na cor
+// da marca) girando juntas num círculo inclinado, em volta de um centro
+// invisível, sobre um céu de nuvens em parallax. Dá para arrastar e girar
+// (e usar as setas); sem WebGL, as mesmas peças em 2D. As tecnologias são
+// sempre botões de verdade (teclado, leitor de tela), por cima do desenho.
 import dynamic from "next/dynamic";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useLocale, useTranslations } from "next-intl";
 import { clamp, sstep } from "@/lib/math";
-import { M, bus as pageBus, pointer, requestMeasure } from "@/lib/scroll-engine";
+import { M, bus as pageBus, pointer, requestMeasure, type FrameState } from "@/lib/scroll-engine";
 import { techGroups, techs } from "@/content/techs";
+import { stackCopy } from "@/content/stack";
+import { BRAND, faceTone } from "@/content/brands";
 import { pick } from "@/content/types";
 import Dissolve from "@/components/ui/Dissolve";
 import TechIcon from "@/components/ui/TechIcon";
 import ErrorBoundary from "@/components/ui/ErrorBoundary";
 import { hasWebGL } from "@/lib/webgl";
-import type { TreeBus } from "@/components/three/StackTree";
-import { layoutFallback, type FallbackTree } from "./stackFallback";
+import type { OrbitBus, OrbitTile } from "@/components/three/StackOrbit";
+import { layoutFallback, type FallbackOrbit } from "./stackFallback";
+import styles from "./Stack.module.css";
+import StackBackdrop from "./StackBackdrop";
 import { useMeasure, useScrollFrame } from "@/hooks/useScrollFrame";
 import { useSection } from "@/hooks/useSection";
 import { useInViewOnce } from "@/hooks/useInViewOnce";
 
 // o 3D só é baixado quando a Stack está chegando perto da tela
-const StackTree = dynamic(() => import("@/components/three/StackTree"), { ssr: false });
+const StackOrbit = dynamic(() => import("@/components/three/StackOrbit"), { ssr: false });
+
+/** o título fica no palco preso: aparece enquanto a Stack sobe para o topo da tela */
+const titleP = (s: FrameState) => clamp((s.y + s.vh * 0.92 - ((M.stack?.top ?? 0) + 140)) / (s.vh * 0.45));
+
+/** grupo de cada tecnologia, na ordem da órbita */
+const GROUP_OF = techGroups.flatMap((g, gi) => g.items.map(() => gi));
 
 export default function Stack() {
   const t = useTranslations("stack");
@@ -30,12 +41,9 @@ export default function Stack() {
   const stage = useRef<HTMLDivElement>(null);
   const tree = useRef<HTMLDivElement>(null);
   const svg = useRef<SVGSVGElement>(null);
-  const rootEl = useRef<HTMLDivElement>(null);
   const sub = useRef<HTMLParagraphElement>(null);
   const noteEl = useRef<HTMLParagraphElement>(null);
-  const fb = useRef<FallbackTree | null>(null);
-  const off = useRef({ top: 0 });
-  const groundPx = useRef<number | null>(null);
+  const fb = useRef<FallbackOrbit | null>(null);
   useSection("stack", section);
 
   const near = useInViewOnce(section, "150% 0px");
@@ -44,7 +52,7 @@ export default function Stack() {
   const [touch, setTouch] = useState(false);
   const [active, setActive] = useState(-1);
 
-  const bus = useMemo<TreeBus>(
+  const bus = useMemo<OrbitBus>(
     () => ({
       p: 0,
       fade: 0,
@@ -71,39 +79,28 @@ export default function Stack() {
     setGl3d(true);
     pageBus.gl3d = true;
   }, []);
-  bus.onGround = useCallback((px: number) => {
-    groundPx.current = px;
-    requestMeasure();
-  }, []);
 
   const stop3d = useCallback(() => {
     setGl3d(false);
     setWant3d(false);
     pageBus.gl3d = false;
     bus.buttons.forEach((b) => b?.removeAttribute("style"));
-    groundPx.current = null;
     requestMeasure();
   }, [bus]);
 
-  // medidas: posição da árvore dentro do palco preso e o desenho em SVG
-  useMeasure((s) => {
+  // medidas: o desenho 2D (quando não há 3D)
+  useMeasure(() => {
     const tr = tree.current;
-    const st = stage.current;
-    if (!tr || !st) return;
-    off.current.top = tr.getBoundingClientRect().top - st.getBoundingClientRect().top;
+    if (!tr) return;
     if (gl3d) {
       fb.current?.clear();
       fb.current = null;
-    } else if (svg.current && rootEl.current) {
-      const groups = Array.from(tr.querySelectorAll<HTMLElement>(".tgroup")).map((g) => ({
-        el: g.querySelector<HTMLElement>(".grp")!,
-        leaves: Array.from(g.querySelectorAll<HTMLElement>(".leaf")),
-      }));
-      fb.current = layoutFallback(tr, svg.current, rootEl.current, groups);
+    } else if (svg.current) {
+      const leaves = Array.from(tr.querySelectorAll<HTMLElement>(".leaf"));
+      fb.current = layoutFallback(tr, svg.current, leaves, GROUP_OF);
     }
-    const g = gl3d && groundPx.current != null ? groundPx.current : fb.current?.ground;
-    // a paisagem põe a borda grama/terra aqui (fração da altura da tela, com o palco preso)
-    pageBus.stackGround = g != null ? clamp((off.current.top + g) / s.vh, 0.15, 0.85) : null;
+    // a órbita não fica presa no chão: a paisagem usa o enquadramento padrão
+    pageBus.stackGround = null;
   });
   useEffect(() => requestMeasure(), [gl3d]);
 
@@ -234,35 +231,31 @@ export default function Stack() {
     bus.invalidate?.();
   };
 
-  const groups3d = useMemo(
-    () => techGroups.map((g) => ({ ref: g.ref, name: pick(g.name, locale), items: g.items.map((it) => ({ id: it.id, name: it.name, ref: it.ref })) })),
-    [locale],
-  );
+  // peças da órbita (os nomes das tecnologias não mudam com o idioma)
+  const tiles = useMemo<OrbitTile[]>(() => techGroups.flatMap((g, gi) => g.items.map((it) => ({ id: it.id, name: it.name, ref: it.ref, group: gi }))), []);
 
   let idx = 0;
   return (
-    <section ref={section} className={`pin stack${gl3d ? " gl3d" : ""}`} id="stack" aria-labelledby="stackT">
+    <section ref={section} className={`pin stack ${styles.section}${gl3d ? " gl3d" : ""}`} id="stack" aria-labelledby="stackT">
       <div ref={stage} className="stage">
+        <StackBackdrop />
         <div className="wrap st-wrap">
           <div className="st-head">
-            <Dissolve as="h2" className="title" id="stackT" text={t("title")} seed={5} />
+            <Dissolve as="h2" className="title" id="stackT" text={t("title")} seed={5} progress={titleP} />
             <p ref={sub} className="st-sub glass">
               {t("sub")}
             </p>
           </div>
-          <div ref={tree} className="tree" tabIndex={0} role="group" aria-label={t("treeLabel")}>
+          <div ref={tree} className="tree" tabIndex={0} role="group" aria-label={pick(stackCopy.label, locale)}>
             <svg ref={svg} className="tree-svg" aria-hidden="true" focusable="false" />
             {want3d && (
               <ErrorBoundary onError={stop3d}>
-                <StackTree bus={bus} groups={groups3d} rootRef={t("rootRef")} />
+                <StackOrbit bus={bus} tiles={tiles} />
               </ErrorBoundary>
             )}
-            <div ref={rootEl} className="tn root chip">
-              <span className="ref">{t("rootRef")}</span>Diego
-            </div>
             {techGroups.map((g) => (
               <div key={g.id} className="tgroup">
-                <h3 className="tn grp chip">
+                <h3 className={`tn grp chip ${styles.grp}`}>
                   <span className="ref">{g.ref}</span>
                   {pick(g.name, locale)}
                 </h3>
@@ -292,7 +285,7 @@ export default function Stack() {
                           onClick={() => show(i)}
                         >
                           <span className="logo chip">
-                            <TechIcon id={it.id} />
+                            <TechIcon id={it.id} color={faceTone(it.id) === "dark" ? BRAND[it.id].colors[0] : undefined} />
                           </span>
                           <span className="txt">
                             <span className="ref">{it.ref}</span>
