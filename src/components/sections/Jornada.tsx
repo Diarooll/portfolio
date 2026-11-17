@@ -1,12 +1,12 @@
 "use client";
-// Jornada: marcos em zigue-zague ligados por uma raiz de madeira que cresce
-// conforme a página desce. A raiz nasce embaixo da cena dos projetos, passa
-// por trás do título e serpenteia entre os nós de cada marco.
+// Jornada: marcos em zigue-zague ligados por uma linha fina, no estilo motion
+// graphics: um traço limpo que se desenha conforme a página desce, com nós
+// discretos em cada marco e um ponto na ponta. O título fica no topo, centralizado.
 // Desenho em SVG: o caminho é calculado uma vez (no resize) e só o
 // stroke-dashoffset muda com a rolagem (barato).
 import { useRef } from "react";
 import { useLocale, useTranslations } from "next-intl";
-import { clamp, lerp } from "@/lib/math";
+import { clamp } from "@/lib/math";
 import { M, docTop } from "@/lib/scroll-engine";
 import { journey } from "@/content/journey";
 import { pick } from "@/content/types";
@@ -15,20 +15,13 @@ import { useMeasure, useScrollFrame } from "@/hooks/useScrollFrame";
 import { useSection } from "@/hooks/useSection";
 
 type Pt = [number, number];
-interface Chunk {
-  a: number;
-  b: number;
-  paths: SVGPathElement[];
-}
-interface Rootlet {
-  oi: number;
-  el: SVGPathElement;
-}
-interface RootGeo {
+interface LineGeo {
   P: Pt[];
   L: number[];
-  chunks: Chunk[];
-  rootlets: Rootlet[];
+  main: SVGPathElement;
+  /** índice do ponto em cada nó */
+  knotAt: number[];
+  nodes: SVGCircleElement[];
   /** deslocamento do SVG em relação ao topo da seção (px, negativo = acima) */
   top: number;
 }
@@ -45,7 +38,7 @@ export default function Jornada() {
   const title = useRef<HTMLDivElement>(null);
   const list = useRef<HTMLOListElement>(null);
   const items = useRef<(HTMLLIElement | null)[]>([]);
-  const geo = useRef<RootGeo | null>(null);
+  const geo = useRef<LineGeo | null>(null);
   const offs = useRef<number[]>([]);
   const tl = useRef({ top: 0, h: 1 });
   const lastTi = useRef(-1);
@@ -75,121 +68,56 @@ export default function Jornada() {
     const tr = head.getBoundingClientRect();
     const mob = vw < 860;
     const cx = mob ? (knots[0]?.[0] ?? 24) : W / 2;
-    const tTop = tr.top - sr.top - top;
     const tBot = tr.bottom - sr.top - top;
-    let a = 11;
-    const r = () => {
-      a = (a * 16807) % 2147483647;
-      return (a - 1) / 2147483646;
-    };
+    // sai de baixo do título e passa por cada nó, alternando direita e esquerda (curvas suaves, tangentes verticais)
     const pts: Pt[] = [];
-    const curve = (p: Pt, q: Pt, bulge: number, n: number) => {
+    const curve = (p: Pt, q: Pt, n: number) => {
       const dy = q[1] - p[1];
       for (let i = 1; i <= n; i++) {
         const tt = i / n;
         const u = 1 - tt;
-        const c1 = [p[0] + bulge, p[1] + dy * 0.5];
-        const c2 = [q[0] - bulge, q[1] - dy * 0.5];
+        const c1 = [p[0], p[1] + dy * 0.55];
+        const c2 = [q[0], q[1] - dy * 0.55];
         pts.push([
           u * u * u * p[0] + 3 * u * u * tt * c1[0] + 3 * u * tt * tt * c2[0] + tt * tt * tt * q[0],
           u * u * u * p[1] + 3 * u * u * tt * c1[1] + 3 * u * tt * tt * c2[1] + tt * tt * tt * q[1],
         ]);
       }
     };
-    // nasce embaixo da cena dos projetos, desce até o título...
-    const start: Pt = [cx, 0.12 * vh];
-    const aboveT: Pt = [cx, tTop - 16];
+    const start: Pt = [cx, tBot + 18];
     pts.push(start);
-    curve(start, aboveT, mob ? 6 : 14, 24);
-    const gapFrom = pts.length - 1;
-    // ...passa por trás dele e serpenteia entre os marcos
-    const belowT: Pt = [mob ? cx : W / 2, tBot + 20];
-    pts.push(belowT);
-    const gapTo = pts.length - 1;
-    const anchors: Pt[] = [belowT, ...knots];
-    const knotIdx: number[] = [];
+    const knotAt: number[] = [];
+    const anchors: Pt[] = [start, ...knots];
     for (let i = 0; i < anchors.length - 1; i++) {
-      curve(anchors[i], anchors[i + 1], (i % 2 ? -1 : 1) * (mob ? 14 : 46), 30);
-      knotIdx.push(pts.length - 1);
+      curve(anchors[i], anchors[i + 1], 36);
+      knotAt.push(pts.length - 1);
     }
-    // ondulação natural, perpendicular ao caminho
     const L = [0];
     for (let i = 1; i < pts.length; i++) L.push(L[i - 1] + Math.hypot(pts[i][0] - pts[i - 1][0], pts[i][1] - pts[i - 1][1]));
-    for (let i = 1; i < pts.length - 1; i++) {
-      if (i >= gapFrom && i <= gapTo) continue;
-      const dx = pts[i + 1][0] - pts[i - 1][0];
-      const dy = pts[i + 1][1] - pts[i - 1][1];
-      const dd = Math.hypot(dx, dy) || 1;
-      const w = Math.sin(L[i] * 0.045) * 2.2 + Math.sin(L[i] * 0.013 + 1.7) * 3.5;
-      pts[i] = [pts[i][0] - (dy / dd) * w, pts[i][1] + (dx / dd) * w];
-    }
-    // monta o SVG: pedaços com espessura caindo (a raiz afina), em 3 passadas
-    sv.querySelectorAll("path").forEach((p) => p.remove());
-    const total = L[L.length - 1] || 1;
-    const w0 = mob ? 9 : 15;
-    const w1 = mob ? 3 : 4.5;
-    const segs: [number, number][] = [];
-    const N = 12;
-    const ranges: [number, number][] = [
-      [0, gapFrom],
-      [gapTo, pts.length - 1],
-    ];
-    ranges.forEach(([s0, s1]) => {
-      const n = Math.max(1, Math.round((N * (L[s1] - L[s0])) / total));
-      for (let k = 0; k < n; k++) segs.push([Math.round(lerp(s0, s1, k / n)), Math.round(lerp(s0, s1, (k + 1) / n))]);
-    });
-    const gRoot = sv.querySelector("g.jr-main")!;
-    const gLets = sv.querySelector("g.jr-lets")!;
-    const chunks: Chunk[] = segs
-      .filter(([s0, s1]) => s1 > s0)
-      .map(([s0, s1]) => {
-        const w = lerp(w0, w1, L[s0] / total);
-        const part = pts.slice(s0, s1 + 1);
-        const paths = [
-          { cls: "jr-bark", sw: w * 1.25, dx: 0 },
-          { cls: "jr-wood", sw: w, dx: 0 },
-          { cls: "jr-light", sw: w * 0.28, dx: -w * 0.22 },
-        ].map(({ cls, sw, dx }) => {
-          const p = document.createElementNS(NS, "path");
-          p.setAttribute("d", d(part.map(([x, y]) => [x + dx, y])));
-          p.setAttribute("class", cls);
-          p.setAttribute("stroke-width", sw.toFixed(2));
-          p.setAttribute("pathLength", "1");
-          gRoot.appendChild(p);
-          return p;
-        });
-        return { a: s0, b: s1, paths };
-      });
-    // raízes finas: algumas ao longo do caminho, duas em cada nó
-    const rootlets: Rootlet[] = [];
-    const sprout = (oi: number, side: number, len: number) => {
-      const p = pts[oi];
-      const q = pts[Math.min(pts.length - 1, oi + 1)];
-      let an = Math.atan2(q[1] - p[1], q[0] - p[0]) + side * (0.7 + r() * 0.6);
-      const seg: Pt[] = [p];
-      let x = p[0];
-      let y = p[1];
-      for (let k = 1; k <= 7; k++) {
-        an += (r() - 0.5) * 0.5 + side * 0.04;
-        x += (Math.cos(an) * len) / 7;
-        y += (Math.sin(an) * len) / 7;
-        seg.push([x, y]);
-      }
-      const el = document.createElementNS(NS, "path");
-      el.setAttribute("d", d(seg));
-      el.setAttribute("class", "jr-let");
-      el.setAttribute("stroke-width", (mob ? 2.2 : 2.8).toFixed(1));
-      el.setAttribute("pathLength", "1");
-      gLets.appendChild(el);
-      rootlets.push({ oi, el });
+    // monta o SVG: um trilho apagado (o caminho todo) e o traço que se desenha por cima
+    sv.querySelectorAll("path, circle.jr-node").forEach((p) => p.remove());
+    const g = sv.querySelector("g.jr-main")!;
+    const dAttr = d(pts);
+    const mk = (cls: string) => {
+      const p = document.createElementNS(NS, "path");
+      p.setAttribute("d", dAttr);
+      p.setAttribute("class", cls);
+      p.setAttribute("pathLength", "1");
+      g.appendChild(p);
+      return p;
     };
-    for (let i = gapTo + 6; i < pts.length - 4; i += 9 + Math.floor(r() * 8)) sprout(i, r() < 0.5 ? -1 : 1, (mob ? 16 : 24) + r() * (mob ? 18 : 30));
-    for (let i = 2; i < gapFrom - 2; i += 8) sprout(i, r() < 0.5 ? -1 : 1, 14 + r() * 18);
-    knotIdx.forEach((ki) => {
-      sprout(Math.max(1, ki - 2), -1, 18 + r() * 14);
-      sprout(Math.max(1, ki - 1), 1, 14 + r() * 12);
+    mk("jr-track");
+    const main = mk("jr-line");
+    const nodes = knots.map((k) => {
+      const c = document.createElementNS(NS, "circle");
+      c.setAttribute("class", "jr-node");
+      c.setAttribute("cx", k[0].toFixed(1));
+      c.setAttribute("cy", k[1].toFixed(1));
+      c.setAttribute("r", mob ? "4.5" : "5.5");
+      g.appendChild(c);
+      return c;
     });
-    geo.current = { P: pts, L, chunks, rootlets, top };
+    geo.current = { P: pts, L, main, knotAt, nodes, top };
     lastTi.current = -1;
   });
 
@@ -208,7 +136,7 @@ export default function Jornada() {
       if (!RM) li.style.transform = `translate3d(0, ${((1 - k) * 14).toFixed(2)}px, 0)`;
       li.classList.toggle("on", k > 0.5);
     });
-    // raiz: cresce até a linha a 72% da tela
+    // linha: desenha até a altura de 72% da tela
     const target = y + vh * 0.72 - (m.top + G.top);
     const P = G.P;
     let ti = P.length - 1;
@@ -222,24 +150,13 @@ export default function Jornada() {
     }
     if (ti === lastTi.current) return;
     lastTi.current = ti;
-    const Lt = G.L[ti];
-    G.chunks.forEach((c) => {
-      const k = clamp((Lt - G.L[c.a]) / Math.max(1e-3, G.L[c.b] - G.L[c.a]));
-      const off = (1 - k).toFixed(4);
-      c.paths.forEach((p) => {
-        p.style.strokeDashoffset = off;
-        p.style.visibility = k > 0 ? "visible" : "hidden";
-      });
-    });
-    G.rootlets.forEach((rl) => {
-      const grow = ti < rl.oi ? 0 : RM ? 1 : clamp((Lt - G.L[rl.oi]) / 70);
-      rl.el.style.strokeDashoffset = (1 - grow).toFixed(4);
-      rl.el.style.visibility = grow > 0 ? "visible" : "hidden";
-    });
-    // ponta crescendo: um brilho quente suave
+    const total = G.L[G.L.length - 1] || 1;
+    G.main.style.strokeDashoffset = (1 - G.L[ti] / total).toFixed(4);
+    G.nodes.forEach((n, i) => n.classList.toggle("on", ti >= G.knotAt[i]));
+    // ponta: um ponto pequeno na frente do traço
     if (tip.current) {
       const on = !RM && ti > 0 && ti < P.length - 1;
-      tip.current.style.opacity = on ? "0.75" : "0";
+      tip.current.style.opacity = on ? "1" : "0";
       if (on) {
         tip.current.setAttribute("cx", P[ti][0].toFixed(1));
         tip.current.setAttribute("cy", P[ti][1].toFixed(1));
@@ -250,15 +167,8 @@ export default function Jornada() {
   return (
     <section ref={section} className="jornada" id="jornada" aria-labelledby="jornT">
       <svg ref={svg} className="j-root" aria-hidden="true" focusable="false">
-        <defs>
-          <radialGradient id="jrGlow">
-            <stop offset="0" stopColor="var(--glow)" stopOpacity="1" />
-            <stop offset="1" stopColor="var(--glow)" stopOpacity="0" />
-          </radialGradient>
-        </defs>
-        <g className="jr-lets" />
         <g className="jr-main" />
-        <circle ref={tip} r="26" fill="url(#jrGlow)" style={{ opacity: 0 }} />
+        <circle ref={tip} className="jr-tip" r="4" style={{ opacity: 0 }} />
       </svg>
       <div className="wrap">
         <div ref={title} className="j-head">

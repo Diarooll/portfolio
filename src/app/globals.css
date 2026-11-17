@@ -1625,7 +1625,8 @@ html.js .tree.v .tn {
 /* ---------- jornada: marcos em zigue-zague ligados por uma raiz ---------- */
 .jornada {
   position: relative;
-  padding-block: clamp(150px, 26vh, 280px) clamp(110px, 16vh, 200px);
+  /* o título só aparece depois que a nuvem de transição passou (ela termina ~0,55 vh abaixo do topo) */
+  padding-block: clamp(560px, 86vh, 980px) clamp(110px, 16vh, 200px);
 }
 .j-root {
   position: absolute;
@@ -1642,22 +1643,37 @@ html.js .tree.v .tn {
   fill: none;
   stroke-linecap: round;
   stroke-linejoin: round;
+}
+/* trilho apagado: mostra o caminho inteiro antes de o traço chegar */
+.j-root .jr-track {
+  stroke: var(--fg);
+  stroke-width: 1;
+  opacity: 0.14;
+}
+/* traço que se desenha com a rolagem (fino e limpo) */
+.j-root .jr-line {
+  stroke: var(--fg);
+  stroke-width: 1.75;
+  opacity: 0.8;
   stroke-dasharray: 1;
   stroke-dashoffset: 1;
-  visibility: hidden;
 }
-.j-root .jr-bark {
-  stroke: var(--bark);
+.j-root .jr-node {
+  fill: var(--sand);
+  stroke: var(--fg);
+  stroke-opacity: 0.45;
+  stroke-width: 1.5;
+  transition:
+    fill 0.25s,
+    stroke-opacity 0.25s;
 }
-.j-root .jr-wood {
-  stroke: var(--wood);
+.j-root .jr-node.on {
+  fill: var(--leaf);
+  stroke-opacity: 0.9;
 }
-.j-root .jr-light {
-  stroke: var(--wood-light);
-  opacity: 0.6;
-}
-.j-root .jr-let {
-  stroke: var(--wood);
+.j-root .jr-tip {
+  fill: var(--fg);
+  transition: opacity 0.2s;
 }
 .j-head {
   position: relative;
@@ -1697,32 +1713,20 @@ html.js .tree.v .tn {
   padding-right: 2.4rem;
   text-align: right;
 }
+/* âncora de posição do nó: quem desenha o nó é o SVG */
 .knot {
   position: absolute;
   top: 1.4rem;
-  width: 18px;
-  height: 18px;
+  width: 12px;
+  height: 12px;
   border-radius: 50%;
-  background: var(--sand);
-  border: 3px solid var(--wood);
-  transition:
-    background-color 0.2s,
-    box-shadow 0.2s,
-    border-color 0.2s;
+  pointer-events: none;
 }
 .zi:nth-child(odd) .knot {
-  left: -9px;
+  left: -6px;
 }
 .zi:nth-child(even) .knot {
-  right: -9px;
-}
-.zi.on .knot {
-  background: var(--leaf);
-  border-color: var(--bark);
-  box-shadow: 0 0 0 5px color-mix(in srgb, var(--leaf) 30%, transparent);
-}
-.zi.next .knot {
-  border-style: dashed;
+  right: -6px;
 }
 .fx .zi {
   opacity: 0.2;
@@ -1755,7 +1759,7 @@ html.js .tree.v .tn {
   }
   .zi:nth-child(odd) .knot,
   .zi:nth-child(even) .knot {
-    left: -9px;
+    left: -6px;
     right: auto;
   }
   .zi:nth-child(even) .tl-desc {
