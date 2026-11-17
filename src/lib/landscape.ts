@@ -109,8 +109,8 @@ export function cameraAt(s: number, M: Partial<Record<SectionId, Metrics>>, vh: 
     [
       { y: 0, v: 0 },
       { y: heroEnd, v: 0.03 }, // o morro sobe só o que cabe na sobra: nunca aparece o fim da foto
-      { y: a - 0.22 * vh, v: 0.03 },
-      { y: a + 0.02 * vh, v: stackDescent },
+      { y: a - 0.12 * vh, v: 0.03 },
+      { y: a + 0.12 * vh, v: stackDescent },
       { y: g("projetos") + 0.2 * vh, v: stackDescent },
       { y: g("projetos") + 0.9 * vh, v: 0 }, // atrás dos painéis, volta ao campo
       { y: b - 0.15 * vh, v: 0 },
@@ -122,11 +122,11 @@ export function cameraAt(s: number, M: Partial<Record<SectionId, Metrics>>, vh: 
     ],
     s,
   );
-  const sky = 1 - sstep(clamp((s - (a - 0.2 * vh)) / (0.3 * vh)));
+  const sky = 1 - sstep(clamp((s - (a - 0.1 * vh)) / (0.3 * vh)));
   const gold = sstep(clamp((s - (g("projetos") - 0.2 * vh)) / (1.2 * vh)));
   const dusk = sstep(clamp((s - (g("contato") - 1.2 * vh)) / (1.1 * vh)));
   // fundo: céu → nuvem (Stack) → dourado (Projetos/Jornada) → anoitecer (Contato)
-  const wCloud = sstep(clamp((s - (a - 0.2 * vh)) / (0.3 * vh)));
+  const wCloud = sstep(clamp((s - (a - 0.1 * vh)) / (0.3 * vh)));
   const wGold = gold;
   const wDusk = dusk;
   return { y, sky, gold, dusk, bg: [1, wCloud, wGold, wDusk] };

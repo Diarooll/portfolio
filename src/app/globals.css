@@ -326,24 +326,36 @@ a {
 .cv-bank i {
   display: block;
 }
-/* névoa sem borda: a tela esbranquiça antes de as nuvens chegarem */
+/* cores do véu: derivadas do fundo real (as variáveis do tema), nunca um azul-cinza fixo */
+.cloud-veil {
+  --veil: var(--bg-cloud-a);
+  --veil-2: var(--bg-cloud-b);
+}
+.cloud-veil[data-to="jornada"] {
+  --veil: var(--bg-gold-a);
+  --veil-2: var(--bg-gold-a);
+}
+/* névoa sem borda: o céu esbranquiça aos poucos antes de as nuvens chegarem. Nasce 100% transparente. */
 .cv-haze {
   position: absolute;
   left: 0;
   right: 0;
   top: 0;
-  height: 190vh;
+  height: 240vh;
   opacity: 0;
   will-change: transform, opacity;
-  background: linear-gradient(to bottom, rgba(246, 249, 251, 0), rgba(246, 249, 251, 0.55) 22%, #f6f9fb 48%, #f6f9fb);
-}
-:root[data-theme="dark"] .cv-haze {
-  background: linear-gradient(to bottom, rgba(27, 30, 48, 0), rgba(27, 30, 48, 0.55) 22%, #1b1e30 48%, #1b1e30);
+  background: linear-gradient(
+    to bottom,
+    color-mix(in srgb, var(--veil) 0%, transparent),
+    color-mix(in srgb, var(--veil) 35%, transparent) 20%,
+    color-mix(in srgb, var(--veil) 85%, transparent) 38%,
+    var(--veil) 52%,
+    var(--veil)
+  );
 }
 .rm .cv-haze {
   display: none;
 }
-/* banco de nuvens: foto recortada (cloud-bank.webp). A base é opaca, então o miolo continua a cor dela */
 .cv-edge {
   height: 62vw;
   background: url(/landscape/cloud-bank.webp) center bottom / 100% auto no-repeat;
@@ -353,12 +365,30 @@ a {
 }
 .cv-flip {
   transform: scaleY(-1);
-  margin-top: -2px;
+  margin-top: -220px;
 }
 .cv-core {
-  height: 115vh;
-  margin-top: -2px;
-  background: linear-gradient(to bottom, #dbe5f0, #eef3f9 20%, #f6f9fc 40%, #f6f9fc 60%, #eef3f9 80%, #dbe5f0);
+  height: 150vh;
+  margin-top: -220px;
+  /* as pontas do miolo se dissolvem por cima da base da foto: nada de linha reta */
+  -webkit-mask-image: linear-gradient(to bottom, transparent, #000 220px, #000 calc(100% - 220px), transparent);
+  mask-image: linear-gradient(to bottom, transparent, #000 220px, #000 calc(100% - 220px), transparent);
+  /* interior da nuvem: o branco do dia misturado com o fundo da seção que vem a seguir */
+  background: linear-gradient(
+    to bottom,
+    color-mix(in srgb, var(--veil) 70%, #fff),
+    color-mix(in srgb, var(--veil) 30%, #fff) 30%,
+    color-mix(in srgb, var(--veil) 30%, #fff) 70%,
+    color-mix(in srgb, var(--veil) 70%, #fff)
+  );
+}
+:root[data-theme="dark"] .cv-core {
+  background: linear-gradient(to bottom, #2a2f4b, var(--veil) 30%, var(--veil) 70%, #2a2f4b);
+}
+/* sem bordas retas: o banco inteiro some em degradê longo nas pontas */
+.cv-bank {
+  -webkit-mask-image: linear-gradient(to bottom, transparent 0, #000 24%, #000 76%, transparent 100%);
+  mask-image: linear-gradient(to bottom, transparent 0, #000 24%, #000 76%, transparent 100%);
 }
 /* banco de trás: a mesma foto espelhada e maior, mais apagada (profundidade) */
 .cv-back {
@@ -372,23 +402,19 @@ a {
 .cv-back .cv-flip {
   transform: scale(-1, -1);
 }
-.cv-back .cv-core {
-  background: linear-gradient(to bottom, #d3deec, #e6eef6 20%, #eaf0f7 40%, #eaf0f7 60%, #e6eef6 80%, #d3deec);
-}
-:root[data-theme="dark"] .cv-bank {
+:root[data-theme="dark"] .cv-edge {
   filter: brightness(0.42) saturate(0.7);
 }
+/* movimento reduzido: só um véu que aparece e some (a cor vem do fundo da seção) */
 .cv-veil {
+  display: none;
   position: absolute;
   inset: 0;
-  background: #f7f9fb;
+  background: color-mix(in srgb, var(--veil) 90%, #fff);
   opacity: 0;
 }
 :root[data-theme="dark"] .cv-veil {
-  background: #1b1e30;
-}
-.cv-veil {
-  display: none;
+  background: var(--veil);
 }
 .rm .cv-veil {
   display: block;

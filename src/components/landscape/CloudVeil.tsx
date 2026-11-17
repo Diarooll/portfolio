@@ -28,10 +28,15 @@ export default function CloudVeil() {
     const span = CLOUD_SPAN * vh;
     // qual travessia está ativa (a mais próxima)
     let p = -1;
-    for (const c of cloudCenters(M, vh)) {
+    let to = "stack";
+    cloudCenters(M, vh).forEach((c, i) => {
       const k = (y - (c - span / 2)) / span;
-      if (k > -0.05 && k < 1.05) p = clamp(k);
-    }
+      if (k > -0.05 && k < 1.05) {
+        p = clamp(k);
+        to = i === 0 ? "stack" : "jornada";
+      }
+    });
+    if (wrap.current && wrap.current.dataset.to !== to) wrap.current.dataset.to = to;
     const on = p > 0 && p < 1;
     if (wrap.current) wrap.current.style.visibility = on ? "visible" : "hidden";
     if (!on) return;
@@ -43,7 +48,7 @@ export default function CloudVeil() {
     const fade = sstep(clamp(p / 0.34)) * (1 - sstep(clamp((p - 0.7) / 0.3)));
     if (haze.current) {
       // névoa que sobe antes das nuvens (sem borda): o céu esbranquiça aos poucos
-      const hy = vh * (1 - 1.5 * clamp((p + 0.05) / 0.62));
+      const hy = vh * (1 - 2.25 * sstep(clamp((p + 0.04) / 0.5)));
       haze.current.style.transform = `translate3d(0, ${hy.toFixed(1)}px, 0)`;
       haze.current.style.opacity = (sstep(clamp(p / 0.3)) * (1 - sstep(clamp((p - 0.8) / 0.2)))).toFixed(3);
     }
