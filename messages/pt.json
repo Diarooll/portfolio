@@ -1,0 +1,85 @@
+{
+  "meta": {
+    "title": "Diego Olalla · Engenheiro de software",
+    "description": "Diego Olalla, engenheiro de software. Back-end com Python e Java, Docker e CI/CD.",
+    "ogAlt": "Diego Olalla, engenheiro de software, sobre uma paisagem de céu azul e uma árvore no morro."
+  },
+  "nav": {
+    "label": "Principal",
+    "skip": "Pular para o conteúdo",
+    "home": "Diego Olalla, voltar ao topo",
+    "sobre": "Sobre",
+    "stack": "Stack",
+    "projetos": "Projetos",
+    "jornada": "Jornada",
+    "contato": "Contato",
+    "lang": "Read in English",
+    "langShort": "EN",
+    "themeToDark": "Tema dia. Mudar para o tema anoitecer",
+    "themeToLight": "Tema anoitecer. Mudar para o tema dia"
+  },
+  "hero": {
+    "label": "Apresentação",
+    "role": "Engenheiro de software",
+    "roleSub": "back-end · Python · Java",
+    "lead": "Estudante de Engenharia de Software na FIAP. Construo back-ends com Python e Java, empacoto com Docker e entrego com CI/CD.",
+    "ctaProjects": "Ver projetos",
+    "ctaContact": "Contato"
+  },
+  "sobre": {
+    "statement": "Gosto da parte que fica por trás da tela.",
+    "line1": "Gosto da parte",
+    "line2": "que fica por trás",
+    "line3": "da tela.",
+    "about": "Estudo Engenharia de Software e gosto mais do back-end: APIs, regras de negócio e dados. Hoje estou construindo o <sents>$ents</sents>, minha startup, e estudando back-end e DevSecOps.",
+    "photoAlt": "Diego de óculos e camiseta preta, com a cabeça apoiada na mão",
+    "statProjects": "PROJETOS",
+    "statProjectsSub": "{online} online, {wip} em andamento",
+    "statTechs": "TECNOLOGIAS",
+    "statTechsSub": "em {groups} grupos",
+    "statLangs": "LINGUAGENS",
+    "statLangsSub": "Python e Java",
+    "statFrameworks": "FRAMEWORKS",
+    "statFrameworksSub": "FastAPI, Django, Spring Boot"
+  },
+  "stack": {
+    "title": "Stack",
+    "sub": "O que uso para escrever, empacotar e entregar.",
+    "treeLabel": "Stack em árvore. Use as setas para girar.",
+    "hint": "Passe o mouse ou foque em uma tecnologia.",
+    "hintTouch": "Toque em uma tecnologia.",
+    "hintDrag": "Arraste para girar.",
+    "rootRef": "root · diego"
+  },
+  "projetos": {
+    "title": "Projetos",
+    "line": "Um projeto no ar e dois em andamento. Um é da faculdade, um é meu e um é para cliente.",
+    "online": "online",
+    "wip": "em andamento",
+    "techLabel": "Tecnologias",
+    "newTab": "(abre em nova aba)"
+  },
+  "jornada": {
+    "title": "Jornada",
+    "sub": "Do primeiro período ao próximo passo."
+  },
+  "contato": {
+    "closing": "Vamos conversar?",
+    "tty": "tty/contato",
+    "cmdEmail": "contato --email",
+    "cmdLinks": "contato --links",
+    "copy": "Copiar e-mail",
+    "copied": "copiado.",
+    "copyFail": "selecionado. Use Ctrl+C.",
+    "comment": "# o jeito mais rápido de falar comigo.",
+    "lead": "Escreva para mim ou veja o código dos projetos.",
+    "localTime": "HORA LOCAL",
+    "zone": "FUSO",
+    "pulse": "PULSO",
+    "bird": "Passarinho no galho. Interagir"
+  },
+  "footer": {
+    "text": "© {year} Diego Olalla. Feito com Next.js e React Three Fiber.",
+    "top": "Voltar ao topo"
+  }
+}

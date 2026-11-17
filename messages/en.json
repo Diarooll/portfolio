@@ -1,0 +1,85 @@
+{
+  "meta": {
+    "title": "Diego Olalla · Software engineer",
+    "description": "Diego Olalla, software engineer. Back-end with Python and Java, Docker and CI/CD.",
+    "ogAlt": "Diego Olalla, software engineer, over a landscape of blue sky and a tree on a hill."
+  },
+  "nav": {
+    "label": "Main",
+    "skip": "Skip to content",
+    "home": "Diego Olalla, back to top",
+    "sobre": "About",
+    "stack": "Stack",
+    "projetos": "Projects",
+    "jornada": "Journey",
+    "contato": "Contact",
+    "lang": "Ler em português",
+    "langShort": "PT",
+    "themeToDark": "Day theme. Switch to the dusk theme",
+    "themeToLight": "Dusk theme. Switch to the day theme"
+  },
+  "hero": {
+    "label": "Introduction",
+    "role": "Software engineer",
+    "roleSub": "back-end · Python · Java",
+    "lead": "Software Engineering student at FIAP. I build back-ends with Python and Java, package them with Docker and ship them with CI/CD.",
+    "ctaProjects": "See projects",
+    "ctaContact": "Contact"
+  },
+  "sobre": {
+    "statement": "I like the part that lives behind the screen.",
+    "line1": "I like the part",
+    "line2": "that lives behind",
+    "line3": "the screen.",
+    "about": "I study Software Engineering and the back-end is what I like most: APIs, business rules and data. Right now I'm building <sents>$ents</sents>, my startup, and studying back-end and DevSecOps.",
+    "photoAlt": "Diego wearing glasses and a black T-shirt, resting his head on his hand",
+    "statProjects": "PROJECTS",
+    "statProjectsSub": "{online} live, {wip} in progress",
+    "statTechs": "TECHNOLOGIES",
+    "statTechsSub": "in {groups} groups",
+    "statLangs": "LANGUAGES",
+    "statLangsSub": "Python and Java",
+    "statFrameworks": "FRAMEWORKS",
+    "statFrameworksSub": "FastAPI, Django, Spring Boot"
+  },
+  "stack": {
+    "title": "Stack",
+    "sub": "What I use to write, package and ship.",
+    "treeLabel": "Stack as a tree. Use the arrow keys to rotate.",
+    "hint": "Hover or focus a technology.",
+    "hintTouch": "Tap a technology.",
+    "hintDrag": "Drag to rotate.",
+    "rootRef": "root · diego"
+  },
+  "projetos": {
+    "title": "Projects",
+    "line": "One project live and two in progress. One is for university, one is mine and one is for a client.",
+    "online": "live",
+    "wip": "in progress",
+    "techLabel": "Technologies",
+    "newTab": "(opens in a new tab)"
+  },
+  "jornada": {
+    "title": "Journey",
+    "sub": "From my first semester to the next step."
+  },
+  "contato": {
+    "closing": "Let's talk?",
+    "tty": "tty/contact",
+    "cmdEmail": "contact --email",
+    "cmdLinks": "contact --links",
+    "copy": "Copy email",
+    "copied": "copied.",
+    "copyFail": "selected. Press Ctrl+C.",
+    "comment": "# the fastest way to reach me.",
+    "lead": "Write to me or look at the projects' code.",
+    "localTime": "LOCAL TIME",
+    "zone": "ZONE",
+    "pulse": "PULSE",
+    "bird": "Little bird on the branch. Interact"
+  },
+  "footer": {
+    "text": "© {year} Diego Olalla. Built with Next.js and React Three Fiber.",
+    "top": "Back to top"
+  }
+}
