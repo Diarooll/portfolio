@@ -8,7 +8,7 @@ import { clamp, easeOut, sstep } from "@/lib/math";
 import { docTop } from "@/lib/scroll-engine";
 import { contactSnippet, site } from "@/content/site";
 import Dissolve from "@/components/ui/Dissolve";
-import EarthLayer from "./EarthLayer";
+import Meteor from "./Meteor";
 import CopyEmail from "@/components/ui/CopyEmail";
 import { useMeasure, useScrollFrame } from "@/hooks/useScrollFrame";
 import { useSection } from "@/hooks/useSection";
@@ -42,8 +42,8 @@ export default function Contato() {
   const entries = contactSnippet.entries;
   return (
     <section ref={section} className="contato" id="contato" aria-labelledby="contT">
-      {/* no espaço: a Terra girando ao fundo, atrás do terminal */}
-      <EarthLayer />
+      {/* no espaço: um meteoro vindo na direção de quem olha, atrás do terminal */}
+      <Meteor target={section} />
       <div className="wrap">
         <Dissolve as="h2" className="closing" id="contT" text={t("closing")} seed={7} />
       </div>
@@ -90,21 +90,6 @@ export default function Contato() {
                 <span className="caret" />
               </p>
             </div>
-          </div>
-          <div className="c-side glass">
-            <p className="c-lead">{t("lead")}</p>
-            <dl className="readout" aria-hidden="true">
-              <div>
-                <dt>{t("pulse")}</dt>
-                <dd>
-                  <span className="bars">
-                    {[0.4, 0.7, 0.5, 0.9, 0.6, 0.3, 0.8, 0.5].map((h, i) => (
-                      <i key={i} style={{ ["--i" as string]: i, ["--h" as string]: h }} />
-                    ))}
-                  </span>
-                </dd>
-              </div>
-            </dl>
           </div>
         </div>
         <div className="wordmark" aria-hidden="true">

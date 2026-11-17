@@ -67,7 +67,10 @@ export const CLOUD_LAYERS = [
   { scale: 1.1, mirror: true, bottom: 34, opacity: 0.7, speed: 22 },
   { scale: 1.45, mirror: false, bottom: 4, opacity: 0.92, speed: 40 },
   { scale: 1.95, mirror: true, bottom: -26, opacity: 1, speed: 68 },
-] as const;
+  // camadas extras que só engrossam o céu de nuvens na faixa da Stack (somem suavemente fora dela)
+  { scale: 1.25, mirror: false, bottom: 52, opacity: 0.75, speed: 30, dense: true },
+  { scale: 1.7, mirror: true, bottom: 20, opacity: 0.85, speed: 52, dense: true },
+] as { scale: number; mirror: boolean; bottom: number; opacity: number; speed: number; dense?: boolean }[];
 export const CLOUD_SRC = "/landscape/cloud-bank.webp";
 
 /** altitude de cada seção (0 = campo, 5 = espaço); o resto é interpolado entre elas */
@@ -84,6 +87,8 @@ export interface CameraState {
   bg: [number, number, number, number];
   /** densidade das nuvens persistentes (0..1) e quanto estão douradas (0..1) */
   clouds: number;
+  /** reforço de nuvens na faixa da Stack (0..1) */
+  dense: number;
   gilt: number;
   /** estrelas (0..1) */
   stars: number;
@@ -116,6 +121,9 @@ export function cameraAt(s: number, M: Partial<Record<SectionId, Metrics>>, vh: 
       { y: heroEnd, v: 0.15 },
       { y: top("sobre", 0.5), v: ALTITUDE.sobre },
       { y: top("stack", 0.5), v: ALTITUDE.stack },
+      // a luz dourada já está completa quando a intro de Projetos entra
+      { y: top("projetos", 0) - 1.1 * vh, v: 2.1 },
+      { y: top("projetos", 0), v: 2.95 },
       { y: top("projetos", 0.4), v: ALTITUDE.projetos },
       { y: top("jornada", 0.1), v: 3.5 },
       { y: top("jornada", 0.9), v: 4.4 },
@@ -129,9 +137,10 @@ export function cameraAt(s: number, M: Partial<Record<SectionId, Metrics>>, vh: 
     hill,
     alt,
     sky: 1 - ramp(alt, 1.3, 2.1),
-    bg: [ramp(alt, 2.2, 3), ramp(alt, 3.2, 3.9), ramp(alt, 3.8, 4.5), ramp(alt, 4.4, 5)],
+    bg: [ramp(alt, 2.15, 2.85), ramp(alt, 3.2, 3.9), ramp(alt, 3.8, 4.5), ramp(alt, 4.4, 5)],
     clouds,
-    gilt: ramp(alt, 2.3, 3),
+    dense: ramp(alt, 1.2, 1.7) * (1 - ramp(alt, 2.0, 2.6)),
+    gilt: ramp(alt, 2.2, 2.9),
     stars: ramp(alt, 4.2, 5),
   };
 }

@@ -68,9 +68,7 @@
     "tty": "tty/contato",
     "copy": "Copiar e-mail",
     "copied": "copiado.",
-    "copyFail": "selecionado. Use Ctrl+C.",
-    "lead": "Escreva para mim ou veja o código dos projetos.",
-    "pulse": "PULSO"
+    "copyFail": "selecionado. Use Ctrl+C."
   },
   "footer": {
     "text": "© {year} Diego Olalla. Feito com Next.js e React Three Fiber.",

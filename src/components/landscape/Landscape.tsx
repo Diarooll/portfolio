@@ -76,8 +76,12 @@ export default function Landscape() {
       if (!el) return;
       const shift = reduced ? 0 : (cam.alt - 1.6) * L.speed;
       el.style.transform = `translate3d(${(-cur.current.x * 6 * (i + 1)).toFixed(2)}px, ${shift.toFixed(2)}vh, 0)`;
-      el.style.opacity = (cam.clouds * L.opacity).toFixed(3);
+      el.style.opacity = (cam.clouds * L.opacity * (L.dense ? cam.dense : 1)).toFixed(3);
     });
+
+    // cor do body = a mesma curva de altitude (nunca azul-claro chapado atrás das camadas)
+    const root = document.documentElement.style;
+    cam.bg.forEach((w, i) => root.setProperty(`--alt-w${i + 1}`, `${(w * 100).toFixed(1)}%`));
 
     // fundo: cada fase é uma camada que aparece por cima da anterior (o céu é a base)
     cam.bg.forEach((w, i) => {

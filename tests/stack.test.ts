@@ -2,7 +2,7 @@
 import { describe, expect, it } from "vitest";
 import { techs } from "@/content/techs";
 import { BRAND, DARK_FACE, contrast, faceTone } from "@/content/brands";
-import { STACK_BACKGROUND, stackCopy } from "@/content/stack";
+import { stackCopy } from "@/content/stack";
 
 describe("cores de marca da Stack", () => {
   it("toda tecnologia tem cor de marca em hex", () => {
@@ -21,6 +21,5 @@ describe("cores de marca da Stack", () => {
   });
   it("o rótulo da Stack não fala mais de centro nem de órbita desenhada", () => {
     expect(stackCopy.label.pt).not.toMatch(/terminal|centro|órbita/i);
-    expect(STACK_BACKGROUND.clouds).toBe("/landscape/cloud-bank.webp");
   });
 });

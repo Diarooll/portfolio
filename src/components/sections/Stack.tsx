@@ -20,7 +20,6 @@ import { hasWebGL } from "@/lib/webgl";
 import type { OrbitBus, OrbitTile } from "@/components/three/StackOrbit";
 import { layoutFallback, type FallbackOrbit } from "./stackFallback";
 import styles from "./Stack.module.css";
-import StackBackdrop from "./StackBackdrop";
 import { useMeasure, useScrollFrame } from "@/hooks/useScrollFrame";
 import { useSection } from "@/hooks/useSection";
 import { useInViewOnce } from "@/hooks/useInViewOnce";
@@ -41,6 +40,7 @@ export default function Stack() {
   const stage = useRef<HTMLDivElement>(null);
   const tree = useRef<HTMLDivElement>(null);
   const svg = useRef<SVGSVGElement>(null);
+  const wrapEl = useRef<HTMLDivElement>(null);
   const sub = useRef<HTMLParagraphElement>(null);
   const noteEl = useRef<HTMLParagraphElement>(null);
   const fb = useRef<FallbackOrbit | null>(null);
@@ -116,6 +116,15 @@ export default function Stack() {
     bus.fade = sstep(clamp((y - (m.top - 0.9 * vh)) / (0.6 * vh))) * (1 - sstep(clamp((y - (pj.top + 0.15 * vh)) / (0.5 * vh))));
     bus.cursor.x = pointer.seen ? (pointer.x / s.vw) * 2 - 1 : 0;
     bus.cursor.y = pointer.seen ? (pointer.y / vh) * 2 - 1 : 0;
+    // todo o conteúdo some (fade rápido) antes da intro de Projetos e fica fora do tab order
+    const wrap = wrapEl.current;
+    if (wrap) {
+      const o = 1 - sstep(clamp((y - (pj.top - 0.85 * vh)) / (0.3 * vh)));
+      const inView = o > 0.004 && y > m.top - 1.3 * vh;
+      wrap.style.opacity = o.toFixed(3);
+      wrap.style.visibility = inView ? "visible" : "hidden";
+      wrap.style.pointerEvents = o > 0.5 ? "" : "none";
+    }
     const inRange = y > m.top - 1.2 * vh && y < pj.top + 0.9 * vh;
     if (gl3d && inRange) bus.invalidate?.();
     if (!s.changed) return;
@@ -238,8 +247,7 @@ export default function Stack() {
   return (
     <section ref={section} className={`pin stack ${styles.section}${gl3d ? " gl3d" : ""}`} id="stack" aria-labelledby="stackT">
       <div ref={stage} className="stage">
-        <StackBackdrop />
-        <div className="wrap st-wrap">
+        <div ref={wrapEl} className="wrap st-wrap">
           <div className="st-head">
             <Dissolve as="h2" className="title" id="stackT" text={t("title")} seed={5} progress={titleP} />
             <p ref={sub} className="st-sub glass">

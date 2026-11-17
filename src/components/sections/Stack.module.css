@@ -12,41 +12,6 @@
   white-space: nowrap;
 }
 
-/* fundo de nuvens: cobre a paisagem enquanto a Stack está presa na tela */
-.backdrop {
-  position: absolute;
-  inset: 0;
-  overflow: hidden;
-  pointer-events: none;
-}
-/* cada camada de nuvens: larga (mais que a tela), presa embaixo, só com transform */
-.cloudLayer {
-  --w: calc(var(--s) * 112%);
-  position: absolute;
-  left: 50%;
-  width: var(--w);
-  margin-left: calc(var(--w) / -2);
-  aspect-ratio: 1672 / 941;
-  will-change: transform;
-}
-.cloudImg {
-  position: absolute;
-  inset: 0;
-  background: center bottom / 100% auto no-repeat;
-  /* a borda de baixo da foto some num degradê: nenhuma camada mostra um corte reto */
-  -webkit-mask-image: linear-gradient(to top, transparent, #000 22%);
-  mask-image: linear-gradient(to top, transparent, #000 22%);
-}
-/* no celular (tela em pé) as nuvens precisam ser bem mais largas para ter altura */
-@media (max-aspect-ratio: 1/1) {
-  .cloudLayer {
-    --w: calc(var(--s) * 250%);
-  }
-}
-:global(:root[data-theme="dark"]) .backdrop {
-  filter: brightness(0.38) saturate(0.7) hue-rotate(-12deg);
-}
-
 /* a seção ganha fichas escuras na versão 2D, como as peças 3D */
 .section {
   --sc-chip: #2c2621;
