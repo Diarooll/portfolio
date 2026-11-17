@@ -13,7 +13,7 @@ import { pick } from "@/content/types";
 import Dissolve from "@/components/ui/Dissolve";
 import TechIcon from "@/components/ui/TechIcon";
 import ErrorBoundary from "@/components/ui/ErrorBoundary";
-import { hasWebGL } from "@/components/three/assets";
+import { hasWebGL } from "@/lib/webgl";
 import type { TreeBus } from "@/components/three/StackTree";
 import { layoutFallback, type FallbackTree } from "./stackFallback";
 import { useMeasure, useScrollFrame } from "@/hooks/useScrollFrame";

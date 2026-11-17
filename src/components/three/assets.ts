@@ -155,16 +155,3 @@ export function jag(a: THREE.Vector3, b: THREE.Vector3, amp: number, depth: numb
   }
   return pts;
 }
-
-/** testa se dá para usar WebGL (sem isso a página usa os desenhos em SVG) */
-export function hasWebGL() {
-  try {
-    const c = document.createElement("canvas");
-    const gl = (c.getContext("webgl2") || c.getContext("webgl")) as WebGLRenderingContext | null;
-    if (!gl) return false;
-    gl.getExtension("WEBGL_lose_context")?.loseContext();
-    return true;
-  } catch {
-    return false;
-  }
-}

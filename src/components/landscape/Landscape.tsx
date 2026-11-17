@@ -42,7 +42,9 @@ export default function Landscape() {
     const d = cam.dusk;
     const filter =
       (dark ? "brightness(0.5) saturate(0.78) hue-rotate(-10deg) contrast(1.06) " : "") +
-      (d > 0.001 ? `brightness(${(1 - 0.22 * d).toFixed(3)}) saturate(${(1 - 0.2 * d).toFixed(3)}) sepia(${(0.28 * d).toFixed(3)}) hue-rotate(${(-12 * d).toFixed(2)}deg)` : "");
+      (d > 0.001
+        ? `brightness(${(1 - 0.22 * d).toFixed(3)}) saturate(${(1 - 0.2 * d).toFixed(3)}) sepia(${(0.28 * d).toFixed(3)}) hue-rotate(${(-12 * d).toFixed(2)}deg)`
+        : "");
     LAYERS.forEach((L, i) => {
       const el = layerRefs.current[i];
       if (!el) return;

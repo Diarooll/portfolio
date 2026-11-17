@@ -8,7 +8,7 @@ import { useEffect, useState } from "react";
 import { enableSmoothScroll, requestMeasure, state } from "@/lib/scroll-engine";
 import { Z } from "@/lib/landscape";
 import { useReducedMotionPref } from "@/hooks/useReducedMotionPref";
-import { hasWebGL } from "./three/assets";
+import { hasWebGL } from "@/lib/webgl";
 import Cursor from "./ui/Cursor";
 import CloudVeil from "./landscape/CloudVeil";
 import ErrorBoundary from "./ui/ErrorBoundary";

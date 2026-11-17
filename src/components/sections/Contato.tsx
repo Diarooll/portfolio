@@ -13,7 +13,7 @@ import Dissolve from "@/components/ui/Dissolve";
 import CopyEmail from "@/components/ui/CopyEmail";
 import Bird from "@/components/ui/Bird";
 import ErrorBoundary from "@/components/ui/ErrorBoundary";
-import { hasWebGL } from "@/components/three/assets";
+import { hasWebGL } from "@/lib/webgl";
 import { useMeasure, useScrollFrame } from "@/hooks/useScrollFrame";
 import { useSection } from "@/hooks/useSection";
 import { useInViewOnce } from "@/hooks/useInViewOnce";

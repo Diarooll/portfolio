@@ -6,6 +6,11 @@ export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
 export const alt = "Diego Olalla";
 
+// gera as duas imagens (pt e en) no build
+export function generateStaticParams() {
+  return [{ locale: "pt" }, { locale: "en" }];
+}
+
 export default async function OG({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params;
   const t = await getTranslations({ locale, namespace: "hero" });
