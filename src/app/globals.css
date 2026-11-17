@@ -343,13 +343,13 @@ a {
 .rm .cv-haze {
   display: none;
 }
+/* banco de nuvens: foto recortada (cloud-bank.webp). A base é opaca, então o miolo continua a cor dela */
 .cv-edge {
-  filter: blur(3px);
-  height: calc(130vw * 700 / 2400);
-  background: url(/landscape/cloud-a.webp) center bottom / 100% 100% no-repeat;
-}
-.cv-front .cv-edge {
-  background-image: url(/landscape/cloud-b.webp);
+  height: 62vw;
+  background: url(/landscape/cloud-bank.webp) center bottom / 100% auto no-repeat;
+  /* a base da foto se dissolve no miolo: sem emenda */
+  -webkit-mask-image: linear-gradient(to bottom, #000 72%, transparent);
+  mask-image: linear-gradient(to bottom, #000 72%, transparent);
 }
 .cv-flip {
   transform: scaleY(-1);
@@ -358,14 +358,22 @@ a {
 .cv-core {
   height: 115vh;
   margin-top: -2px;
-  background: linear-gradient(to bottom, #f6f9fb, #ffffff 40%, #f3f6f9);
+  background: linear-gradient(to bottom, #dbe5f0, #eef3f9 20%, #f6f9fc 40%, #f6f9fc 60%, #eef3f9 80%, #dbe5f0);
 }
+/* banco de trás: a mesma foto espelhada e maior, mais apagada (profundidade) */
 .cv-back {
   filter: drop-shadow(0 -20px 40px rgba(120, 150, 180, 0.25));
-  opacity: 0.96;
+}
+.cv-back .cv-edge {
+  height: 70vw;
+  background-size: 118% auto;
+  transform: scaleX(-1);
+}
+.cv-back .cv-flip {
+  transform: scale(-1, -1);
 }
 .cv-back .cv-core {
-  background: linear-gradient(to bottom, #f1f6fa, #e9f0f6);
+  background: linear-gradient(to bottom, #d3deec, #e6eef6 20%, #eaf0f7 40%, #eaf0f7 60%, #e6eef6 80%, #d3deec);
 }
 :root[data-theme="dark"] .cv-bank {
   filter: brightness(0.42) saturate(0.7);

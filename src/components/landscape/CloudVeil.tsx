@@ -3,7 +3,7 @@
 // Dois bancos de nuvem sobem pela tela em velocidades diferentes (paralaxe),
 // cobrem tudo por um instante e abrem para a seção seguinte. Enquanto a tela
 // está coberta, a paisagem troca de enquadramento sem ninguém ver o "corte".
-// Cada banco = borda fofa (imagem) + miolo sólido + borda fofa invertida.
+// Cada banco = borda fofa (foto cloud-bank.webp) + miolo sólido + borda invertida.
 // Movimento reduzido: só um véu branco que aparece e some (crossfade).
 import { useRef } from "react";
 import { CLOUD_SPAN, cloudCenters } from "@/lib/landscape";
