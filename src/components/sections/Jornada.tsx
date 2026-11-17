@@ -6,7 +6,7 @@
 // stroke-dashoffset muda com a rolagem (barato).
 import { useRef } from "react";
 import { useLocale, useTranslations } from "next-intl";
-import { clamp } from "@/lib/math";
+import { clamp, sstep } from "@/lib/math";
 import { M, docTop } from "@/lib/scroll-engine";
 import { journey } from "@/content/journey";
 import { pick } from "@/content/types";
@@ -42,6 +42,7 @@ export default function Jornada() {
   const geo = useRef<LineGeo | null>(null);
   const offs = useRef<number[]>([]);
   const tl = useRef({ top: 0, h: 1 });
+  const tTop = useRef(0);
   const lastTi = useRef(-1);
   useSection("jornada", section);
 
@@ -51,6 +52,7 @@ export default function Jornada() {
     const head = title.current;
     if (!sec || !sv || !head || !list.current) return;
     const { vw, vh } = s;
+    if (title.current) tTop.current = docTop(title.current);
     tl.current = { top: docTop(list.current), h: Math.max(1, list.current.offsetHeight) };
     offs.current = items.current.map((li) => li?.offsetTop ?? 0);
     const sr = sec.getBoundingClientRect();
@@ -129,6 +131,12 @@ export default function Jornada() {
     const G = geo.current;
     if (!m || !G) return;
     const { y, vh, reduced: RM } = s;
+    // título: entra com fade + leve subida sobre o fundo contínuo
+    if (title.current) {
+      const k = RM ? 1 : sstep(clamp((y + vh * 0.95 - tTop.current) / (vh * 0.45)));
+      title.current.style.opacity = k.toFixed(3);
+      title.current.style.transform = RM ? "" : `translate3d(0, ${((1 - k) * 28).toFixed(1)}px, 0)`;
+    }
     // marcos: acendem quando a "frente" da leitura passa por eles
     const reach = clamp((y + vh * 0.72 - tl.current.top) / tl.current.h);
     items.current.forEach((li, i) => {

@@ -111,18 +111,29 @@ export default function Projetos() {
         pn.el.inert = c > 0.98;
         pp.current[i] = RM ? (raw > 0 ? 1 : 0) * clamp((p - A[i][0]) / 0.05) : clamp((p - A[i][0] + 0.01) / 0.16);
       });
-      // saída: o trilho desfoca e some; a raiz da Jornada nasce daqui
+      // saída: o trilho se dissolve na cor do fundo (sem blur) e a base some
+      // por uma máscara vertical longa, sem corte reto; a Jornada nasce daqui
       const pEnd = m.top + m.h - vh;
-      const pe = sstep(clamp((y - (pEnd - 0.15 * vh)) / (0.75 * vh)));
-      tr.style.opacity = (1 - pe).toFixed(3);
-      if (!RM) {
-        tr.style.filter = pe > 0.001 ? `blur(${(pe * 12).toFixed(2)}px)` : "none";
-        tr.style.transform = pe > 0.001 ? `scale(${(1 - pe * 0.04).toFixed(4)})` : "";
+      const pe = sstep(clamp((y - (pEnd - 0.3 * vh)) / (0.9 * vh)));
+      tr.style.opacity = (1 - pe * pe).toFixed(3);
+      tr.style.filter = "";
+      tr.style.transform = "";
+      if (pe > 0.001) {
+        const a0 = (100 - 70 * pe).toFixed(2);
+        const a1 = (100 - 30 * pe).toFixed(2);
+        const mk = `linear-gradient(to bottom, #000 ${a0}%, transparent ${a1}%)`;
+        tr.style.maskImage = mk;
+        tr.style.webkitMaskImage = mk;
+      } else {
+        tr.style.maskImage = "";
+        tr.style.webkitMaskImage = "";
       }
     } else {
       tr.style.opacity = "";
       tr.style.filter = "";
       tr.style.transform = "";
+      tr.style.maskImage = "";
+      tr.style.webkitMaskImage = "";
       panels.current.forEach((pn, i) => {
         if (!pn.el) return;
         pn.el.inert = false;
