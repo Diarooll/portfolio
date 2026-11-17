@@ -1,17 +1,7 @@
 // Stack: 10 tecnologias em 4 grupos. A ordem aqui é a ordem na árvore.
 import type { Localized } from "./types";
 
-export type IconId =
-  | "python"
-  | "java"
-  | "fastapi"
-  | "django"
-  | "spring"
-  | "docker"
-  | "githubactions"
-  | "postgresql"
-  | "git"
-  | "claudecode";
+export type IconId = "python" | "java" | "fastapi" | "django" | "spring" | "docker" | "githubactions" | "postgresql" | "git" | "claudecode";
 
 export interface Tech {
   id: IconId;
@@ -66,7 +56,12 @@ export const techGroups: TechGroup[] = [
     items: [
       { id: "git", name: "Git", ref: "vcs · git", note: { pt: "versionamento", en: "version control" } },
       // Claude Code usa um glifo ">_" próprio, não o logo da Anthropic
-      { id: "claudecode", name: "Claude Code", ref: "ai · claude-code", note: { pt: "assistente de código com IA no terminal", en: "AI coding assistant in the terminal" } },
+      {
+        id: "claudecode",
+        name: "Claude Code",
+        ref: "ai · claude-code",
+        note: { pt: "assistente de código com IA no terminal", en: "AI coding assistant in the terminal" },
+      },
     ],
   },
 ];

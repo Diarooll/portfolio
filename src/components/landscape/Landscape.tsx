@@ -33,10 +33,16 @@ export default function Landscape() {
     const descent = 1 + FRAME.bleed + GROUND.greenVh / 100 - groundFrac;
     const cam = cameraAt(s.y, M, vh, descent);
 
-    const key = `${s.y.toFixed(1)}|${cur.current.x.toFixed(4)}|${cur.current.y.toFixed(4)}|${vh}|${groundFrac.toFixed(4)}`;
+    const key = `${document.documentElement.dataset.theme}|${s.y.toFixed(1)}|${cur.current.x.toFixed(4)}|${cur.current.y.toFixed(4)}|${vh}|${groundFrac.toFixed(4)}`;
     if (key === last.current) return;
     last.current = key;
 
+    // tema e anoitecer escurecem as fotos com filtro (aplicado pela GPU, sem repintar)
+    const dark = document.documentElement.dataset.theme === "dark";
+    const d = cam.dusk;
+    const filter =
+      (dark ? "brightness(0.5) saturate(0.78) hue-rotate(-10deg) contrast(1.06) " : "") +
+      (d > 0.001 ? `brightness(${(1 - 0.22 * d).toFixed(3)}) saturate(${(1 - 0.2 * d).toFixed(3)}) sepia(${(0.28 * d).toFixed(3)}) hue-rotate(${(-12 * d).toFixed(2)}deg)` : "");
     LAYERS.forEach((L, i) => {
       const el = layerRefs.current[i];
       if (!el) return;
@@ -46,6 +52,7 @@ export default function Landscape() {
       const x = -cur.current.x * L.mouse;
       el.style.transform = `translate3d(${x.toFixed(2)}px, ${y.toFixed(2)}px, 0)`;
       if (L.id === "sky") el.style.opacity = cam.sky.toFixed(3);
+      el.style.filter = filter || "none";
     });
     if (drift.current) drift.current.style.opacity = (cam.sky * 0.9).toFixed(3);
     cam.bg.forEach((w, i) => {

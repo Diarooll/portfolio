@@ -75,7 +75,7 @@ export const GROUND = {
 export function cloudCenters(M: Partial<Record<SectionId, Metrics>>, vh: number) {
   const out: number[] = [];
   if (M.stack) out.push(M.stack.top - 0.5 * vh);
-  if (M.jornada) out.push(M.jornada.top - 0.45 * vh);
+  if (M.jornada) out.push(M.jornada.top - 0.2 * vh);
   return out;
 }
 /** quanto de rolagem uma travessia de nuvem dura (em vh) */
@@ -109,14 +109,16 @@ export function cameraAt(s: number, M: Partial<Record<SectionId, Metrics>>, vh: 
     [
       { y: 0, v: 0 },
       { y: heroEnd, v: 0.14 }, // o morro sobe e esconde o pé das letras
-      { y: a - 0.25 * vh, v: 0.2 },
-      { y: a + 0.15 * vh, v: stackDescent },
+      { y: a - 0.22 * vh, v: 0.2 },
+      { y: a + 0.02 * vh, v: stackDescent },
       { y: g("projetos") + 0.2 * vh, v: stackDescent },
       { y: g("projetos") + 0.9 * vh, v: 0 }, // atrás dos painéis, volta ao campo
-      { y: b - 0.2 * vh, v: 0 },
-      { y: b + 0.05 * vh, v: -1.15 }, // escondida embaixo da tela
+      { y: b - 0.15 * vh, v: 0 },
+      { y: b + 0.02 * vh, v: -1.15 }, // escondida embaixo da tela
       { y: g("contato") - 0.9 * vh, v: -1.15 },
-      { y: g("contato") + 0.35 * vh, v: -0.42 }, // no Contato o morro e a árvore voltam, ao anoitecer
+      { y: g("contato") + 0.35 * vh, v: -0.32 }, // no Contato o morro e a árvore voltam, ao anoitecer
+      // no fim da página o morro sobe até cobrir o pé do nome gigante
+      { y: M.fim ? M.fim.top + M.fim.h - vh : g("contato") + 2 * vh, v: 0.06 },
     ],
     s,
   );

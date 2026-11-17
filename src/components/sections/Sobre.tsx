@@ -82,9 +82,7 @@ export default function Sobre() {
             <div className="about-photo">
               <Image src="/foto.jpg" alt={t("photoAlt")} fill sizes="120px" style={{ objectFit: "cover", objectPosition: "50% 30%" }} />
             </div>
-            <p className="about">
-              {t.rich("about", { sents: (c) => <span className="sents-inline">{c}</span> })}
-            </p>
+            <p className="about">{t.rich("about", { sents: (c) => <span className="sents-inline">{c}</span> })}</p>
             <dl ref={ds} className="ds">
               <div>
                 <dt>{t("statProjects")}</dt>

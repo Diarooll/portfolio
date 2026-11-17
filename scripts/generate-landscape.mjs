@@ -45,8 +45,7 @@ function cloud(r, cx, cy, w, h, blur = 10) {
     const rad = h * (0.28 + 0.42 * bump) * (0.75 + r() * 0.5);
     puffs.push([cx - w / 2 + t * w, cy - bump * h * 0.25 - r() * h * 0.15, rad]);
   }
-  const circles = (dx, dy, k, fill) =>
-    puffs.map(([x, y, rad]) => `<circle cx="${f(x + dx)}" cy="${f(y + dy)}" r="${f(rad * k)}" fill="${fill}"/>`).join("");
+  const circles = (dx, dy, k, fill) => puffs.map(([x, y, rad]) => `<circle cx="${f(x + dx)}" cy="${f(y + dy)}" r="${f(rad * k)}" fill="${fill}"/>`).join("");
   return `<g filter="url(#fluff)" data-b="${blur}">
     ${circles(0, h * 0.14, 1, "#C7D8E6")}
     ${circles(0, 0, 0.97, "#F7FAFC")}
@@ -55,9 +54,8 @@ function cloud(r, cx, cy, w, h, blur = 10) {
   </g>`;
 }
 
-const blurDefs = [6, 10, 16, 24]
-  .map((b) => `<filter id="b${b}" x="-20%" y="-20%" width="140%" height="140%"><feGaussianBlur stdDeviation="${b}"/></filter>`)
-  .join("") +
+const blurDefs =
+  [6, 10, 16, 24].map((b) => `<filter id="b${b}" x="-20%" y="-20%" width="140%" height="140%"><feGaussianBlur stdDeviation="${b}"/></filter>`).join("") +
   // "fluff": deforma as bordas com ruído para a nuvem parecer volumosa, não um monte de círculos
   `<filter id="fluff" x="-20%" y="-30%" width="140%" height="160%"><feTurbulence type="fractalNoise" baseFrequency="0.011" numOctaves="4" seed="3"/><feDisplacementMap in="SourceGraphic" scale="70" xChannelSelector="R" yChannelSelector="G"/><feGaussianBlur stdDeviation="5"/></filter>` +
   `<filter id="leafy" x="-10%" y="-10%" width="120%" height="120%"><feTurbulence type="fractalNoise" baseFrequency="0.06" numOctaves="2" seed="8"/><feDisplacementMap in="SourceGraphic" scale="22" xChannelSelector="R" yChannelSelector="G"/></filter>`;
@@ -134,8 +132,13 @@ if (PLACEHOLDERS) {
   const H = 1350;
   let body = `<rect width="${W}" height="${H}" fill="url(#skyG)"/><rect width="${W}" height="${H}" fill="url(#sunG)"/>`;
   const spots = [
-    [380, 260, 520, 150], [1180, 180, 380, 110], [1900, 330, 640, 170],
-    [760, 520, 420, 120], [1560, 620, 360, 100], [220, 760, 300, 90], [2160, 820, 340, 95],
+    [380, 260, 520, 150],
+    [1180, 180, 380, 110],
+    [1900, 330, 640, 170],
+    [760, 520, 420, 120],
+    [1560, 620, 360, 100],
+    [220, 760, 300, 90],
+    [2160, 820, 340, 95],
   ];
   spots.forEach(([x, y, w, h]) => (body += cloud(r, x, y, w, h, 10)));
   await save("sky.webp", W, H, body, { opaque: true });

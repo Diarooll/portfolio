@@ -1,0 +1,7 @@
+.next
+node_modules
+coverage
+legacy
+prototype
+public
+package-lock.json

@@ -6,7 +6,13 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "landscape:clouds": "node scripts/generate-landscape.mjs"
   },
   "dependencies": {
     "@react-three/drei": "^10.7.9",
@@ -16,7 +22,7 @@
     "next-intl": "^4.15.1",
     "react": "19.1.0",
     "react-dom": "19.1.0",
-    "three": "^0.187.0"
+    "three": "^0.182.0"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",
@@ -28,7 +34,7 @@
     "@types/node": "^22.20.5",
     "@types/react": "^19",
     "@types/react-dom": "^19",
-    "@types/three": "^0.187.0",
+    "@types/three": "^0.182.0",
     "@vitejs/plugin-react": "^6.3.0",
     "eslint": "^9",
     "eslint-config-next": "15.5.29",
@@ -39,5 +45,8 @@
     "tailwindcss": "^4",
     "typescript": "^5",
     "vitest": "^5.1.0"
+  },
+  "engines": {
+    "node": ">=22"
   }
 }

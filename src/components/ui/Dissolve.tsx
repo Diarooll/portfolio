@@ -76,10 +76,5 @@ export default function Dissolve({ as = "span", text, unit = "char", seed = 1, i
     </span>
   ));
 
-  return createElement(
-    as,
-    { ref, id, className },
-    label ? <span className="sr">{text}</span> : null,
-    <span aria-hidden="true">{pieces}</span>,
-  );
+  return createElement(as, { ref, id, className }, label ? <span className="sr">{text}</span> : null, <span aria-hidden="true">{pieces}</span>);
 }

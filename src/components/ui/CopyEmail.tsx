@@ -24,9 +24,12 @@ export default function CopyEmail({ email, targetId, labels }: CopyEmailProps) {
   const [state, setState] = useState("");
   const timer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  useEffect(() => () => {
-    if (timer.current) clearTimeout(timer.current);
-  }, []);
+  useEffect(
+    () => () => {
+      if (timer.current) clearTimeout(timer.current);
+    },
+    [],
+  );
 
   const done = (ok: boolean) => {
     if (!ok) selectText(document.getElementById(targetId));

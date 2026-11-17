@@ -271,30 +271,30 @@ a {
   will-change: transform;
   contain: layout style;
 }
-:root[data-theme="dark"] .ls-layer {
-  filter: brightness(0.5) saturate(0.78) hue-rotate(-10deg) contrast(1.06);
-}
 .ls-drift {
   position: absolute;
   left: 0;
   right: 0;
-  bottom: 18%;
-  height: 34%;
+  top: 4%;
+  height: 30%;
   overflow: hidden;
   opacity: 0.9;
+  /* some nas bordas: parece névoa passando, não uma faixa */
+  -webkit-mask-image: linear-gradient(to bottom, transparent, #000 35%, #000 55%, transparent);
+  mask-image: linear-gradient(to bottom, transparent, #000 35%, #000 55%, transparent);
 }
 .ls-drift span {
   position: absolute;
   inset: 0 auto 0 0;
   width: 200%;
   background: url(/landscape/cloud-b.webp) repeat-x 0 100% / auto 100%;
-  opacity: 0.38;
+  opacity: 0.22;
   animation: drift 160s linear infinite;
   will-change: transform;
 }
 .ls-drift span + span {
   background-image: url(/landscape/cloud-a.webp);
-  opacity: 0.28;
+  opacity: 0.16;
   bottom: -14%;
   animation-duration: 240s;
   animation-direction: reverse;
@@ -312,11 +312,14 @@ a {
   position: absolute;
   left: 0;
   right: 0;
-  top: calc(100% - 3vh);
+  top: calc(100% - 6vh);
 }
 .ls-green {
-  height: calc(var(--green) + 3vh);
-  background: linear-gradient(to bottom, rgba(94, 158, 47, 0), #5e9e2f 3vh, #4f8a27 55%, #3f7322);
+  height: calc(var(--green) + 6vh);
+  /* começa na cor média da borda de baixo da foto (#6c930f) e escurece até o chão da Stack */
+  background:
+    repeating-linear-gradient(100deg, rgba(40, 70, 10, 0.06) 0 3px, transparent 3px 9px),
+    linear-gradient(to bottom, rgba(108, 147, 15, 0), #6c930f 6vh, #5e9e2f 40%, #4f8a27 75%, #3f7322);
 }
 .ls-soil {
   position: relative;
@@ -360,6 +363,7 @@ a {
   display: block;
 }
 .cv-edge {
+  filter: blur(3px);
   height: calc(130vw * 700 / 2400);
   background: url(/landscape/cloud-a.webp) center bottom / 100% 100% no-repeat;
 }
@@ -739,8 +743,8 @@ html:not(.fx) .hero-front {
 .hero-name {
   position: absolute;
   left: var(--gutter);
-  bottom: 30vh;
-  bottom: 30svh;
+  bottom: 35vh;
+  bottom: 35svh;
   margin: 0 0 0 -0.04em;
   font-size: var(--fs-name);
   line-height: 0.92;
@@ -765,8 +769,8 @@ html:not(.fx) .hero-front {
   position: absolute;
   left: var(--gutter);
   right: var(--gutter);
-  bottom: clamp(24px, 5vh, 56px);
-  max-width: 1000px;
+  bottom: clamp(16px, 3.5vh, 40px);
+  max-width: 920px;
   display: grid;
   grid-template-columns: 1fr 1.3fr;
   gap: 1rem 3rem;
@@ -820,7 +824,9 @@ html:not(.fx) .hero-front {
     bottom: auto;
     top: calc(var(--nav-h) + 30svh);
     font-size: clamp(2.6rem, 13.5vw, 4rem);
-    text-shadow: 0 1px 18px rgba(251, 247, 238, 0.65);
+    text-shadow:
+      0 0 3px rgba(251, 247, 238, 0.9),
+      0 0 18px rgba(251, 247, 238, 0.8);
   }
   :root[data-theme="dark"] .hero-name {
     text-shadow: 0 1px 18px rgba(0, 0, 0, 0.6);
@@ -927,6 +933,18 @@ html:not(.fx) .hero-front {
   letter-spacing: -0.01em;
 }
 @media (max-width: 699px) {
+  /* no celular a frase fica sobre a copa da árvore: um halo claro garante a leitura */
+  .statement {
+    text-shadow:
+      0 0 3px rgba(251, 247, 238, 0.9),
+      0 0 16px rgba(251, 247, 238, 0.85),
+      0 0 34px rgba(251, 247, 238, 0.7);
+  }
+  :root[data-theme="dark"] .statement {
+    text-shadow:
+      0 0 3px rgba(0, 0, 0, 0.8),
+      0 0 18px rgba(0, 0, 0, 0.7);
+  }
   .statement .line:nth-child(2) {
     margin-left: 6vw;
   }
@@ -1491,7 +1509,9 @@ html.js .tree.v .tn {
   display: flex;
   align-items: center;
   gap: 0.22em;
-  font: 800 clamp(2.6rem, 6.4vw, 5.6rem) / 1 var(--font-jakarta), var(--font-sans);
+  font:
+    800 clamp(2.6rem, 6.4vw, 5.6rem) / 1 var(--font-jakarta),
+    var(--font-sans);
   letter-spacing: 0.04em;
   color: var(--pf);
 }
@@ -1597,6 +1617,30 @@ html.js .tree.v .tn {
   width: 100%;
   overflow: visible;
   pointer-events: none;
+}
+.jornada > .wrap {
+  position: relative;
+}
+.j-root path {
+  fill: none;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-dasharray: 1;
+  stroke-dashoffset: 1;
+  visibility: hidden;
+}
+.j-root .jr-bark {
+  stroke: var(--bark);
+}
+.j-root .jr-wood {
+  stroke: var(--wood);
+}
+.j-root .jr-light {
+  stroke: var(--wood-light);
+  opacity: 0.6;
+}
+.j-root .jr-let {
+  stroke: var(--wood);
 }
 .j-head {
   position: relative;
@@ -2029,4 +2073,118 @@ html.js .tree.v .tn {
 }
 .leaves canvas {
   pointer-events: none !important;
+}
+
+/* ---------- passarinho ---------- */
+.bird {
+  cursor: pointer;
+  outline: none;
+}
+.b-ring {
+  fill: none;
+  stroke: var(--accent);
+  stroke-width: 3;
+  opacity: 0;
+}
+.bird:focus-visible .b-ring {
+  opacity: 1;
+}
+.b-body,
+.b-hd {
+  fill: #b9895a;
+}
+.b-belly {
+  fill: #efe1c4;
+}
+.b-wing,
+.b-cap,
+.b-tail {
+  fill: #7a5233;
+}
+.b-beak {
+  fill: #e0a54b;
+}
+.b-eye {
+  fill: var(--bird-eye);
+}
+.b-hl {
+  fill: #efe1c4;
+}
+.b-lid {
+  fill: #b9895a;
+  transform: scaleY(0);
+  transform-box: fill-box;
+  transform-origin: 50% 0%;
+  transition: transform 70ms;
+}
+.bird.blink .b-lid {
+  transform: scaleY(1);
+}
+.b-legs {
+  fill: none;
+  stroke: #4a3423;
+  stroke-width: 2.4;
+  stroke-linecap: round;
+}
+.b-head {
+  transform-box: fill-box;
+  transform-origin: 80% 85%;
+  transition: transform 0.28s cubic-bezier(0.2, 0.8, 0.3, 1);
+}
+.rm .b-head {
+  transition-duration: 0.18s;
+}
+.b-flip {
+  transform-box: fill-box;
+  transform-origin: 50% 100%;
+  transition: transform 0.2s;
+}
+.b-wing {
+  transform-box: fill-box;
+  transform-origin: 15% 30%;
+}
+.b-chirp path {
+  fill: none;
+  stroke: var(--fg);
+  stroke-width: 2.4;
+  stroke-linecap: round;
+  opacity: 0;
+  transform-box: fill-box;
+  transform-origin: 100% 100%;
+}
+.bird.chirp .b-chirp path {
+  animation: chirp 0.9s ease-out forwards;
+}
+.bird.chirp .b-chirp path:nth-child(2) {
+  animation-delay: 0.08s;
+}
+.bird.chirp .b-chirp path:nth-child(3) {
+  animation-delay: 0.16s;
+}
+.rm .bird.chirp .b-chirp path {
+  animation-name: chirpRm;
+}
+@keyframes chirp {
+  0% {
+    opacity: 0;
+    transform: scale(0.6);
+  }
+  30% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+    transform: translate(-8px, -10px) scale(1.15);
+  }
+}
+@keyframes chirpRm {
+  0% {
+    opacity: 0;
+  }
+  25% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+  }
 }

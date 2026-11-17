@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
+  <!-- Favicon: a árvore sozinha no morro, sob o céu azul (a mesma cena do site) -->
+  <rect width="32" height="32" rx="7" fill="#4fa0e0"/>
+  <path d="M0 25 Q 12 19 32 21 V32 H0Z" fill="#5e9e2f"/>
+  <rect x="19.2" y="15" width="2" height="6.5" rx="1" fill="#5b3f2a"/>
+  <circle cx="20.2" cy="12.5" r="5.6" fill="#4e8a2a"/>
+  <circle cx="18.4" cy="11" r="3.4" fill="#7fb843"/>
+</svg>
