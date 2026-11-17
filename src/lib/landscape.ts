@@ -41,7 +41,7 @@ const H = 941;
 
 export const LAYERS: LandscapeLayer[] = [
   { id: "sky", src: "/landscape/sky.webp", width: W, height: H, z: -30, depth: 0.15, mouse: 6, opaque: true },
-  { id: "far", src: "/landscape/far.webp", width: W, height: H, z: -28, depth: 0.45, mouse: 10 },
+  { id: "far", src: "/landscape/far.webp", width: W, height: H, z: -28, depth: 0.82, mouse: 12 },
   // aqui, em z -24, fica o nome grande do hero (passa por trás do morro)
   { id: "front", src: "/landscape/front.webp", width: W, height: H, z: -20, depth: 0.92, mouse: 18 },
   { id: "grass", src: "/landscape/grass.webp", width: W, height: H, z: -18, depth: 1, mouse: 26 },
@@ -108,8 +108,8 @@ export function cameraAt(s: number, M: Partial<Record<SectionId, Metrics>>, vh: 
   const y = keyframes(
     [
       { y: 0, v: 0 },
-      { y: heroEnd, v: 0.14 }, // o morro sobe e esconde o pé das letras
-      { y: a - 0.22 * vh, v: 0.2 },
+      { y: heroEnd, v: 0.03 }, // o morro sobe só o que cabe na sobra: nunca aparece o fim da foto
+      { y: a - 0.22 * vh, v: 0.03 },
       { y: a + 0.02 * vh, v: stackDescent },
       { y: g("projetos") + 0.2 * vh, v: stackDescent },
       { y: g("projetos") + 0.9 * vh, v: 0 }, // atrás dos painéis, volta ao campo

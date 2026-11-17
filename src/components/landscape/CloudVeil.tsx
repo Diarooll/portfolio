@@ -8,7 +8,7 @@
 import { useRef } from "react";
 import { CLOUD_SPAN, cloudCenters } from "@/lib/landscape";
 import { M } from "@/lib/scroll-engine";
-import { clamp } from "@/lib/math";
+import { clamp, sstep } from "@/lib/math";
 import { useScrollFrame } from "@/hooks/useScrollFrame";
 
 const BANKS = [
@@ -19,6 +19,7 @@ const BANKS = [
 export default function CloudVeil() {
   const banks = useRef<(HTMLDivElement | null)[]>([]);
   const veil = useRef<HTMLDivElement>(null);
+  const haze = useRef<HTMLDivElement>(null);
   const wrap = useRef<HTMLDivElement>(null);
 
   useScrollFrame((s) => {
@@ -38,9 +39,18 @@ export default function CloudVeil() {
       if (veil.current) veil.current.style.opacity = Math.sin(Math.PI * p).toFixed(3);
       return;
     }
+    // entrada e saída graduais: os bancos nascem do véu de névoa e se dissolvem de volta nele
+    const fade = sstep(clamp(p / 0.34)) * (1 - sstep(clamp((p - 0.7) / 0.3)));
+    if (haze.current) {
+      // névoa que sobe antes das nuvens (sem borda): o céu esbranquiça aos poucos
+      const hy = vh * (1 - 1.5 * clamp((p + 0.05) / 0.62));
+      haze.current.style.transform = `translate3d(0, ${hy.toFixed(1)}px, 0)`;
+      haze.current.style.opacity = (sstep(clamp(p / 0.3)) * (1 - sstep(clamp((p - 0.8) / 0.2)))).toFixed(3);
+    }
     banks.current.forEach((el, i) => {
       if (!el) return;
       const b = BANKS[i];
+      el.style.opacity = (fade * (i === 0 ? 0.96 : 1)).toFixed(3);
       const h = el.offsetHeight;
       // de baixo da tela (vh) até sumir em cima (-h); o miolo cobre a tela no meio
       const t = clamp((p - 0.5) * b.speed + 0.5 + b.lag);
@@ -51,6 +61,7 @@ export default function CloudVeil() {
 
   return (
     <div ref={wrap} className="cloud-veil" aria-hidden="true">
+      <div ref={haze} className="cv-haze" />
       {BANKS.map((b, i) => (
         <div
           key={i}

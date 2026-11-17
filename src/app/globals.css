@@ -312,14 +312,14 @@ a {
   position: absolute;
   left: 0;
   right: 0;
-  top: calc(100% - 6vh);
+  top: calc(100% - 1.5vh);
 }
 .ls-green {
-  height: calc(var(--green) + 6vh);
+  height: calc(var(--green) + 1.5vh);
   /* começa na cor média da borda de baixo da foto (#6c930f) e escurece até o chão da Stack */
   background:
     repeating-linear-gradient(100deg, rgba(40, 70, 10, 0.06) 0 3px, transparent 3px 9px),
-    linear-gradient(to bottom, rgba(108, 147, 15, 0), #6c930f 6vh, #5e9e2f 40%, #4f8a27 75%, #3f7322);
+    linear-gradient(to bottom, rgba(108, 147, 15, 0), #6c930f 1.5vh, #5e9e2f 40%, #4f8a27 75%, #3f7322);
 }
 .ls-soil {
   position: relative;
@@ -361,6 +361,23 @@ a {
 }
 .cv-bank i {
   display: block;
+}
+/* névoa sem borda: a tela esbranquiça antes de as nuvens chegarem */
+.cv-haze {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  height: 190vh;
+  opacity: 0;
+  will-change: transform, opacity;
+  background: linear-gradient(to bottom, rgba(246, 249, 251, 0), rgba(246, 249, 251, 0.55) 22%, #f6f9fb 48%, #f6f9fb);
+}
+:root[data-theme="dark"] .cv-haze {
+  background: linear-gradient(to bottom, rgba(27, 30, 48, 0), rgba(27, 30, 48, 0.55) 22%, #1b1e30 48%, #1b1e30);
+}
+.rm .cv-haze {
+  display: none;
 }
 .cv-edge {
   filter: blur(3px);
