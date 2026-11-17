@@ -54,3 +54,13 @@ node_modules/
 # ----- Arquivos internos de trabalho -----
 # Contrato usado pelos agentes HTML/CSS/JS durante o desenvolvimento
 CONTRACT.md
+
+# ----- Next.js (gerado pelo create-next-app) -----
+/.next/
+/out/
+/build
+/coverage
+.vercel
+*.tsbuildinfo
+next-env.d.ts
+npm-debug.log*
