@@ -130,8 +130,9 @@ body {
 html.fx:not(.rm):not(.lenis) {
   scroll-behavior: smooth;
 }
-html,
-body {
+/* O fundo fica SÓ no html: as camadas da paisagem têm z-index negativo e um
+   body opaco as esconderia (ficava só o azul chapado). */
+html {
   background: color-mix(
     in srgb,
     color-mix(in srgb, color-mix(in srgb, color-mix(in srgb, var(--bg-sky-a), var(--bg-gold-b) var(--alt-w1, 0%)), var(--bg-dusk-b) var(--alt-w2, 0%)), var(--bg-deep-b) var(--alt-w3, 0%)),
