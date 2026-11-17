@@ -1,0 +1,40 @@
+/* camada da Terra: cobre a seção, com um palco do tamanho da tela que acompanha a rolagem */
+.layer {
+  position: absolute;
+  inset: 0;
+  z-index: -2;
+  pointer-events: none;
+}
+.sticky {
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  height: 100svh;
+  overflow: hidden;
+}
+/* sem WebGL (ou enquanto o 3D carrega): a mesma composição em CSS, com a foto recortada num círculo */
+.fallback {
+  position: absolute;
+  inset: 0;
+  transition: opacity 0.8s ease;
+  background-image:
+    radial-gradient(1px 1px at 12% 18%, #fff 50%, transparent 51%), radial-gradient(1px 1px at 37% 9%, #cfe0ff 50%, transparent 51%),
+    radial-gradient(1px 1px at 58% 27%, #fff 50%, transparent 51%), radial-gradient(1.5px 1.5px at 81% 14%, #fff 50%, transparent 51%),
+    radial-gradient(1px 1px at 24% 46%, #ffe9cf 50%, transparent 51%), radial-gradient(1px 1px at 66% 52%, #fff 50%, transparent 51%),
+    radial-gradient(1px 1px at 9% 71%, #cfe0ff 50%, transparent 51%), radial-gradient(1px 1px at 47% 63%, #fff 50%, transparent 51%);
+}
+.globe {
+  position: absolute;
+  left: calc(var(--x) * 100% - var(--r));
+  top: calc(var(--y) * 100% - var(--r));
+  width: calc(var(--r) * 2);
+  height: calc(var(--r) * 2);
+  border-radius: 50%;
+  background:
+    radial-gradient(circle at 22% 30%, transparent 35%, rgba(2, 6, 16, 0.75) 70%, rgba(2, 6, 16, 0.95)),
+    url(/earth/earth-day.webp) 30% 50% / 200% 100%;
+  box-shadow: -10px -10px 40px rgba(110, 165, 255, 0.28);
+}
+.hidden {
+  opacity: 0;
+}

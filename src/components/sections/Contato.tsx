@@ -8,6 +8,7 @@ import { clamp, easeOut, sstep } from "@/lib/math";
 import { docTop } from "@/lib/scroll-engine";
 import { contactSnippet, site } from "@/content/site";
 import Dissolve from "@/components/ui/Dissolve";
+import EarthLayer from "./EarthLayer";
 import CopyEmail from "@/components/ui/CopyEmail";
 import { useMeasure, useScrollFrame } from "@/hooks/useScrollFrame";
 import { useSection } from "@/hooks/useSection";
@@ -41,6 +42,8 @@ export default function Contato() {
   const entries = contactSnippet.entries;
   return (
     <section ref={section} className="contato" id="contato" aria-labelledby="contT">
+      {/* no espaço: a Terra girando ao fundo, atrás do terminal */}
+      <EarthLayer />
       <div className="wrap">
         <Dissolve as="h2" className="closing" id="contT" text={t("closing")} seed={7} />
       </div>
@@ -66,8 +69,7 @@ export default function Contato() {
               </p>
               {entries.map((e, i) => (
                 <p key={e.key} className="tln ind2">
-                  <span className="str">&quot;{e.key}&quot;</span>:{" "}
-                  <span className="str">&quot;</span>
+                  <span className="str">&quot;{e.key}&quot;</span>: <span className="str">&quot;</span>
                   <a
                     className="code-link"
                     id={e.key === "Email" ? "mailText" : undefined}
