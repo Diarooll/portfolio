@@ -1,12 +1,11 @@
 "use client";
 // Liga as partes "vivas" da página depois que o conteúdo já está na tela:
-// rolagem suave, cursor, nuvens de transição e as rajadas de vento.
+// rolagem suave, cursor, as rajadas de vento.
 import { useEffect, useState } from "react";
 import { enableSmoothScroll, requestMeasure, state } from "@/lib/scroll-engine";
 import { Z } from "@/lib/landscape";
 import { useReducedMotionPref } from "@/hooks/useReducedMotionPref";
 import Cursor from "./ui/Cursor";
-import CloudVeil from "./landscape/CloudVeil";
 import WindGusts from "./landscape/WindGusts";
 
 export default function Experience() {
@@ -26,7 +25,6 @@ export default function Experience() {
   return (
     <>
       <Cursor />
-      <CloudVeil />
       {/* atrás do morro e na frente do conteúdo (bem sutis, não atrapalham a leitura) */}
       <div className="wind" style={{ zIndex: Z.leavesBack }} aria-hidden="true">
         <WindGusts count={mobile ? 3 : 6} seed={7} reduced={reduced} />

@@ -1,7 +1,9 @@
-// Configuração da paisagem em camadas (2.5D).
-// As camadas são fotos recortadas com o MESMO enquadramento (16:9): empilhadas
-// na mesma posição, elas formam a cena inteira. Cada uma anda numa velocidade
-// diferente com a rolagem e com o cursor, e é isso que dá profundidade.
+// Configuração da paisagem em camadas (2.5D) e da SUBIDA CONTÍNUA.
+// Rolar a página = a câmera sobe: o morro com a árvore desce e sai de cena
+// pelo Sobre, as nuvens ficam como camadas persistentes de fundo (mais densas
+// no Sobre/Stack, só um mar de nuvens dourado em Projetos), e o fundo de cor
+// segue UMA curva de altitude: dia → dourado → anoitecer → azul profundo → espaço.
+// As camadas de foto têm o MESMO enquadramento (16:9): empilhadas, formam a cena.
 //
 // Para trocar uma foto: substitua o arquivo em public/landscape/ (mesmo nome)
 // e, se precisar, ajuste depth/mouse/fit abaixo. Veja o README.
@@ -20,7 +22,7 @@ export interface LandscapeLayer {
   height: number;
   /** z-index: negativo fica atrás do conteúdo. O nome do hero fica entre far e front. */
   z: number;
-  /** velocidade vertical na "descida" da câmera (1 = acompanha o chão) */
+  /** quanto a camada desce com a subida da câmera (1 = acompanha o chão; 0 = fica parada) */
   depth: number;
   /** paralaxe com o cursor, em px */
   mouse: number;
@@ -40,7 +42,7 @@ const W = 1672;
 const H = 941;
 
 export const LAYERS: LandscapeLayer[] = [
-  { id: "sky", src: "/landscape/sky.webp", width: W, height: H, z: -30, depth: 0.15, mouse: 6, opaque: true },
+  { id: "sky", src: "/landscape/sky.webp", width: W, height: H, z: -30, depth: 0, mouse: 6, opaque: true },
   { id: "far", src: "/landscape/far.webp", width: W, height: H, z: -28, depth: 0.82, mouse: 12 },
   // aqui, em z -24, fica o nome grande do hero (passa por trás do morro)
   { id: "front", src: "/landscape/front.webp", width: W, height: H, z: -20, depth: 0.92, mouse: 18 },
@@ -49,85 +51,87 @@ export const LAYERS: LandscapeLayer[] = [
 
 /** z-index das outras peças da cena, para manter a ordem num lugar só */
 export const Z = {
-  bg: -40, // gradiente de fundo (céu → nuvem → dourado → anoitecer)
+  bg: -40, // gradiente de fundo (altitude)
+  stars: -39, // estrelas do espaço
   sky: -30,
-  drift: -29, // nuvens passando sobre o céu
+  clouds: -29, // nuvens persistentes
   far: -28,
-  leavesBack: -26, // folhas que somem atrás do morro
+  leavesBack: -26, // rajadas de vento atrás do morro
   heroName: -24,
   front: -20,
   grass: -18,
-  ground: -18, // continuação verde e terra, presa embaixo da grama
-  tint: -16, // luz do fim de tarde sobre a paisagem
 };
 
-/** chão abaixo da foto: verde que continua a grama e depois a terra (onde ficam as raízes) */
-export const GROUND = {
-  /** altura do verde antes da terra, em vh */
-  greenVh: 30,
-  grassTop: "#5E9E2F",
-  grassDeep: "#3F7322",
-  soilTop: "#6B4A2F",
-  soilDeep: "#3B2819",
-};
+/** camadas de nuvem persistentes (a mesma foto, espelhada e em escalas/velocidades diferentes) */
+export const CLOUD_LAYERS = [
+  { scale: 1.1, mirror: true, bottom: 34, opacity: 0.7, speed: 22 },
+  { scale: 1.45, mirror: false, bottom: 4, opacity: 0.92, speed: 40 },
+  { scale: 1.95, mirror: true, bottom: -26, opacity: 1, speed: 68 },
+] as const;
+export const CLOUD_SRC = "/landscape/cloud-bank.webp";
 
-/** momentos em que uma nuvem cobre a tela (o centro, em px de rolagem) */
-export function cloudCenters(M: Partial<Record<SectionId, Metrics>>, vh: number) {
-  const out: number[] = [];
-  if (M.stack) out.push(M.stack.top - 0.5 * vh);
-  if (M.jornada) out.push(M.jornada.top - 0.2 * vh);
-  return out;
-}
-/** quanto de rolagem uma travessia de nuvem dura (em vh) */
-export const CLOUD_SPAN = 1.5;
+/** altitude de cada seção (0 = campo, 5 = espaço); o resto é interpolado entre elas */
+export const ALTITUDE = { hero: 0, sobre: 1, stack: 2, projetos: 3, jornada: 4, contato: 5 } as const;
 
 export interface CameraState {
-  /** descida da câmera em vh (positivo: as camadas sobem, vemos mais o chão) */
-  y: number;
-  /** opacidade da foto do céu (some depois da Sobre, e o gradiente de fundo aparece) */
+  /** quanto o morro desceu, em vh (0 = cena inicial; passa de 1 = fora da tela) */
+  hill: number;
+  /** altitude contínua (0..5) */
+  alt: number;
+  /** opacidade da foto do céu */
   sky: number;
-  /** pesos da luz: dourado e anoitecer (0..1) */
-  gold: number;
-  dusk: number;
-  /** peso de cada fundo do gradiente (céu, nuvem, dourado, anoitecer) */
+  /** peso de cada fundo por cima do céu: dourado, anoitecer, azul profundo, espaço */
   bg: [number, number, number, number];
+  /** densidade das nuvens persistentes (0..1) e quanto estão douradas (0..1) */
+  clouds: number;
+  gilt: number;
+  /** estrelas (0..1) */
+  stars: number;
 }
 
+/** sobe de 0 a 1 entre a e b (suave) */
+const ramp = (v: number, a: number, b: number) => sstep(clamp((v - a) / (b - a)));
+
 /**
- * Onde a câmera está para uma rolagem s.
- * stackDescent: descida (em vh) que põe a borda grama/terra no chão da árvore da Stack.
+ * Onde a câmera está para uma rolagem s. Tudo depende da altitude contínua, então
+ * nada troca de repente: cada peso é uma rampa suave da altitude.
  */
-export function cameraAt(s: number, M: Partial<Record<SectionId, Metrics>>, vh: number, stackDescent: number): CameraState {
-  const g = (id: SectionId) => M[id]?.top ?? 0;
+export function cameraAt(s: number, M: Partial<Record<SectionId, Metrics>>, vh: number): CameraState {
+  const top = (id: SectionId, f = 0) => (M[id] ? M[id]!.top + M[id]!.h * f : 0);
   const hero = M.hero;
   const heroEnd = hero ? hero.top + hero.h - vh : vh;
-  const [cA, cB] = cloudCenters(M, vh);
-  const a = cA ?? g("stack");
-  const b = cB ?? g("jornada");
-  // a câmera troca de lugar enquanto a nuvem cobre a tela (entre ±0,2 vh do centro)
-  const y = keyframes(
+  // o morro sai para baixo enquanto o Sobre passa
+  const hill = keyframes(
     [
       { y: 0, v: 0 },
-      { y: heroEnd, v: 0.03 }, // o morro sobe só o que cabe na sobra: nunca aparece o fim da foto
-      { y: a - 0.12 * vh, v: 0.03 },
-      { y: a + 0.12 * vh, v: stackDescent },
-      { y: g("projetos") + 0.2 * vh, v: stackDescent },
-      { y: g("projetos") + 0.9 * vh, v: 0 }, // atrás dos painéis, volta ao campo
-      { y: b - 0.15 * vh, v: 0 },
-      { y: b + 0.02 * vh, v: -1.15 }, // escondida embaixo da tela
-      { y: g("contato") - 0.9 * vh, v: -1.15 },
-      { y: g("contato") + 0.35 * vh, v: -0.32 }, // no Contato o morro e a árvore voltam, ao anoitecer
-      // no fim da página o morro sobe até cobrir o pé do nome gigante
-      { y: M.fim ? M.fim.top + M.fim.h - vh : g("contato") + 2 * vh, v: 0.06 },
+      { y: heroEnd, v: 0.03 }, // só o que cabe na sobra da imagem: nunca aparece o fim da foto
+      { y: top("sobre", 0.5), v: 1.3 },
     ],
     s,
   );
-  const sky = 1 - sstep(clamp((s - (a - 0.1 * vh)) / (0.3 * vh)));
-  const gold = sstep(clamp((s - (g("projetos") - 0.2 * vh)) / (1.2 * vh)));
-  const dusk = sstep(clamp((s - (g("contato") - 1.2 * vh)) / (1.1 * vh)));
-  // fundo: céu → nuvem (Stack) → dourado (Projetos/Jornada) → anoitecer (Contato)
-  const wCloud = sstep(clamp((s - (a - 0.1 * vh)) / (0.3 * vh)));
-  const wGold = gold;
-  const wDusk = dusk;
-  return { y, sky, gold, dusk, bg: [1, wCloud, wGold, wDusk] };
+  // altitude: um valor por seção, interpolado
+  const alt = keyframes(
+    [
+      { y: 0, v: ALTITUDE.hero },
+      { y: heroEnd, v: 0.15 },
+      { y: top("sobre", 0.5), v: ALTITUDE.sobre },
+      { y: top("stack", 0.5), v: ALTITUDE.stack },
+      { y: top("projetos", 0.4), v: ALTITUDE.projetos },
+      { y: top("jornada", 0.1), v: 3.5 },
+      { y: top("jornada", 0.9), v: 4.4 },
+      { y: top("contato", 0.35), v: ALTITUDE.contato },
+    ],
+    s,
+    (t) => t, // linear entre as seções: a curva já é suave por ter muitas paradas
+  );
+  const clouds = ramp(alt, 0.2, 1.3) * (1 - 0.45 * ramp(alt, 2, 3)) * (1 - ramp(alt, 3.1, 3.8));
+  return {
+    hill,
+    alt,
+    sky: 1 - ramp(alt, 1.3, 2.1),
+    bg: [ramp(alt, 2.2, 3), ramp(alt, 3.2, 3.9), ramp(alt, 3.8, 4.5), ramp(alt, 4.4, 5)],
+    clouds,
+    gilt: ramp(alt, 2.3, 3),
+    stars: ramp(alt, 4.2, 5),
+  };
 }

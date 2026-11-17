@@ -35,6 +35,7 @@ export default function Jornada() {
   const section = useRef<HTMLElement>(null);
   const svg = useRef<SVGSVGElement>(null);
   const tip = useRef<SVGCircleElement>(null);
+  const grad = useRef<SVGLinearGradientElement>(null);
   const title = useRef<HTMLDivElement>(null);
   const list = useRef<HTMLOListElement>(null);
   const items = useRef<(HTMLLIElement | null)[]>([]);
@@ -59,6 +60,7 @@ export default function Jornada() {
     sv.setAttribute("viewBox", `0 0 ${W.toFixed(0)} ${H.toFixed(0)}`);
     sv.style.top = `${top}px`;
     sv.style.height = `${H}px`;
+    grad.current?.setAttribute("y2", H.toFixed(0));
     // coordenadas locais: (x, y) dentro do SVG
     const local = (el: Element): Pt => {
       const r = el.getBoundingClientRect();
@@ -167,6 +169,14 @@ export default function Jornada() {
   return (
     <section ref={section} className="jornada" id="jornada" aria-labelledby="jornT">
       <svg ref={svg} className="j-root" aria-hidden="true" focusable="false">
+        <defs>
+          {/* o traço clareia de cima para baixo, acompanhando o céu que escurece */}
+          <linearGradient id="jrInk" ref={grad} gradientUnits="userSpaceOnUse" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0" style={{ stopColor: "var(--fg)" }} />
+            <stop offset="0.45" style={{ stopColor: "var(--fg)" }} />
+            <stop offset="0.85" style={{ stopColor: "#f3e9d8" }} />
+          </linearGradient>
+        </defs>
         <g className="jr-main" />
         <circle ref={tip} className="jr-tip" r="4" style={{ opacity: 0 }} />
       </svg>

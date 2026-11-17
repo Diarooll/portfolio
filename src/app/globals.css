@@ -50,6 +50,10 @@
   --bg-gold-b: #f2c49a;
   --bg-dusk-a: #a8a1d0;
   --bg-dusk-b: #f1bba3;
+  --bg-deep-a: #1b3170;
+  --bg-deep-b: #6a6bb0;
+  --bg-space-a: #02040c;
+  --bg-space-b: #0b1233;
   --tint-gold: #f2b25c;
   --tint-dusk: #6c5a9a;
   /* rótulos da cena 3D: fichas claras com texto escuro, legíveis sobre a terra */
@@ -109,6 +113,10 @@
   --bg-gold-b: #57392f;
   --bg-dusk-a: #120d20;
   --bg-dusk-b: #3b2541;
+  --bg-deep-a: #0c1432;
+  --bg-deep-b: #2d2a5a;
+  --bg-space-a: #010207;
+  --bg-space-b: #060a1c;
   --tint-gold: #8a4a24;
   --tint-dusk: #1a1030;
   color-scheme: dark;
@@ -237,8 +245,7 @@ a {
 .landscape {
   pointer-events: none;
 }
-.ls-bg,
-.ls-tint {
+.ls-bg {
   position: fixed;
   inset: 0;
   pointer-events: none;
@@ -246,181 +253,64 @@ a {
 .ls-bg-sky {
   background: linear-gradient(to bottom, var(--bg-sky-a), var(--bg-sky-b));
 }
-.ls-bg-cloud {
-  background: linear-gradient(to bottom, var(--bg-cloud-a), var(--bg-cloud-b));
-}
 .ls-bg-gold {
   background: linear-gradient(to bottom, var(--bg-gold-a), var(--bg-gold-b));
 }
 .ls-bg-dusk {
   background: linear-gradient(to bottom, var(--bg-dusk-a), var(--bg-dusk-b));
 }
-.ls-tint {
+.ls-bg-deep {
+  background: linear-gradient(to bottom, var(--bg-deep-a), var(--bg-deep-b));
+}
+.ls-bg-space {
+  background: linear-gradient(to bottom, var(--bg-space-a), var(--bg-space-b));
+}
+/* estrelas: duas camadas da mesma textura, em escalas diferentes */
+.ls-stars {
+  position: fixed;
+  inset: -5vh 0;
+  pointer-events: none;
   opacity: 0;
-}
-.ls-tint-gold {
-  background: linear-gradient(to bottom, transparent 10%, var(--tint-gold));
-  mix-blend-mode: multiply;
-}
-.ls-tint-dusk {
-  background: linear-gradient(to bottom, var(--tint-dusk), transparent 85%);
+  background:
+    url(/landscape/stars.svg) 0 0 / 900px 900px,
+    url(/landscape/stars.svg) 330px 210px / 560px 560px;
+  will-change: transform, opacity;
 }
 .ls-layer {
   position: fixed;
   pointer-events: none;
-  will-change: transform;
+  will-change: transform, opacity;
   contain: layout style;
 }
-/* chão abaixo da foto: verde contínuo e depois a terra */
-.ls-ground {
-  position: absolute;
-  left: 0;
-  right: 0;
-  top: calc(100% - 1.5vh);
-}
-.ls-green {
-  height: calc(var(--green) + 1.5vh);
-  /* começa na cor média da borda de baixo da foto (#6c930f) e escurece até o chão da Stack */
-  background:
-    repeating-linear-gradient(100deg, rgba(40, 70, 10, 0.06) 0 3px, transparent 3px 9px),
-    linear-gradient(to bottom, rgba(108, 147, 15, 0), #6c930f 1.5vh, #5e9e2f 40%, #4f8a27 75%, #3f7322);
-}
-.ls-soil {
-  position: relative;
-  height: 220vh;
-  background:
-    radial-gradient(circle at 20% 30%, rgba(255, 230, 190, 0.07) 0 2px, transparent 3px) 0 0 / 46px 41px,
-    radial-gradient(circle at 70% 60%, rgba(20, 10, 4, 0.18) 0 3px, transparent 4px) 0 0 / 63px 57px,
-    repeating-linear-gradient(to bottom, transparent 0 60px, rgba(30, 18, 10, 0.08) 60px 62px),
-    linear-gradient(to bottom, #6b4a2f, #4c3421 40%, #3b2819);
-}
-/* borda de grama com raízes finas, onde o verde vira terra */
-.ls-soil::before {
-  content: "";
-  position: absolute;
-  left: 0;
-  right: 0;
-  top: -14px;
-  height: 40px;
-  background: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='120' height='40' viewBox='0 0 120 40'><path d='M0 14 Q15 8 30 13 T60 12 T90 14 T120 13 V20 H0Z' fill='%233f7322'/><path d='M0 18 Q20 22 40 18 T80 19 T120 18 V22 H0Z' fill='%234a3423' opacity='.55'/><g stroke='%234a3423' stroke-width='1.2' fill='none' opacity='.7'><path d='M12 20 q2 8 -2 16'/><path d='M38 20 q-3 7 1 13'/><path d='M67 20 q3 9 0 17'/><path d='M96 20 q-2 6 2 12'/></g></svg>")
-    repeat-x 0 0 / 120px 40px;
-}
-
-/* ---------- transição de nuvens ---------- */
-.cloud-veil {
+/* nuvens persistentes de fundo: a mesma foto em 3 profundidades (só transform e opacity) */
+.ls-clouds {
   position: fixed;
   inset: 0;
-  z-index: 45;
-  pointer-events: none;
   overflow: hidden;
-  visibility: hidden;
+  pointer-events: none;
 }
-.cv-bank {
+.ls-cloud {
+  --w: calc(var(--s) * 112%);
   position: absolute;
-  left: -15vw;
-  width: 130vw;
-  top: 0;
-  will-change: transform;
-  transform: translate3d(0, 110vh, 0);
-}
-.cv-bank i {
-  display: block;
-}
-/* cores do véu: derivadas do fundo real (as variáveis do tema), nunca um azul-cinza fixo */
-.cloud-veil {
-  --veil: var(--bg-cloud-a);
-  --veil-2: var(--bg-cloud-b);
-}
-.cloud-veil[data-to="jornada"] {
-  --veil: var(--bg-gold-a);
-  --veil-2: var(--bg-gold-a);
-}
-/* névoa sem borda: o céu esbranquiça aos poucos antes de as nuvens chegarem. Nasce 100% transparente. */
-.cv-haze {
-  position: absolute;
-  left: 0;
-  right: 0;
-  top: 0;
-  height: 240vh;
-  opacity: 0;
+  left: 50%;
+  width: var(--w);
+  margin-left: calc(var(--w) / -2);
+  aspect-ratio: 1672 / 941;
   will-change: transform, opacity;
-  background: linear-gradient(
-    to bottom,
-    color-mix(in srgb, var(--veil) 0%, transparent),
-    color-mix(in srgb, var(--veil) 35%, transparent) 20%,
-    color-mix(in srgb, var(--veil) 85%, transparent) 38%,
-    var(--veil) 52%,
-    var(--veil)
-  );
 }
-.rm .cv-haze {
-  display: none;
-}
-.cv-edge {
-  height: 62vw;
-  background: url(/landscape/cloud-bank.webp) center bottom / 100% auto no-repeat;
-  /* a base da foto se dissolve no miolo: sem emenda */
-  -webkit-mask-image: linear-gradient(to bottom, #000 72%, transparent);
-  mask-image: linear-gradient(to bottom, #000 72%, transparent);
-}
-.cv-flip {
-  transform: scaleY(-1);
-  margin-top: -220px;
-}
-.cv-core {
-  height: 150vh;
-  margin-top: -220px;
-  /* as pontas do miolo se dissolvem por cima da base da foto: nada de linha reta */
-  -webkit-mask-image: linear-gradient(to bottom, transparent, #000 220px, #000 calc(100% - 220px), transparent);
-  mask-image: linear-gradient(to bottom, transparent, #000 220px, #000 calc(100% - 220px), transparent);
-  /* interior da nuvem: o branco do dia misturado com o fundo da seção que vem a seguir */
-  background: linear-gradient(
-    to bottom,
-    color-mix(in srgb, var(--veil) 70%, #fff),
-    color-mix(in srgb, var(--veil) 30%, #fff) 30%,
-    color-mix(in srgb, var(--veil) 30%, #fff) 70%,
-    color-mix(in srgb, var(--veil) 70%, #fff)
-  );
-}
-:root[data-theme="dark"] .cv-core {
-  background: linear-gradient(to bottom, #2a2f4b, var(--veil) 30%, var(--veil) 70%, #2a2f4b);
-}
-/* sem bordas retas: o banco inteiro some em degradê longo nas pontas */
-.cv-bank {
-  -webkit-mask-image: linear-gradient(to bottom, transparent 0, #000 24%, #000 76%, transparent 100%);
-  mask-image: linear-gradient(to bottom, transparent 0, #000 24%, #000 76%, transparent 100%);
-}
-/* banco de trás: a mesma foto espelhada e maior, mais apagada (profundidade) */
-.cv-back {
-  filter: drop-shadow(0 -20px 40px rgba(120, 150, 180, 0.25));
-}
-.cv-back .cv-edge {
-  height: 70vw;
-  background-size: 118% auto;
-  transform: scaleX(-1);
-}
-.cv-back .cv-flip {
-  transform: scale(-1, -1);
-}
-:root[data-theme="dark"] .cv-edge {
-  filter: brightness(0.42) saturate(0.7);
-}
-/* movimento reduzido: só um véu que aparece e some (a cor vem do fundo da seção) */
-.cv-veil {
-  display: none;
+.ls-cloud-img {
   position: absolute;
   inset: 0;
-  background: color-mix(in srgb, var(--veil) 90%, #fff);
-  opacity: 0;
+  background: center bottom / 100% auto no-repeat;
+  /* a base da foto se dissolve: nenhuma camada mostra um corte reto */
+  -webkit-mask-image: linear-gradient(to top, transparent, #000 24%);
+  mask-image: linear-gradient(to top, transparent, #000 24%);
 }
-:root[data-theme="dark"] .cv-veil {
-  background: var(--veil);
-}
-.rm .cv-veil {
-  display: block;
-}
-.rm .cv-bank {
-  display: none;
+/* no celular (tela em pé) as nuvens precisam ser bem mais largas para ter altura */
+@media (max-aspect-ratio: 1/1) {
+  .ls-cloud {
+    --w: calc(var(--s) * 250%);
+  }
 }
 
 /* ---------- barra ---------- */
@@ -439,12 +329,11 @@ a {
   background: var(--glass-strong);
   border-bottom: 1px solid var(--glass-line);
 }
-@media (hover: hover) and (pointer: fine) {
-  .nav-bg {
-    background: var(--glass);
-    -webkit-backdrop-filter: blur(12px) saturate(1.2);
-    backdrop-filter: blur(12px) saturate(1.2);
-  }
+/* vidro bege com desfoque em qualquer altitude: o texto da barra mantém contraste AA sobre céu, nuvens ou espaço */
+.nav-bg {
+  background: var(--glass-strong);
+  -webkit-backdrop-filter: blur(14px) saturate(1.2);
+  backdrop-filter: blur(14px) saturate(1.2);
 }
 html:not(.fx) .nav-bg {
   opacity: 1;
@@ -1644,13 +1533,13 @@ html.js .tree.v .tn {
 }
 /* trilho apagado: mostra o caminho inteiro antes de o traço chegar */
 .j-root .jr-track {
-  stroke: var(--fg);
+  stroke: url(#jrInk);
   stroke-width: 1;
   opacity: 0.14;
 }
 /* traço que se desenha com a rolagem (fino e limpo) */
 .j-root .jr-line {
-  stroke: var(--fg);
+  stroke: url(#jrInk);
   stroke-width: 1.75;
   opacity: 0.8;
   stroke-dasharray: 1;
@@ -1670,7 +1559,7 @@ html.js .tree.v .tn {
   stroke-opacity: 0.9;
 }
 .j-root .jr-tip {
-  fill: var(--fg);
+  fill: #f3e9d8;
   transition: opacity 0.2s;
 }
 .j-head {
@@ -1766,6 +1655,22 @@ html.js .tree.v .tn {
 }
 
 /* ---------- contato ---------- */
+/* no espaço o fundo é quase preto: texto e vidro usam a paleta noturna, nos dois temas */
+.contato,
+.site-foot {
+  --fg: #f3e9d8;
+  --muted: #d2c3ab;
+  --accent: #9fce6b;
+  --accent-2: #b9df8b;
+  --accent-ink: #15110c;
+  --link: #b9df8b;
+  --glass: rgba(26, 22, 32, 0.66);
+  --glass-strong: rgba(26, 22, 32, 0.86);
+  --glass-line: rgba(243, 233, 216, 0.16);
+  --line: rgba(243, 233, 216, 0.16);
+  --line-2: rgba(243, 233, 216, 0.3);
+  color: var(--fg);
+}
 .contato {
   position: relative;
   padding-block: clamp(110px, 18vh, 200px) 0;
