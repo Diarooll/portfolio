@@ -271,42 +271,6 @@ a {
   will-change: transform;
   contain: layout style;
 }
-.ls-drift {
-  position: absolute;
-  left: 0;
-  right: 0;
-  top: 4%;
-  height: 30%;
-  overflow: hidden;
-  opacity: 0.9;
-  /* some nas bordas: parece névoa passando, não uma faixa */
-  -webkit-mask-image: linear-gradient(to bottom, transparent, #000 35%, #000 55%, transparent);
-  mask-image: linear-gradient(to bottom, transparent, #000 35%, #000 55%, transparent);
-}
-.ls-drift span {
-  position: absolute;
-  inset: 0 auto 0 0;
-  width: 200%;
-  background: url(/landscape/cloud-b.webp) repeat-x 0 100% / auto 100%;
-  opacity: 0.22;
-  animation: drift 160s linear infinite;
-  will-change: transform;
-}
-.ls-drift span + span {
-  background-image: url(/landscape/cloud-a.webp);
-  opacity: 0.16;
-  bottom: -14%;
-  animation-duration: 240s;
-  animation-direction: reverse;
-}
-.rm .ls-drift span {
-  animation: none;
-}
-@keyframes drift {
-  to {
-    transform: translate3d(-50%, 0, 0);
-  }
-}
 /* chão abaixo da foto: verde contínuo e depois a terra */
 .ls-ground {
   position: absolute;
@@ -2126,13 +2090,85 @@ html.js .tree.v .tn {
 }
 
 /* canvas 3D das folhas (atrás do morro e na frente do texto) */
-.leaves {
+/* ---------- rajadas de vento ---------- */
+.wind {
   position: fixed;
   inset: 0;
   pointer-events: none;
+  overflow: hidden;
 }
-.leaves canvas {
-  pointer-events: none !important;
+.gust {
+  position: absolute;
+  left: 0;
+  width: 300px;
+  height: 60px;
+  color: #fff;
+  opacity: 0;
+  will-change: transform, opacity;
+  animation: gust-r var(--dur) cubic-bezier(0.35, 0.1, 0.45, 1) var(--delay) infinite;
+}
+:root[data-theme="dark"] .gust {
+  color: #c9d2ee;
+}
+.gust-l {
+  animation-name: gust-l;
+}
+.gust-in {
+  transform-origin: 50% 50%;
+}
+/* cruza a tela em ~60% do tempo e fica o resto em silêncio: uma rajada de cada vez */
+@keyframes gust-r {
+  0% {
+    transform: translate3d(-340px, 0, 0);
+    opacity: 0;
+  }
+  10% {
+    opacity: var(--alpha);
+  }
+  50% {
+    opacity: calc(var(--alpha) * 0.8);
+  }
+  62% {
+    transform: translate3d(calc(100vw + 40px), var(--drift), 0);
+    opacity: 0;
+  }
+  100% {
+    transform: translate3d(calc(100vw + 40px), var(--drift), 0);
+    opacity: 0;
+  }
+}
+@keyframes gust-l {
+  0% {
+    transform: translate3d(calc(100vw + 40px), 0, 0);
+    opacity: 0;
+  }
+  10% {
+    opacity: var(--alpha);
+  }
+  50% {
+    opacity: calc(var(--alpha) * 0.8);
+  }
+  62% {
+    transform: translate3d(-340px, var(--drift), 0);
+    opacity: 0;
+  }
+  100% {
+    transform: translate3d(-340px, var(--drift), 0);
+    opacity: 0;
+  }
+}
+/* movimento reduzido: rajadas paradas e discretas */
+.rm .gust,
+.gust-still {
+  animation: none;
+  transform: translate3d(var(--rest), 0, 0);
+}
+@media (prefers-reduced-motion: reduce) {
+  .gust {
+    animation: none;
+    transform: translate3d(var(--rest), 0, 0);
+    opacity: calc(var(--alpha) * 0.35);
+  }
 }
 
 /* ---------- passarinho ---------- */
