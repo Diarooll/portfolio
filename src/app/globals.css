@@ -1917,6 +1917,45 @@ html.js .tree.v .tn {
 .out {
   padding-left: 2ch;
 }
+/* trecho de código no terminal */
+.code {
+  gap: 0.2rem;
+  font-size: clamp(0.8125rem, 1.6vw, 0.9375rem);
+  line-height: 1.55;
+}
+.code .tln {
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+.code .ind {
+  padding-left: 4ch;
+}
+.code .ind2 {
+  padding-left: 8ch;
+}
+.code .kw {
+  color: var(--accent);
+  font-weight: 500;
+}
+.code .fn {
+  color: var(--link);
+}
+.code .str {
+  color: var(--muted);
+}
+.code-link {
+  color: var(--link);
+  text-decoration: underline;
+  text-decoration-color: color-mix(in srgb, var(--link) 40%, transparent);
+  text-underline-offset: 3px;
+}
+.code-link:hover {
+  text-decoration-color: currentColor;
+}
+.code .copy-state,
+.code .btn-sm {
+  margin-left: 1ch;
+}
 .cmt {
   color: var(--muted);
   padding-left: 2ch;

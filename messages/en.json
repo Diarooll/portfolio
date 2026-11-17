@@ -66,17 +66,11 @@
   "contato": {
     "closing": "Let's talk?",
     "tty": "tty/contact",
-    "cmdEmail": "contact --email",
-    "cmdLinks": "contact --links",
     "copy": "Copy email",
     "copied": "copied.",
     "copyFail": "selected. Press Ctrl+C.",
-    "comment": "# the fastest way to reach me.",
     "lead": "Write to me or look at the projects' code.",
-    "localTime": "LOCAL TIME",
-    "zone": "ZONE",
-    "pulse": "PULSE",
-    "bird": "Little bird on the branch. Interact"
+    "pulse": "PULSE"
   },
   "footer": {
     "text": "© {year} Diego Olalla. Built with Next.js and React Three Fiber.",

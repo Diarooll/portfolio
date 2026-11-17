@@ -1,5 +1,6 @@
 // Dados de contato e do site, num lugar só.
-// TODO(Diego): troque o e-mail e o link do LinkedIn pelos seus antes de publicar.
+// O trecho de FastAPI que aparece no terminal do Contato é montado a partir daqui:
+// para trocar um link, é só mudar o valor abaixo.
 
 export const site = {
   name: "Diego Olalla",
@@ -11,13 +12,24 @@ export const site = {
   url:
     process.env.NEXT_PUBLIC_SITE_URL ??
     (process.env.VERCEL_PROJECT_PRODUCTION_URL ? `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}` : "http://localhost:3000"),
-  // TODO: coloque seu e-mail real
-  email: "seu-email@exemplo.com",
-  // TODO: coloque a URL do seu perfil no LinkedIn (o site antigo usava https://www.linkedin.com/in/diego-olalla/)
-  linkedin: "#",
+  email: "diego.aleola@gmail.com",
+  linkedin: "https://www.linkedin.com/in/diego-olalla/",
   github: "https://github.com/Diarooll",
-  timeZone: "America/Sao_Paulo",
 } as const;
 
-/** o e-mail ainda é o de exemplo? (mostra um aviso só em desenvolvimento) */
-export const isPlaceholderEmail = site.email === "seu-email@exemplo.com";
+/**
+ * Trecho de FastAPI mostrado no terminal do Contato:
+ *
+ *   @app.get("/diego/contato")
+ *   def mostrar_contatos():
+ *       return {"GitHub": ..., "LinkedIn": ..., "Email": ...}
+ */
+export const contactSnippet = {
+  route: "/diego/contato",
+  fn: "mostrar_contatos",
+  entries: [
+    { key: "GitHub", value: site.github, href: site.github, external: true },
+    { key: "LinkedIn", value: site.linkedin, href: site.linkedin, external: true },
+    { key: "Email", value: site.email, href: `mailto:${site.email}`, external: false },
+  ],
+} as const;
