@@ -46,12 +46,17 @@
   --bg-sky-b: #b5dcf5;
   --bg-cloud-a: #eef4f8;
   --bg-cloud-b: #f7f4ee;
-  --bg-gold-a: #f8e7bf;
+  /* hora dourada: azul claro lavado no alto, creme no meio, pêssego no horizonte */
+  --bg-gold-a: #bcd2ea;
+  --bg-gold-m: #f6e6c4;
   --bg-gold-b: #f2c49a;
-  --bg-dusk-a: #4d639f;
-  --bg-dusk-b: #e3a98e;
+  /* entardecer: azul do crepúsculo, lilás-rosado e brasa no horizonte */
+  --bg-dusk-a: #3d5694;
+  --bg-dusk-m: #a98cb0;
+  --bg-dusk-b: #e8a98a;
   --bg-deep-a: #14275a;
-  --bg-deep-b: #34478a;
+  --bg-deep-m: #26397a;
+  --bg-deep-b: #3f5496;
   --bg-space-a: #02040c;
   --bg-space-b: #070d28;
   --tint-gold: #f2b25c;
@@ -109,12 +114,16 @@
   --bg-sky-b: #283c66;
   --bg-cloud-a: #161c33;
   --bg-cloud-b: #2a2f4b;
-  --bg-gold-a: #1e1a33;
-  --bg-gold-b: #57392f;
-  --bg-dusk-a: #120d20;
-  --bg-dusk-b: #3b2541;
-  --bg-deep-a: #0c1432;
-  --bg-deep-b: #2d2a5a;
+  /* fim de tarde à noite: azul-marinho no alto, índigo no meio e brasa rosada no horizonte */
+  --bg-gold-a: #101a42;
+  --bg-gold-m: #3d3d6b;
+  --bg-gold-b: #94586a;
+  --bg-dusk-a: #0b1233;
+  --bg-dusk-m: #2c3466;
+  --bg-dusk-b: #7c4a62;
+  --bg-deep-a: #080f2c;
+  --bg-deep-m: #162250;
+  --bg-deep-b: #263872;
   --bg-space-a: #010207;
   --bg-space-b: #060a1c;
   --tint-gold: #8a4a24;
@@ -263,13 +272,13 @@ a {
   background: linear-gradient(to bottom, var(--bg-sky-a), var(--bg-sky-b));
 }
 .ls-bg-gold {
-  background: linear-gradient(to bottom, var(--bg-gold-a), var(--bg-gold-b));
+  background: linear-gradient(to bottom, var(--bg-gold-a), var(--bg-gold-m) 52%, var(--bg-gold-b));
 }
 .ls-bg-dusk {
-  background: linear-gradient(to bottom, var(--bg-dusk-a), var(--bg-dusk-b));
+  background: linear-gradient(to bottom, var(--bg-dusk-a), var(--bg-dusk-m) 50%, var(--bg-dusk-b));
 }
 .ls-bg-deep {
-  background: linear-gradient(to bottom, var(--bg-deep-a), var(--bg-deep-b));
+  background: linear-gradient(to bottom, var(--bg-deep-a), var(--bg-deep-m) 55%, var(--bg-deep-b));
 }
 .ls-bg-space {
   background: linear-gradient(to bottom, var(--bg-space-a), var(--bg-space-b));
@@ -310,7 +319,8 @@ a {
   position: absolute;
   left: 50%;
   width: var(--w);
-  margin-left: calc(var(--w) / -2);
+  /* --x desloca a faixa para o lado (fração da largura), para as camadas mostrarem trechos diferentes */
+  margin-left: calc(var(--w) / -2 + var(--w) * var(--x, 0));
   aspect-ratio: 1672 / 941;
   will-change: transform, opacity;
 }
@@ -318,9 +328,14 @@ a {
   position: absolute;
   inset: 0;
   background: center bottom / 100% auto no-repeat;
-  /* a base da foto se dissolve: nenhuma camada mostra um corte reto */
-  -webkit-mask-image: linear-gradient(to top, transparent, #000 24%);
-  mask-image: linear-gradient(to top, transparent, #000 24%);
+  transform-origin: 50% 100%;
+  /* desfoque por profundidade: as camadas do fundo ficam enevoadas e a franja do recorte se suaviza */
+  filter: blur(var(--blur, 0px));
+  /* a base e as laterais da foto se dissolvem: nenhuma camada mostra um corte reto */
+  -webkit-mask-image: linear-gradient(to top, transparent, #000 24%), linear-gradient(to right, transparent, #000 6%, #000 94%, transparent);
+  -webkit-mask-composite: source-in;
+  mask-image: linear-gradient(to top, transparent, #000 24%), linear-gradient(to right, transparent, #000 6%, #000 94%, transparent);
+  mask-composite: intersect;
 }
 /* no celular (tela em pé) as nuvens precisam ser bem mais largas para ter altura */
 @media (max-aspect-ratio: 1/1) {

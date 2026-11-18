@@ -62,15 +62,32 @@ export const Z = {
   grass: -18,
 };
 
-/** camadas de nuvem persistentes (a mesma foto, espelhada e em escalas/velocidades diferentes) */
+/**
+ * Camadas de nuvem persistentes. A mesma faixa de foto, mas cada camada mostra um trecho
+ * diferente (x), com proporção própria (sy), espelhada ou não e com desfoque por profundidade
+ * (blur, em px: as mais distantes ficam mais enevoadas), para o mesmo desenho não se repetir
+ * de forma óbvia nem aparecer a franja do recorte.
+ */
 export const CLOUD_LAYERS = [
-  { scale: 1.1, mirror: true, bottom: 34, opacity: 0.7, speed: 22 },
-  { scale: 1.45, mirror: false, bottom: 4, opacity: 0.92, speed: 40 },
-  { scale: 1.95, mirror: true, bottom: -26, opacity: 1, speed: 68 },
+  { scale: 1.1, mirror: true, bottom: 34, opacity: 0.7, speed: 22, x: -0.07, sy: 0.9, blur: 1.9 },
+  { scale: 1.45, mirror: false, bottom: 4, opacity: 0.92, speed: 40, x: 0.15, sy: 1, blur: 1.1 },
+  { scale: 1.95, mirror: true, bottom: -26, opacity: 1, speed: 68, x: -0.18, sy: 1.06, blur: 0.8 },
   // camadas extras que só engrossam o céu de nuvens na faixa da Stack (somem suavemente fora dela)
-  { scale: 1.25, mirror: false, bottom: 52, opacity: 0.75, speed: 30, dense: true },
-  { scale: 1.7, mirror: true, bottom: 20, opacity: 0.85, speed: 52, dense: true },
-] as { scale: number; mirror: boolean; bottom: number; opacity: number; speed: number; dense?: boolean }[];
+  { scale: 1.25, mirror: false, bottom: 52, opacity: 0.75, speed: 30, x: -0.11, sy: 1.14, blur: 2.2, dense: true },
+  { scale: 1.7, mirror: true, bottom: 20, opacity: 0.85, speed: 52, x: 0.17, sy: 0.86, blur: 1.5, dense: true },
+] as {
+  scale: number;
+  mirror: boolean;
+  bottom: number;
+  opacity: number;
+  speed: number;
+  /** deslocamento lateral, em fração da largura da camada */
+  x: number;
+  /** escala vertical (proporção) */
+  sy: number;
+  blur: number;
+  dense?: boolean;
+}[];
 export const CLOUD_SRC = "/landscape/cloud-bank.webp";
 
 /** altitude de cada seção (0 = campo, 5 = espaço); o resto é interpolado entre elas */

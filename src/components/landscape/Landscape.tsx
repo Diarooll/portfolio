@@ -69,10 +69,11 @@ export default function Landscape() {
     if (cloudBox.current) {
       cloudBox.current.style.visibility = cam.clouds > 0.003 ? "visible" : "hidden";
       // douradas em Projetos (luz do fim de tarde sobre o mar de nuvens)
-      const g = cam.gilt;
-      cloudBox.current.style.filter =
-        (dark ? "brightness(0.4) saturate(0.7) hue-rotate(-12deg) " : "") +
-        (g > 0.01 ? `sepia(${(0.55 * g).toFixed(3)}) saturate(${(1 + 0.9 * g).toFixed(3)}) hue-rotate(${(-12 * g).toFixed(1)}deg) brightness(${(1 - 0.05 * g).toFixed(3)})` : "");
+      // tons das nuvens: o sol de fim de tarde acende o topo (creme/dourado) e deixa as sombras
+      // rosadas, nunca marrons ou oliva (por isso sem sepia forte); à noite ficam azuladas, de luar
+      const g = Math.round(cam.gilt * 50) / 50;
+      const warm = g > 0.01 ? `hue-rotate(${((dark ? 24 : 9) * g).toFixed(1)}deg) sepia(${((dark ? 0.16 : 0.3) * g).toFixed(3)}) saturate(${(1 + (dark ? 0.5 : 0.7) * g).toFixed(3)}) brightness(${(1 + 0.04 * g).toFixed(3)})` : "";
+      cloudBox.current.style.filter = (dark ? "brightness(0.58) saturate(0.92) " : "") + warm;
     }
     CLOUD_LAYERS.forEach((L, i) => {
       const el = cloudRefs.current[i];
@@ -141,9 +142,12 @@ export default function Landscape() {
               cloudRefs.current[i] = el;
             }}
             className="ls-cloud"
-            style={{ bottom: `${L.bottom}%`, opacity: 0, ["--s" as string]: L.scale }}
+            style={{ bottom: `${L.bottom}%`, opacity: 0, ["--s" as string]: L.scale, ["--x" as string]: L.x }}
           >
-            <div className="ls-cloud-img" style={{ backgroundImage: `url(${CLOUD_SRC})`, transform: L.mirror ? "scaleX(-1)" : undefined }} />
+            <div
+              className="ls-cloud-img"
+              style={{ backgroundImage: `url(${CLOUD_SRC})`, transform: `scale(${L.mirror ? -1 : 1}, ${L.sy})`, ["--blur" as string]: `${L.blur}px` }}
+            />
           </div>
         ))}
       </div>
