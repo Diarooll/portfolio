@@ -22,8 +22,8 @@ export const journey: JourneyItem[] = [
     when: { pt: "FIAP · cursando", en: "FIAP · in progress" },
     title: { pt: "Engenharia de Software", en: "Software Engineering" },
     desc: {
-      pt: "Já no primeiro semestre me apaixonei por construir soluções para problemas do dia a dia.",
-      en: "In my very first semester I fell in love with building solutions for everyday problems.",
+      pt: "Já no primeiro semestre, o que mais me atraiu foi construir soluções para problemas do dia a dia.",
+      en: "In my very first semester, what drew me most was building solutions for everyday problems.",
     },
   },
   {
