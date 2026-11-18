@@ -9,7 +9,7 @@
 // texturas prontas, sem repintar).
 import Image from "next/image";
 import { useRef } from "react";
-import { CLOUD_LAYERS, CLOUD_SRC, FRAME, LAYERS, Z, cameraAt } from "@/lib/landscape";
+import { CLOUD_LAYERS, CLOUD_SRC, FRAME, HERO_HILL, LAYERS, Z, cameraAt } from "@/lib/landscape";
 import { M, pointer } from "@/lib/scroll-engine";
 import { clamp } from "@/lib/math";
 import { useScrollFrame } from "@/hooks/useScrollFrame";
@@ -47,12 +47,15 @@ export default function Landscape() {
       if (!el) return;
       const x = -cur.current.x * L.mouse;
       if (L.id === "sky") {
-        el.style.transform = `translate3d(${x.toFixed(2)}px, ${(-cur.current.y * L.mouse * 0.5).toFixed(2)}px, 0)`;
+        // o céu é o plano mais distante: desce devagar (até ~9% da tela) desde o primeiro pixel
+        const t = clamp(cam.hill / 0.8);
+        const rise = reduced ? 0 : (1 - (1 - t) * (1 - t)) * 0.09 * vh;
+        el.style.transform = `translate3d(${x.toFixed(2)}px, ${(rise - cur.current.y * L.mouse * 0.5).toFixed(2)}px, 0)`;
         el.style.opacity = cam.sky.toFixed(3);
       } else if (reduced) {
         // movimento reduzido: o morro some num crossfade (sem se mover)
         el.style.transform = "none";
-        el.style.opacity = clamp(1 - cam.hill / 0.9).toFixed(3);
+        el.style.opacity = clamp(1 - (cam.hill - HERO_HILL) / 0.9).toFixed(3);
       } else {
         const y = cam.hill * L.depth * vh - cur.current.y * L.mouse * 0.5;
         el.style.transform = `translate3d(${x.toFixed(2)}px, ${y.toFixed(2)}px, 0)`;
@@ -115,7 +118,7 @@ export default function Landscape() {
             layerRefs.current[i] = el;
           }}
           className={`ls-layer ls-${L.id}`}
-          style={{ zIndex: L.z, inset: bleed }}
+          style={{ zIndex: L.z, inset: L.id === "sky" ? "-12%" : bleed }}
         >
           <Image
             src={L.src}

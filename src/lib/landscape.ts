@@ -94,6 +94,9 @@ export interface CameraState {
   stars: number;
 }
 
+/** quanto o morro já desceu (em vh) quando o hero termina */
+export const HERO_HILL = 0.4;
+
 /** sobe de 0 a 1 entre a e b (suave) */
 const ramp = (v: number, a: number, b: number) => sstep(clamp((v - a) / (b - a)));
 
@@ -109,7 +112,11 @@ export function cameraAt(s: number, M: Partial<Record<SectionId, Metrics>>, vh: 
   const hill = keyframes(
     [
       { y: 0, v: 0 },
-      { y: heroEnd, v: 0.03 }, // só o que cabe na sobra da imagem: nunca aparece o fim da foto
+      // já no primeiro pixel de rolagem o morro desce (paralaxe visível no hero); só aparece
+      // transparência no topo das camadas, então nunca surge o fim da foto
+      { y: heroEnd, v: HERO_HILL },
+      // a árvore já saiu quando o cartão do Sobre aparece (nenhum "fantasma" atrás do vidro)
+      { y: top("sobre", 0.1), v: 1.15 },
       { y: top("sobre", 0.5), v: 1.3 },
     ],
     s,
@@ -118,7 +125,7 @@ export function cameraAt(s: number, M: Partial<Record<SectionId, Metrics>>, vh: 
   const alt = keyframes(
     [
       { y: 0, v: ALTITUDE.hero },
-      { y: heroEnd, v: 0.15 },
+      { y: heroEnd, v: 0.5 },
       { y: top("sobre", 0.5), v: ALTITUDE.sobre },
       { y: top("stack", 0.5), v: ALTITUDE.stack },
       // a luz dourada já está completa quando a intro de Projetos entra

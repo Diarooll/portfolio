@@ -329,7 +329,8 @@ a {
   left: 0;
   right: 0;
   z-index: 60;
-  color: var(--fg);
+  /* a barra acompanha a altitude: texto claro e vidro escuro quando o fundo escurece (azul profundo e espaço) */
+  color: color-mix(in srgb, #f3e9d8 var(--alt-w3, 0%), var(--fg));
 }
 .nav-bg {
   position: absolute;
@@ -340,7 +341,7 @@ a {
 }
 /* vidro bege com desfoque em qualquer altitude: o texto da barra mantém contraste AA sobre céu, nuvens ou espaço */
 .nav-bg {
-  background: var(--glass-strong);
+  background: color-mix(in srgb, rgba(8, 12, 32, 0.82) var(--alt-w3, 0%), var(--glass-strong));
   -webkit-backdrop-filter: blur(14px) saturate(1.2);
   backdrop-filter: blur(14px) saturate(1.2);
 }
@@ -802,6 +803,10 @@ html:not(.fx) .hero-front {
   overflow: hidden;
   position: relative;
   background: var(--sand);
+}
+/* o cartão do Sobre é mais opaco que o vidro comum: nada da paisagem aparece por trás do texto */
+.about-card.glass {
+  background: var(--glass-strong);
 }
 .about {
   font-size: var(--fs-lead);
