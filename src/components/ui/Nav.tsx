@@ -16,6 +16,7 @@ export default function Nav() {
   const other = locale === "pt" ? "en" : "pt";
   const brand = useRef<HTMLAnchorElement>(null);
   const bg = useRef<HTMLDivElement>(null);
+  const header = useRef<HTMLElement>(null);
   const line = useRef<HTMLDivElement>(null);
   const links = useRef<(HTMLAnchorElement | null)[]>([]);
 
@@ -29,6 +30,9 @@ export default function Nav() {
       brand.current.style.visibility = sw > 0.001 ? "visible" : "hidden";
     }
     if (bg.current) bg.current.style.opacity = sw.toFixed(3);
+    // no topo do hero a barra ainda não tem vidro e os links ficam sobre a copa escura: texto claro e um
+    // véu suave no alto (como uma vinheta de foto); ao virar vidro, volta às cores do tema
+    header.current?.style.setProperty("--nav-top", (1 - sw).toFixed(3));
     // capítulo atual e progresso dentro dele
     const starts: [string, number][] = [
       ["sobre", (M.sobre?.top ?? 0) - 0.2 * vh],
@@ -57,7 +61,7 @@ export default function Nav() {
   }, 20);
 
   return (
-    <header className="nav">
+    <header ref={header} className="nav">
       <div ref={bg} className="nav-bg" />
       <div className="nav-in">
         <a ref={brand} className="brand" href="#hero" aria-label={t("home")}>
