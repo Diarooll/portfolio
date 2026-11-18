@@ -9,8 +9,6 @@ const nextConfig: NextConfig = {
     formats: ["image/avif", "image/webp"],
     qualities: [75, 80],
   },
-  // three e o R3F vêm em ESM; transpilar evita surpresas no build
-  transpilePackages: ["three"],
 };
 
 export default withNextIntl(nextConfig);
