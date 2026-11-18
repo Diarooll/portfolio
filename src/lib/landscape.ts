@@ -56,7 +56,7 @@ export const Z = {
   sky: -30,
   clouds: -29, // nuvens persistentes
   far: -28,
-  leavesBack: -26, // rajadas de vento atrás do morro
+  wind: -28.5, // rajadas de vento: acima das nuvens, abaixo do morro/árvore e de todo o conteúdo
   heroName: -24,
   front: -20,
   grass: -18,

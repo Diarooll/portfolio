@@ -25,12 +25,10 @@ export default function Experience() {
   return (
     <>
       <Cursor />
-      {/* atrás do morro e na frente do conteúdo (bem sutis, não atrapalham a leitura) */}
-      <div className="wind" style={{ zIndex: Z.leavesBack }} aria-hidden="true">
-        <WindGusts count={mobile ? 3 : 6} seed={7} reduced={reduced} />
-      </div>
-      <div className="wind" style={{ zIndex: 44 }} aria-hidden="true">
-        <WindGusts count={mobile ? 1 : 3} seed={31} reduced={reduced} />
+      {/* o vento fica no fundo da cena: acima do céu e das nuvens, ABAIXO da árvore, do morro, dos títulos,
+          dos cartões e das peças 3D (nada de traço cruzando o conteúdo). Bem curto, suave e discreto */}
+      <div className="wind" style={{ zIndex: Z.wind }} aria-hidden="true">
+        <WindGusts count={mobile ? 2 : 5} seed={7} reduced={reduced} />
       </div>
     </>
   );

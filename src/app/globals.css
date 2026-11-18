@@ -2122,8 +2122,8 @@ html.js .tree.v .tn {
 .gust {
   position: absolute;
   left: 0;
-  width: 300px;
-  height: 60px;
+  width: 180px;
+  height: 44px;
   color: #fff;
   opacity: 0;
   will-change: transform, opacity;
@@ -2141,7 +2141,7 @@ html.js .tree.v .tn {
 /* cruza a tela em ~60% do tempo e fica o resto em silêncio: uma rajada de cada vez */
 @keyframes gust-r {
   0% {
-    transform: translate3d(-340px, 0, 0);
+    transform: translate3d(-220px, 0, 0);
     opacity: 0;
   }
   10% {
@@ -2171,11 +2171,11 @@ html.js .tree.v .tn {
     opacity: calc(var(--alpha) * 0.8);
   }
   62% {
-    transform: translate3d(-340px, var(--drift), 0);
+    transform: translate3d(-220px, var(--drift), 0);
     opacity: 0;
   }
   100% {
-    transform: translate3d(-340px, var(--drift), 0);
+    transform: translate3d(-220px, var(--drift), 0);
     opacity: 0;
   }
 }

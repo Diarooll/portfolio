@@ -37,34 +37,35 @@ function rng(seed: number) {
 function makeGusts(count: number, seed: number): Gust[] {
   const r = rng(seed);
   return Array.from({ length: count }, (_, i) => {
-    const n = 3 + Math.floor(r() * 3);
-    const dur = 11 + r() * 9;
+    const n = 2 + Math.floor(r() * 2);
+    const dur = 14 + r() * 10;
     return {
       top: 6 + ((i + r() * 0.8) / count) * 80,
-      scale: 0.7 + r() * 0.9,
+      scale: 0.8 + r() * 0.6,
       dur,
       delay: -r() * dur,
       rtl: r() < 0.28,
       rot: -5 + r() * 10,
       drift: -40 + r() * 80,
-      alpha: 0.5 + r() * 0.4,
+      alpha: 0.22 + r() * 0.2,
       rest: 6 + r() * 70,
       lines: Array.from({ length: n }, () => ({
-        y: 8 + r() * 44,
-        x: r() * 40,
-        len: 110 + r() * 150,
-        bend: -9 + r() * 18,
-        w: 0.8 + r() * 0.7,
-        a: 0.45 + r() * 0.5,
+        y: 8 + r() * 28,
+        x: r() * 24,
+        // traços curtos, com uma curva leve (nada de ondas)
+        len: 50 + r() * 70,
+        bend: -3.5 + r() * 7,
+        w: 0.55 + r() * 0.45,
+        a: 0.4 + r() * 0.45,
       })),
-      dust: Array.from({ length: 2 + Math.floor(r() * 3) }, () => ({ x: 20 + r() * 260, y: 8 + r() * 44, r: 0.6 + r() * 0.8 })),
+      dust: Array.from({ length: 1 + Math.floor(r() * 2) }, () => ({ x: 14 + r() * 140, y: 8 + r() * 28, r: 0.5 + r() * 0.5 })),
     };
   });
 }
 
 function GustShape({ g, id }: { g: Gust; id: string }) {
   return (
-    <svg className="gust-svg" width={300} height={60} viewBox="0 0 300 60" aria-hidden="true" focusable="false">
+    <svg className="gust-svg" width={180} height={44} viewBox="0 0 180 44" aria-hidden="true" focusable="false">
       <defs>
         <linearGradient id={id} x1="0" y1="0" x2="1" y2="0">
           <stop offset="0" stopColor="currentColor" stopOpacity="0" />
@@ -85,7 +86,7 @@ function GustShape({ g, id }: { g: Gust; id: string }) {
         />
       ))}
       {g.dust.map((p, i) => (
-        <circle key={i} cx={p.x} cy={p.y} r={p.r} fill="currentColor" opacity={0.5} />
+        <circle key={i} cx={p.x} cy={p.y} r={p.r} fill="currentColor" opacity={0.3} />
       ))}
     </svg>
   );
