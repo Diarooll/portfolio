@@ -18,15 +18,15 @@ export const site = {
 } as const;
 
 /**
- * Trecho de FastAPI mostrado no terminal do Contato:
+ * Trecho de FastAPI mostrado no terminal do Contato (nomes no idioma da página):
  *
- *   @app.get("/diego/contato")
- *   def mostrar_contatos():
+ *   @app.get("/diego/contact")
+ *   def show_contacts():
  *       return {"GitHub": ..., "LinkedIn": ..., "Email": ...}
  */
 export const contactSnippet = {
-  route: "/diego/contato",
-  fn: "mostrar_contatos",
+  route: { pt: "/diego/contato", en: "/diego/contact" },
+  fn: { pt: "mostrar_contatos", en: "show_contacts" },
   entries: [
     { key: "GitHub", value: site.github, href: site.github, external: true },
     { key: "LinkedIn", value: site.linkedin, href: site.linkedin, external: true },

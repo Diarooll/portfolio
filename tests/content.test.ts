@@ -72,3 +72,18 @@ describe("textos e configuração", () => {
     for (const l of LAYERS) expect(existsSync(join(process.cwd(), "public", l.src))).toBe(true);
   });
 });
+
+describe("idiomas", () => {
+  it("inglês é o padrão na raiz e o português vive em /pt", async () => {
+    const { routing } = await import("@/i18n/routing");
+    expect(routing.defaultLocale).toBe("en");
+    expect(routing.locales).toEqual(["en", "pt"]);
+    expect(routing.localePrefix).toBe("as-needed");
+  });
+  it("o trecho do Contato tem nomes nos dois idiomas", async () => {
+    const { contactSnippet } = await import("@/content/site");
+    expect(contactSnippet.route.en).toBe("/diego/contact");
+    expect(contactSnippet.fn.en).toBe("show_contacts");
+    expect(contactSnippet.fn.pt).toBe("mostrar_contatos");
+  });
+});

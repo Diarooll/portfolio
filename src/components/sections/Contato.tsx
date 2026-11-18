@@ -3,7 +3,8 @@
 // que devolve os contatos (links reais, clicáveis). Os dados vêm de content/site.ts.
 // No fim, o nome gigante afunda atrás do morro, ao anoitecer.
 import { useRef } from "react";
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
+import { pick } from "@/content/types";
 import { clamp, easeOut, sstep } from "@/lib/math";
 import { docTop } from "@/lib/scroll-engine";
 import { contactSnippet, site } from "@/content/site";
@@ -14,6 +15,7 @@ import { useSection } from "@/hooks/useSection";
 
 export default function Contato() {
   const t = useTranslations("contato");
+  const locale = useLocale();
   const section = useRef<HTMLElement>(null);
   const term = useRef<HTMLDivElement>(null);
   const lines = useRef<HTMLElement[]>([]);
@@ -56,10 +58,10 @@ export default function Contato() {
             </div>
             <div className="term-body code">
               <p className="tln">
-                <span className="kw">@app</span>.get(<span className="str">&quot;{contactSnippet.route}&quot;</span>)
+                <span className="kw">@app</span>.get(<span className="str">&quot;{pick(contactSnippet.route, locale)}&quot;</span>)
               </p>
               <p className="tln">
-                <span className="kw">def</span> <span className="fn">{contactSnippet.fn}</span>():
+                <span className="kw">def</span> <span className="fn">{pick(contactSnippet.fn, locale)}</span>():
               </p>
               <p className="tln ind">
                 <span className="kw">return</span> {"{"}

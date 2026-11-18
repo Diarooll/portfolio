@@ -1,7 +1,7 @@
 # Diego Olalla · portfólio
 
 Site pessoal em Next.js 15 (App Router) + TypeScript + Tailwind CSS v4, com cenas 3D em React Three Fiber.
-O conteúdo é em português (padrão, em `/`) e inglês (`/en`).
+O conteúdo é em inglês (padrão, em `/`) e português (`/pt`).
 
 O site estático antigo (HTML/CSS/JS) está guardado em `legacy/`, e o protótipo aprovado do redesign em `prototype/`.
 

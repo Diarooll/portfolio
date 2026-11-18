@@ -70,7 +70,7 @@ export default function Stack() {
   const moved = useRef(false);
 
   useEffect(() => {
-    setTouch(matchMedia("(pointer: coarse)").matches);
+    setTouch(matchMedia("(hover: none)").matches);
     bus.reduced = document.documentElement.dataset.motion === "reduced";
   }, [bus]);
   useEffect(() => {

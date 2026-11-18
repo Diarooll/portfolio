@@ -1,10 +1,10 @@
 import { defineRouting } from "next-intl/routing";
 
-// pt é o padrão e fica na raiz ("/"); inglês em "/en".
+// inglês é o padrão e fica na raiz ("/"); português em "/pt".
 export const routing = defineRouting({
-  locales: ["pt", "en"],
-  defaultLocale: "pt",
+  locales: ["en", "pt"],
+  defaultLocale: "en",
   localePrefix: "as-needed",
-  // o site é em português por padrão: "/" é sempre pt, mesmo com navegador em inglês
+  // o site é em inglês por padrão: "/" é sempre en, qualquer que seja o idioma do navegador
   localeDetection: false,
 });
