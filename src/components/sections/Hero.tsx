@@ -52,6 +52,17 @@ export default function Hero() {
     const stage = backStage.current;
     if (!el || !brand || !stage) return;
     el.style.transform = "none";
+    // celular: o nome fica relativo ao cartão (logo acima dele), não a uma % da altura da tela;
+    // em tela baixa o cartão sobe e o nome sobe junto, sem cobrir o texto
+    const card = info.current;
+    const wrapEl = el.parentElement;
+    if (card && wrapEl && window.innerWidth < 700) {
+      const gap = 14;
+      const navH = parseFloat(getComputedStyle(document.documentElement).getPropertyValue("--nav-h")) || 96;
+      const pref = navH + 0.3 * window.innerHeight;
+      const fit = wrapEl.clientHeight - parseFloat(getComputedStyle(card).bottom || "16") - card.offsetHeight - gap - el.offsetHeight;
+      el.style.setProperty("--hn-top", `${Math.max(8, Math.min(pref, fit)).toFixed(1)}px`);
+    } else el.style.removeProperty("--hn-top");
     const hs = stage.getBoundingClientRect();
     const nr = el.getBoundingClientRect();
     const br = brand.getBoundingClientRect();

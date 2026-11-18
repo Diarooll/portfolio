@@ -777,7 +777,8 @@ html:not(.fx) .hero-front {
   }
   .hero-name {
     bottom: auto;
-    top: calc(var(--nav-h) + 30svh);
+    /* o Hero.tsx calcula --hn-top: no máximo 30% da tela, mas sempre acima do cartão */
+    top: var(--hn-top, calc(var(--nav-h) + 30svh));
     font-size: clamp(2.6rem, 13.5vw, 4rem);
     text-shadow:
       0 0 3px rgba(251, 247, 238, 0.9),
