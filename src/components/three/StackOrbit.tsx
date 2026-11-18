@@ -31,6 +31,8 @@ export interface OrbitBus {
   buttons: (HTMLButtonElement | null)[];
   reduced: boolean;
   cursor: { x: number; y: number };
+  /** retângulo da área da Stack (.tree) dentro do canvas, em px: o canvas cobre a tela toda e a órbita se centra nessa área */
+  view: { tx: number; ty: number; tw: number; th: number };
   /** pede um quadro (o canvas só desenha quando a Stack está por perto) */
   invalidate?: () => void;
   /** chamado quando a cena 3D está pronta */
@@ -49,16 +51,19 @@ export interface OrbitTile {
 const CAMZ = 24;
 const FOV = 23;
 const TAN = Math.tan((FOV * Math.PI) / 360);
-/** inclinação do círculo: visto um pouco de cima e levemente torto, como no esboço */
-const TILT_X = 0.44;
+/** levemente torto, como no esboço (a inclinação para a câmera depende do formato da tela: tiltFor) */
 const TILT_Z = -0.12;
+/** em telas largas o círculo é visto bem de lado; em telas altas (celular) quase de cima */
+const tiltFor = (aspect: number) => 0.95 + (0.56 - 0.95) * clamp((aspect - 0.7) / 1.0);
 
 export default function StackOrbit(props: { bus: OrbitBus; tiles: OrbitTile[] }) {
   return (
     <Canvas
       className="tree-canvas"
-      style={{ position: "absolute", inset: 0, pointerEvents: "none" }}
-      dpr={[1, 1.75]}
+      // o canvas é maior que a área da Stack: cobre a tela toda (--cv-* vêm do Stack.tsx), então as peças
+      // saem pelo canto da tela e nunca são cortadas no meio
+      style={{ position: "absolute", left: "var(--cv-x, 0px)", top: "var(--cv-y, 0px)", width: "var(--cv-w, 100%)", height: "var(--cv-h, 100%)", pointerEvents: "none" }}
+      dpr={[1, 1.6]}
       frameloop="demand"
       gl={{ antialias: true, alpha: true, powerPreference: "high-performance", toneMapping: THREE.ACESFilmicToneMapping, toneMappingExposure: 1.05 }}
       camera={{ fov: FOV, position: [0, 0, CAMZ], near: 0.1, far: 90 }}
@@ -168,19 +173,16 @@ function faceTextures(t: OrbitTile, onLoad: () => void) {
   const color = mk();
   const bump = mk();
   const body = fontFamily("--font-schibsted", "Arial");
-  const mono = fontFamily("--font-dm-mono", "Menlo");
-  const layout = (x: CanvasRenderingContext2D, bg: CanvasFillStrokeStyles["fillStyle"], ink: string, dim: string, logo?: HTMLCanvasElement) => {
+  const layout = (x: CanvasRenderingContext2D, bg: CanvasFillStrokeStyles["fillStyle"], ink: string, logo?: HTMLCanvasElement) => {
     x.clearRect(0, 0, W, H);
     x.fillStyle = bg;
     x.fillRect(0, 0, W, H);
-    if (logo) x.drawImage(logo, (W - logo.width) / 2, 70);
+    if (logo) x.drawImage(logo, (W - logo.width) / 2, 78);
     x.textAlign = "center";
     x.fillStyle = ink;
-    fit(x, t.name, 700, 82, 450, body);
-    x.fillText(t.name, W / 2, H - 120);
-    x.fillStyle = dim;
-    fit(x, t.ref, 500, 36, 430, mono);
-    x.fillText(t.ref, W / 2, H - 62);
+    // só o nome, grande (o subtítulo pequeno saiu: ficava ilegível no tamanho em que a peça aparece)
+    fit(x, t.name, 700, 104, 440, body);
+    x.fillText(t.name, W / 2, H - 86);
   };
   const draw = (img?: HTMLImageElement) => {
     const cx = color.getContext("2d")!;
@@ -188,7 +190,7 @@ function faceTextures(t: OrbitTile, onLoad: () => void) {
     const g = cx.createLinearGradient(0, 0, 0, H);
     g.addColorStop(0, tone.top);
     g.addColorStop(1, tone.bottom);
-    layout(cx, g, tone.ink, tone.dim, img ? brandLogo(img, t.id, 224) : undefined);
+    layout(cx, g, tone.ink, img ? brandLogo(img, t.id, 256) : undefined);
     const n = cx.getImageData(0, 0, W, H);
     for (let i = 0; i < n.data.length; i += 4) {
       const v = (Math.random() - 0.5) * 6;
@@ -199,7 +201,7 @@ function faceTextures(t: OrbitTile, onLoad: () => void) {
     cx.putImageData(n, 0, 0);
     const bx = bump.getContext("2d")!;
     bx.filter = "blur(1.5px)";
-    layout(bx, "#ffffff", "#000000", "#555555", img ? brandLogo(img, t.id, 224, "#000000") : undefined);
+    layout(bx, "#ffffff", "#000000", img ? brandLogo(img, t.id, 256, "#000000") : undefined);
     bx.filter = "none";
   };
   draw();
@@ -234,29 +236,57 @@ function slotAngles(tiles: OrbitTile[]) {
 }
 
 function Scene({ bus, tiles }: { bus: OrbitBus; tiles: OrbitTile[] }) {
-  const { camera, size, invalidate, scene } = useThree();
+  const { camera, invalidate, scene } = useThree();
   const dark = useThemeDark();
 
-  // layout: maior raio que cabe na caixa, contando a perspectiva (a frente desce e cresce)
-  const L = useMemo(() => {
-    const hh0 = CAMZ * TAN;
-    const hw0 = hh0 * (size.width / Math.max(1, size.height));
-    const sinT = Math.sin(TILT_X);
-    const cosT = Math.cos(TILT_X);
-    let R = 6.4;
-    let tileS = 1.3;
-    for (; R > 1.6; R -= 0.05) {
-      tileS = clamp(R * 0.19, 0.62, 1.12);
-      const half = (TH / 2) * tileS * 1.25;
-      const near = CAMZ / (CAMZ - R * cosT);
-      const far = CAMZ / (CAMZ + R * cosT);
-      const bottom = (R * sinT + half) * near;
-      const top = (R * sinT + half) * far;
-      const side = R + (TW / 2) * tileS * 1.25;
-      if (bottom <= hh0 * 0.92 && top <= hh0 * 0.92 && side <= hw0 * 0.96) break;
+  // layout: o canvas cobre a tela toda; a órbita se centra na área da Stack (bus.view) e usa o maior raio
+  // que cabe nela, contando a perspectiva (a frente desce e cresce).
+  const lay = useMemo(() => ({ key: "", R: 4, Rx: 4, tileS: 1, tilt: 0.56, cx: 0, cy: 0 }), []);
+  const layout = (W: number, H: number) => {
+    const v = bus.view;
+    const key = `${W}|${H}|${v.tx}|${v.ty}|${v.tw}|${v.th}`;
+    if (key === lay.key) return false;
+    lay.key = key;
+    const tw = v.tw > 0 ? v.tw : W;
+    const th = v.th > 0 ? v.th : H;
+    const tx = v.tw > 0 ? v.tx : 0;
+    const ty = v.th > 0 ? v.ty : 0;
+    const cx = tx + tw / 2;
+    const cy = ty + th / 2;
+    const T = tiltFor(tw / th);
+    const sinT = Math.sin(T);
+    const cosT = Math.cos(T);
+    const k = (z: number) => H / 2 / ((CAMZ - z) * TAN); // px por unidade de mundo no plano z
+    const margin = W * 0.02;
+    const slackB = Math.min(H * 0.1, Math.max(0, H - (ty + th)));
+    const slackT = H * 0.03;
+    let R = 9;
+    let tileS = 1;
+    for (; R > 1.4; R -= 0.05) {
+      tileS = clamp(R * (tw / th < 1.1 ? 0.34 : 0.26), 0.45, 1.55);
+      const halfW = (TW / 2) * tileS * 1.2;
+      // reserva extra: peças que se sobreporiam nas laterais são afastadas na vertical (ver "separação")
+      const halfH = (TH / 2) * tileS * 1.2 * 1.45;
+      const yExt = R * sinT + halfH + R * 0.12;
+      const below = yExt * k(R * cosT);
+      const above = yExt * k(-R * cosT);
+      const side = (R + halfW) * k(0);
+      if (cy + below <= ty + th + slackB && cy - above >= ty - slackT && cx - side >= margin && cx + side <= W - margin) break;
     }
-    return { R, tileS };
-  }, [size.width, size.height]);
+    // em telas largas o círculo se estica na horizontal (mais respiro entre as peças da frente e de trás)
+    const halfW = (TW / 2) * tileS * 1.2;
+    const roomX = Math.min(cx - margin, W - margin - cx) / k(0) - halfW;
+    lay.R = R;
+    lay.Rx = R * clamp(roomX / R, 1, 1.4);
+    lay.tileS = tileS;
+    lay.tilt = T;
+    lay.cx = cx;
+    lay.cy = cy;
+    tmp.Q.setFromEuler(new THREE.Euler(T, 0, TILT_Z));
+    camera.setViewOffset(W, H, W / 2 - cx, H / 2 - cy, W, H);
+    camera.updateProjectionMatrix();
+    return true;
+  };
 
   const built = useMemo(() => {
     const { body, face } = tileGeometries();
@@ -340,8 +370,9 @@ function Scene({ bus, tiles }: { bus: OrbitBus; tiles: OrbitTile[] }) {
     () => ({
       V: new THREE.Vector3(),
       W: new THREE.Vector3(),
-      Q: new THREE.Quaternion().setFromEuler(new THREE.Euler(TILT_X, 0, TILT_Z)),
+      Q: new THREE.Quaternion().setFromEuler(new THREE.Euler(0.56, 0, TILT_Z)),
       cam: { x: 0, y: 0 },
+      sep: { x: [] as number[], y: [] as number[], w: [] as number[], h: [] as number[], k: [] as number[], z: [] as number[], o: [] as number[] },
       auto: 0,
       t: 0,
     }),
@@ -355,7 +386,8 @@ function Scene({ bus, tiles }: { bus: OrbitBus; tiles: OrbitTile[] }) {
     const { V, W, cam } = tmp;
     const RM = bus.reduced;
     const ROT = bus.rot;
-    const { R, tileS } = L;
+    layout(state.size.width, state.size.height);
+    const { R, Rx, tileS } = lay;
     // paralaxe leve do cursor
     const k = 1 - Math.exp(-dt * 2.2);
     cam.x += ((RM ? 0 : bus.cursor.x) - cam.x) * k;
@@ -387,20 +419,21 @@ function Scene({ bus, tiles }: { bus: OrbitBus; tiles: OrbitTile[] }) {
       const on = bus.hover[i] || bus.focus[i];
       it.hv += ((on ? 1 : 0) - it.hv) * (1 - Math.exp(-dt * 10));
       // chegada: as peças vêm do centro, uma a uma, e encaixam no círculo
-      const ki = RM ? 1 : easeOut(clamp((p - 0.05 - (i / n) * 0.5) / 0.3));
+      // (a saída começa em ~56% do percurso: as peças precisam estar todas no círculo antes disso, com tempo parado)
+      const ki = RM ? 1 : easeOut(clamp((p - (i / n) * 0.24) / 0.16));
       const a = it.a + ROT.y + (1 - ki) * 1.4;
       const w = it.wind;
       // vento: flutua, balança e gira devagar sobre o próprio eixo (parado com movimento reduzido)
       const float = RM ? 0 : Math.sin(T * w.f + w.ph) * 0.12;
-      V.set(Math.cos(a) * R * ki, float, Math.sin(a) * R * ki).applyQuaternion(tmp.Q);
+      V.set(Math.cos(a) * Rx * ki, float, Math.sin(a) * R * ki).applyQuaternion(tmp.Q);
       // no hover a peça vem um pouco para a frente
       V.z += it.hv * 0.6;
       if (exE > 0) {
         // vai para fora: mistura da direção radial (de onde a peça está) com a direção sorteada dela
         const rx = Math.atan2(V.y, V.x);
         const ang = rx + Math.sin(it.out.ang) * 1.1;
-        V.x += Math.cos(ang) * hw * 1.15 * it.out.reach * exE;
-        V.y += Math.sin(ang) * hh * 1.15 * it.out.reach * exE;
+        V.x += Math.cos(ang) * hw * 1.45 * it.out.reach * exE;
+        V.y += Math.sin(ang) * hh * 1.45 * it.out.reach * exE;
         V.z += it.out.dz * exE;
       }
       it.g.position.copy(V);
@@ -411,14 +444,57 @@ function Scene({ bus, tiles }: { bus: OrbitBus; tiles: OrbitTile[] }) {
       // no hover/foco ela fica de frente para quem olha
       const yaw = (spin + Math.cos(a) * 0.25) * (1 - it.hv);
       it.g.rotation.set(nod, yaw, sway * (1 - it.hv) + it.out.tw * exE);
-      // sai encolhendo: some quando já está longe do círculo
-      const gone = 1 - clamp((ex - 0.5) / 0.45);
+      // sai encolhendo só no fim do caminho: a peça atravessa a tela até o canto, sem ser cortada pelo canvas
+      const gone = 1 - clamp((ex - 0.72) / 0.28);
       const s = tileS * (0.35 + 0.65 * ki) * (1 + it.hv * 0.14) * (RM ? 1 : Math.max(0.001, fade)) * Math.max(0.001, gone);
       it.g.scale.setScalar(s);
       it.g.visible = ki > 0.01 && fade > 0.01 && gone > 0.002;
       it.depth = clamp((V.z + R) / (2 * R + 1));
       it.vis = ki > 0.6 && fade > 0.3 && ex < 0.1;
     });
+
+    // separação: duas peças que se sobreporiam na tela (nas laterais do círculo, onde a fila vai "para dentro")
+    // se afastam na vertical, a mais próxima desce e a mais distante sobe. É contínuo (nada pula) e vale
+    // também para o movimento reduzido (sem animação, mas a posição parada nunca tem peças em cima de outras)
+    {
+      const S = tmp.sep;
+      const on = 1 - clamp(ex / 0.08);
+      const Wd0 = state.size.width;
+      const Hd0 = state.size.height;
+      built.items.forEach((it, i) => {
+        W.copy(it.g.position).project(camera);
+        const kz = Hd0 / 2 / ((CAMZ - it.g.position.z) * TAN);
+        S.x[i] = (W.x + 1) * 0.5 * Wd0;
+        S.y[i] = (1 - W.y) * 0.5 * Hd0;
+        S.k[i] = kz;
+        S.z[i] = it.g.position.z;
+        S.w[i] = TW * 1.18 * it.g.scale.x * kz * (it.g.visible ? 1 : 0);
+        S.h[i] = TH * 1.18 * it.g.scale.x * kz * (it.g.visible ? 1 : 0);
+        S.o[i] = 0;
+      });
+      if (on > 0.001) {
+        for (let pass = 0; pass < 4; pass++)
+          for (let i = 0; i < n; i++)
+            for (let j = i + 1; j < n; j++) {
+              const ow = (S.w[i] + S.w[j]) / 2;
+              if (ow <= 0) continue;
+              const ox = ow - Math.abs(S.x[i] - S.x[j]);
+              if (ox <= 0) continue;
+              const dy = S.y[j] + S.o[j] - (S.y[i] + S.o[i]);
+              const oy = (S.h[i] + S.h[j]) / 2 - Math.abs(dy);
+              if (oy <= 0) continue;
+              const f = clamp(ox / (0.35 * ow));
+              const dir = S.z[j] === S.z[i] ? (dy >= 0 ? 1 : -1) : S.z[j] > S.z[i] ? 1 : -1;
+              const m = oy * 0.5 * f * on * 1.02;
+              S.o[j] += dir * m;
+              S.o[i] -= dir * m;
+            }
+        built.items.forEach((it, i) => {
+          const lim = S.h[i] * 1.3;
+          it.g.position.y -= clamp(S.o[i], -lim, lim) / Math.max(1, S.k[i]);
+        });
+      }
+    }
 
     // alvos do DOM em cima de cada peça (tamanho pela peça de frente, sem contar o giro)
     const Wd = state.size.width;
@@ -432,8 +508,9 @@ function Scene({ bus, tiles }: { bus: OrbitBus; tiles: OrbitTile[] }) {
         .project(camera);
       const bw = Math.max(28, Math.abs(V.x - W.x) * Wd);
       const bh = bw * (TH / TW);
-      const x = (W.x + 1) * 0.5 * Wd - bw / 2;
-      const y = (1 - W.y) * 0.5 * Hd - bh / 2;
+      // o canvas é maior que a área da Stack: os botões ficam em coordenadas da .tree
+      const x = (W.x + 1) * 0.5 * Wd - bw / 2 - bus.view.tx;
+      const y = (1 - W.y) * 0.5 * Hd - bh / 2 - bus.view.ty;
       b.style.width = `${bw.toFixed(0)}px`;
       b.style.height = `${bh.toFixed(0)}px`;
       b.style.transform = `translate3d(${x.toFixed(1)}px, ${y.toFixed(1)}px, 0)`;

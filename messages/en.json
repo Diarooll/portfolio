@@ -44,7 +44,6 @@
   },
   "stack": {
     "title": "Stack",
-    "sub": "What I use to write, package and ship.",
     "treeLabel": "Stack as a tree. Use the arrow keys to rotate.",
     "hint": "Hover or focus a technology.",
     "hintTouch": "Tap a technology.",

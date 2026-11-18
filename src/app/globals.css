@@ -950,21 +950,14 @@ html:not(.fx) .hero-front {
 .st-head .title {
   text-shadow: 0 2px 24px rgba(251, 247, 238, 0.6);
 }
-.st-sub {
-  color: var(--fg);
-  font-size: var(--fs-lead);
-  max-width: 22rem;
-  padding: 0.4rem 0.9rem;
-  border-radius: 12px;
-}
 .tree {
   position: relative;
   flex: 1 1 auto;
   min-height: 340px;
 }
+/* o canvas 3D é maior que a .tree: cobre o palco todo (tamanho e posição por inline style, com --cv-*) */
 .tree-canvas {
   position: absolute;
-  inset: 0;
 }
 .tree-svg {
   position: absolute;
@@ -994,19 +987,6 @@ html:not(.fx) .hero-front {
 }
 .pulse {
   fill: var(--glow);
-}
-.tree-note {
-  align-self: flex-start;
-  min-height: 1.6em;
-  font-size: var(--fs-lead);
-  font-weight: 500;
-  padding: 0.45rem 1rem;
-  border-radius: 999px;
-}
-.tree-note::before {
-  content: "> ";
-  font-family: var(--font-mono);
-  color: var(--accent);
 }
 .tn {
   margin: 0;
@@ -1205,14 +1185,6 @@ html.js .tree.v .tn {
   outline: 2px solid var(--accent);
   outline-offset: 6px;
   border-radius: 8px;
-}
-@media (max-width: 699px) {
-  .st-sub {
-    display: none;
-  }
-  .tree-note {
-    font-size: 0.9375rem;
-  }
 }
 
 /* ---------- projetos: painéis em trilho ---------- */

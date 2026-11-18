@@ -41,9 +41,7 @@ export default function Stack() {
   const tree = useRef<HTMLDivElement>(null);
   const svg = useRef<SVGSVGElement>(null);
   const wrapEl = useRef<HTMLDivElement>(null);
-  const sub = useRef<HTMLParagraphElement>(null);
   const head = useRef<HTMLDivElement>(null);
-  const noteEl = useRef<HTMLParagraphElement>(null);
   const fb = useRef<FallbackOrbit | null>(null);
   useSection("stack", section);
 
@@ -64,6 +62,7 @@ export default function Stack() {
       buttons: [],
       reduced: false,
       cursor: { x: 0, y: 0 },
+      view: { tx: 0, ty: 0, tw: 0, th: 0 },
     }),
     [],
   );
@@ -90,10 +89,22 @@ export default function Stack() {
     requestMeasure();
   }, [bus]);
 
-  // medidas: o desenho 2D (quando não há 3D)
+  // medidas: o canvas 3D cobre o palco inteiro (maior que a .tree), para as peças saírem pelo canto da tela
+  // sem serem cortadas; o desenho 2D (quando não há 3D) usa só a .tree
   useMeasure(() => {
     const tr = tree.current;
+    const st = stage.current;
     if (!tr) return;
+    if (st) {
+      const sr = st.getBoundingClientRect();
+      const r = tr.getBoundingClientRect();
+      tr.style.setProperty("--cv-x", `${(sr.left - r.left).toFixed(1)}px`);
+      tr.style.setProperty("--cv-y", `${(sr.top - r.top).toFixed(1)}px`);
+      tr.style.setProperty("--cv-w", `${sr.width.toFixed(1)}px`);
+      tr.style.setProperty("--cv-h", `${sr.height.toFixed(1)}px`);
+      bus.view = { tx: Math.round(r.left - sr.left), ty: Math.round(r.top - sr.top), tw: Math.round(r.width), th: Math.round(r.height) };
+      bus.invalidate?.();
+    }
     if (gl3d) {
       fb.current?.clear();
       fb.current = null;
@@ -134,15 +145,13 @@ export default function Stack() {
     }
     // movimento reduzido: as peças entram num crossfade (sem escala)
     if (tree.current) tree.current.style.opacity = s.reduced ? enter.toFixed(3) : "";
-    const textOut = spread ? 1 - sstep(clamp((y - (pj.top - 1.1 * vh)) / (0.4 * vh))) : 1;
+    // o título, o subtítulo e a dica somem ANTES de as peças começarem a sair: nenhuma peça cruza a pílula
+    const textOut = spread ? 1 - sstep(clamp((y - (pj.top - 1.42 * vh)) / (0.24 * vh))) : 1;
     if (head.current) head.current.style.opacity = textOut.toFixed(3);
     const inRange = y > m.top - 1.2 * vh && y < pj.top + 0.9 * vh;
     if (gl3d && inRange) bus.invalidate?.();
     if (!s.changed) return;
     if (!gl3d) fb.current?.update(p, s.reduced);
-    const se = sstep(clamp((y - (m.top - 0.6 * vh)) / (0.55 * vh)));
-    if (sub.current) sub.current.style.opacity = se.toFixed(3);
-    if (noteEl.current) noteEl.current.style.opacity = (sstep(clamp((y - (m.top - 0.2 * vh)) / (0.4 * vh))) * textOut).toFixed(3);
   });
 
   // arrastar para girar (só na horizontal; na vertical a página rola)
@@ -261,9 +270,6 @@ export default function Stack() {
         <div ref={wrapEl} className="wrap st-wrap">
           <div ref={head} className="st-head">
             <Dissolve as="h2" className="title" id="stackT" text={t("title")} seed={5} progress={titleP} />
-            <p ref={sub} className="st-sub glass">
-              {t("sub")}
-            </p>
           </div>
           <div ref={tree} className="tree" tabIndex={0} role="group" aria-label={pick(stackCopy.label, locale)}>
             <svg ref={svg} className="tree-svg" aria-hidden="true" focusable="false" />
@@ -318,7 +324,8 @@ export default function Stack() {
               </div>
             ))}
           </div>
-          <p ref={noteEl} id="treeNote" className="tree-note glass" aria-live="polite">
+          {/* sem texto de instrução na tela: só um aviso para leitores de tela (a tecnologia em foco) */}
+          <p id="treeNote" className="sr" aria-live="polite">
             {note}
           </p>
         </div>

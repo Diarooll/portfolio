@@ -44,7 +44,6 @@
   },
   "stack": {
     "title": "Stack",
-    "sub": "O que uso para escrever, empacotar e entregar.",
     "treeLabel": "Stack em árvore. Use as setas para girar.",
     "hint": "Passe o mouse ou foque em uma tecnologia.",
     "hintTouch": "Toque em uma tecnologia.",
