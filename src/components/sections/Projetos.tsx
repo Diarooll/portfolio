@@ -40,7 +40,7 @@ export default function Projetos() {
   const panels = useRef<Panel[]>([0, 1, 2, 3].map(() => ({ el: null, inner: null, unit: null, edge: null, logo: null })));
   /** progresso de cada painel (usado pelos textos que se dissolvem) */
   const pp = useRef([0, 0, 0, 0]);
-  const PM = useRef({ Wt: 0, H: 1, S: 56, sk: 100, skew: 0, phi: 0, fm: 140, tops: [0, 0, 0, 0] });
+  const PM = useRef({ Wt: 0, H: 1, S: 56, sk: 100, skew: 0, phi: 0, fm: 140, tops: [0, 0, 0, 0], utops: [0, 0, 0, 0] });
   /** última máscara aplicada em cada painel (evita reescrever o estilo sem mudança) */
   const maskKey = useRef(["", "", "", ""]);
   useSection("projetos", section);
@@ -72,6 +72,8 @@ export default function Projetos() {
       });
     }
     P.tops = panels.current.map((pn) => (pn.el ? docTop(pn.el) : 0));
+    // celular: os textos se dissolvem pela posição do cartão (unit), não do painel
+    P.utops = panels.current.map((pn, i) => (pn.unit ? docTop(pn.unit) : P.tops[i]));
   });
 
   useScrollFrame((s) => {
@@ -90,8 +92,8 @@ export default function Projetos() {
         const raw = clamp((p - A[i][0]) / (A[i][1] - A[i][0]));
         const c = i < 3 ? clamp((p - A[i + 1][0]) / (A[i + 1][1] - A[i + 1][0])) : 0;
         const Lf = i === 0 ? -sk : i * S;
-        // o painel anterior sai de cena quando o seguinte termina de entrar: nenhuma listra
-        // parada fica sobre as nuvens (só o painel atual e a sua faixa)
+        // os painéis anteriores continuam visíveis atrás, empilhados (cor, faixa e rótulo); só o conteúdo
+        // do painel coberto se apaga para o seguinte assumir
         if (!RM) {
           const a = ease(raw);
           const L = Wt + (Lf - Wt) * a;
@@ -101,7 +103,7 @@ export default function Projetos() {
           pn.el.style.clipPath =
             a <= 0 ? "polygon(0 0, 0 0, 0 0)" : `polygon(${(L + sk - gl).toFixed(2)}px 0, ${Wt}px 0, ${Wt}px 100%, ${(L - gl).toFixed(2)}px 100%)`;
           pn.el.style.visibility = a <= 0 ? "hidden" : "visible";
-          pn.el.style.opacity = i < 3 ? (1 - sstep(clamp((ease(c) - 0.45) / 0.55))).toFixed(3) : "";
+          pn.el.style.opacity = "";
           if (i > 0) {
             const F = lerp(26, P.fm, Math.pow(1 - a, 0.8));
             const t0 = (L + sk) * Math.cos(P.phi);
@@ -126,8 +128,8 @@ export default function Projetos() {
           const a = sstep(clamp((p - A[i][0]) / 0.05));
           const nxt = i < 3 ? sstep(clamp((p - A[i + 1][0]) / 0.05)) : 0;
           pn.el.style.clipPath = `polygon(${(Lf + sk).toFixed(1)}px 0, ${Wt}px 0, ${Wt}px 100%, ${Lf.toFixed(1)}px 100%)`;
-          pn.el.style.opacity = (a * (1 - nxt)).toFixed(3);
-          pn.el.style.visibility = a <= 0.001 || nxt >= 0.999 ? "hidden" : "visible";
+          pn.el.style.opacity = a.toFixed(3);
+          pn.el.style.visibility = a <= 0.001 ? "hidden" : "visible";
           pn.el.style.maskImage = "";
           pn.el.style.webkitMaskImage = "";
           maskKey.current[i] = "";
@@ -164,13 +166,15 @@ export default function Projetos() {
       panels.current.forEach((pn, i) => {
         if (!pn.el) return;
         pn.el.inert = false;
-        const k = clamp((y + vh * 0.97 - P.tops[i]) / (vh * 0.5));
+        // sem cortina no celular: a entrada é o gradiente de cor do próprio painel (CSS) e o cartão que assenta
+        pn.el.style.clipPath = "";
+        const k = clamp((y + vh * 0.97 - P.utops[i]) / (vh * 0.5));
         if (!RM) {
-          const T = 100 - 108 * ease(k);
-          pn.el.style.clipPath = k >= 1 ? "none" : `polygon(0 ${(T + 8).toFixed(2)}%, 100% ${T.toFixed(2)}%, 100% 100%, 0 100%)`;
+          pn.el.style.opacity = "";
           if (pn.unit) pn.unit.style.transform = `scale(${lerp(0.94, 1, easeOut(k)).toFixed(4)})`;
         } else pn.el.style.opacity = (0.15 + 0.85 * sstep(k)).toFixed(3);
-        pp.current[i] = clamp((y + vh * 0.9 - P.tops[i]) / (vh * 0.5));
+        // os textos terminam de se dissolver quando o cartão chega a ~70% da altura da tela
+        pp.current[i] = clamp((y + vh * 0.98 - P.utops[i]) / (vh * 0.28));
       });
     }
     panels.current.forEach((pn, i) => {

@@ -1236,6 +1236,48 @@ html.js .tree.v .tn {
 .pn0 .p-line {
   text-shadow: 0 2px 28px color-mix(in srgb, var(--bg-gold-a) 80%, transparent);
 }
+/* contraste (AA 4,5:1 nos dois temas): uma névoa suave atrás do texto, no tom do céu do tema, e o ponto
+   "em andamento" sólido e com aro (sem piscar), para não se perder sobre as nuvens */
+.pn0 .pc {
+  position: relative;
+  --veil: rgba(255, 249, 236, 0.7);
+}
+:root[data-theme="dark"] .pn0 .pc {
+  --veil: rgba(12, 10, 30, 0.72);
+}
+.pn0 .pc::before {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  left: -3.2rem;
+  top: -3.2rem;
+  bottom: -3rem;
+  width: min(calc(100% + 3.2rem), 42rem);
+  pointer-events: none;
+  background: radial-gradient(
+    ellipse closest-side,
+    var(--veil) 0%,
+    var(--veil) 52%,
+    color-mix(in srgb, var(--veil) 55%, transparent) 78%,
+    transparent 100%
+  );
+}
+.pn0 .strip-lb {
+  color: var(--pf);
+  text-shadow: 0 0 10px var(--veil), 0 0 4px var(--veil);
+}
+.pn0 .key .led {
+  width: 12px;
+  height: 12px;
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--pf) 60%, transparent);
+}
+.pn0 .key .led.warn {
+  animation: none;
+  background: #b0601a;
+}
+:root[data-theme="dark"] .pn0 .key .led.warn {
+  background: #f0b27a;
+}
 /* abertura e Sito's: cores do site (vidro claro); $ents e ALERA: cores das marcas */
 .pn0 {
   --pb: #f6efe2;
@@ -1572,6 +1614,56 @@ html.js .tree.v .tn {
   }
 }
 @media (max-width: 699px) {
+  /* no celular os painéis são blocos empilhados: em vez de cortes retos, cada cor nasce e some num
+     gradiente longo (a faixa --blend de cada lado se sobrepõe à do vizinho, ~220px de mistura).
+     A cor da marca fica atrás de tudo (z-index -1 dentro do trilho) e o cartão tem a própria cor. */
+  .proj .pnl {
+    --blend: 110px;
+    background: transparent;
+  }
+  .proj .pn1::before,
+  .proj .pn2::before,
+  .proj .pn3::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: calc(var(--blend) * -1);
+    bottom: calc(var(--blend) * -1);
+    z-index: -1;
+    pointer-events: none;
+    background: linear-gradient(
+      to bottom,
+      transparent,
+      color-mix(in srgb, var(--pb) 12%, transparent) calc(var(--blend) * 0.35),
+      color-mix(in srgb, var(--pb) 58%, transparent) calc(var(--blend) * 0.7),
+      color-mix(in srgb, var(--pb) 94%, transparent) var(--blend),
+      color-mix(in srgb, var(--pb) 94%, transparent) calc(100% - var(--blend)),
+      color-mix(in srgb, var(--pb) 58%, transparent) calc(100% - var(--blend) * 0.7),
+      color-mix(in srgb, var(--pb) 12%, transparent) calc(100% - var(--blend) * 0.35),
+      transparent
+    );
+  }
+  /* o último painel se dissolve devagar no fundo antes da Jornada (faixa maior, sem corte) */
+  .proj .pn3::before {
+    bottom: -260px;
+    background: linear-gradient(
+      to bottom,
+      transparent,
+      color-mix(in srgb, var(--pb) 12%, transparent) calc(var(--blend) * 0.35),
+      color-mix(in srgb, var(--pb) 58%, transparent) calc(var(--blend) * 0.7),
+      color-mix(in srgb, var(--pb) 94%, transparent) var(--blend),
+      color-mix(in srgb, var(--pb) 94%, transparent) calc(100% - 300px),
+      color-mix(in srgb, var(--pb) 60%, transparent) calc(100% - 200px),
+      color-mix(in srgb, var(--pb) 22%, transparent) calc(100% - 100px),
+      transparent
+    );
+  }
+  .pn1 .pnl-in,
+  .pn2 .pnl-in,
+  .pn3 .pnl-in {
+    padding-block: 6.4rem;
+  }
   .pnl-in {
     padding-block: 3.2rem 3.4rem;
   }
