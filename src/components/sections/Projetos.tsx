@@ -40,7 +40,9 @@ export default function Projetos() {
   const panels = useRef<Panel[]>([0, 1, 2, 3].map(() => ({ el: null, inner: null, unit: null, edge: null, logo: null })));
   /** progresso de cada painel (usado pelos textos que se dissolvem) */
   const pp = useRef([0, 0, 0, 0]);
-  const PM = useRef({ Wt: 0, H: 1, S: 56, sk: 100, skew: 0, tops: [0, 0, 0, 0] });
+  const PM = useRef({ Wt: 0, H: 1, S: 56, sk: 100, skew: 0, phi: 0, fm: 140, tops: [0, 0, 0, 0] });
+  /** última máscara aplicada em cada painel (evita reescrever o estilo sem mudança) */
+  const maskKey = useRef(["", "", "", ""]);
   useSection("projetos", section);
 
   useMeasure((s) => {
@@ -52,7 +54,10 @@ export default function Projetos() {
       P.H = Math.max(1, tr.clientHeight);
       P.S = clamp(s.vw * 0.05, 44, 76);
       P.sk = clamp(P.Wt * 0.11, 60, 170);
-      P.skew = (-Math.atan(P.sk / P.H) * 180) / Math.PI;
+      P.phi = Math.atan(P.sk / P.H);
+      P.skew = (-P.phi * 180) / Math.PI;
+      // largura da franja suave da cortina: 100 a 200px
+      P.fm = clamp(s.vw * 0.11, 100, 200);
       tr.style.setProperty("--S", `${P.S.toFixed(1)}px`);
       tr.style.setProperty("--sk", `${P.sk.toFixed(1)}px`);
     } else {
@@ -61,6 +66,8 @@ export default function Projetos() {
           pn.el.style.clipPath = "";
           pn.el.style.opacity = "";
           pn.el.style.visibility = "";
+          pn.el.style.maskImage = "";
+          pn.el.style.webkitMaskImage = "";
         }
       });
     }
@@ -83,28 +90,48 @@ export default function Projetos() {
         const raw = clamp((p - A[i][0]) / (A[i][1] - A[i][0]));
         const c = i < 3 ? clamp((p - A[i + 1][0]) / (A[i + 1][1] - A[i + 1][0])) : 0;
         const Lf = i === 0 ? -sk : i * S;
+        // o painel anterior sai de cena quando o seguinte termina de entrar: nenhuma listra
+        // parada fica sobre as nuvens (só o painel atual e a sua faixa)
         if (!RM) {
           const a = ease(raw);
           const L = Wt + (Lf - Wt) * a;
-          pn.el.style.clipPath = a <= 0 ? "polygon(0 0, 0 0, 0 0)" : `polygon(${(L + sk).toFixed(2)}px 0, ${Wt}px 0, ${Wt}px 100%, ${L.toFixed(2)}px 100%)`;
+          // a abertura é só uma luz que passa (borda larga e suave); os outros painéis nascem com a
+          // borda em gradiente de 100 a 200px, que vai se firmando quando o painel assenta
+          const gl = i === 0 ? sk * 0.65 : 0;
+          pn.el.style.clipPath =
+            a <= 0 ? "polygon(0 0, 0 0, 0 0)" : `polygon(${(L + sk - gl).toFixed(2)}px 0, ${Wt}px 0, ${Wt}px 100%, ${(L - gl).toFixed(2)}px 100%)`;
           pn.el.style.visibility = a <= 0 ? "hidden" : "visible";
-          pn.el.style.opacity = "";
+          pn.el.style.opacity = i < 3 ? (1 - sstep(clamp((ease(c) - 0.45) / 0.55))).toFixed(3) : "";
+          if (i > 0) {
+            const F = lerp(26, P.fm, Math.pow(1 - a, 0.8));
+            const t0 = (L + sk) * Math.cos(P.phi);
+            const mk = a <= 0 ? "" : `linear-gradient(${(90 + (P.phi * 180) / Math.PI).toFixed(3)}deg, transparent ${t0.toFixed(1)}px, #000 ${(t0 + F).toFixed(1)}px)`;
+            if (maskKey.current[i] !== mk) {
+              maskKey.current[i] = mk;
+              pn.el.style.maskImage = mk;
+              pn.el.style.webkitMaskImage = mk;
+            }
+          }
           const ce = ease(c);
           const enter = i === 0 ? 0 : (1 - easeOut(clamp((p - A[i][0] - 0.02) / (A[i][1] - A[i][0] + 0.04)))) * 70;
           pn.inner.style.opacity = (1 - ce).toFixed(3);
           pn.inner.style.transform = `translate3d(${(enter - 48 * ce).toFixed(2)}px, 0, 0)`;
           if (pn.edge) {
             pn.edge.style.transform = `translate3d(${L.toFixed(2)}px, 0, 0) skewX(${P.skew.toFixed(3)}deg)`;
-            pn.edge.style.opacity = (a > 0 && a < 1 ? Math.sin(Math.PI * a) : 0).toFixed(3);
+            pn.edge.style.opacity = (i === 0 && a > 0 && a < 1 ? Math.sin(Math.PI * a) : 0).toFixed(3);
           }
           if (pn.unit) pn.unit.style.transform = `scale(${lerp(PD[i], 1, easeOut(clamp((p - A[i][0]) / (A[i][1] - A[i][0] + 0.06)))).toFixed(4)})`;
         } else {
           // movimento reduzido: troca no lugar, sem varredura
           const a = sstep(clamp((p - A[i][0]) / 0.05));
+          const nxt = i < 3 ? sstep(clamp((p - A[i + 1][0]) / 0.05)) : 0;
           pn.el.style.clipPath = `polygon(${(Lf + sk).toFixed(1)}px 0, ${Wt}px 0, ${Wt}px 100%, ${Lf.toFixed(1)}px 100%)`;
-          pn.el.style.opacity = a.toFixed(3);
-          pn.el.style.visibility = a <= 0.001 ? "hidden" : "visible";
-          pn.inner.style.opacity = (1 - sstep(clamp((p - A[Math.min(3, i + 1)][0]) / 0.05)) * (i < 3 ? 1 : 0)).toFixed(3);
+          pn.el.style.opacity = (a * (1 - nxt)).toFixed(3);
+          pn.el.style.visibility = a <= 0.001 || nxt >= 0.999 ? "hidden" : "visible";
+          pn.el.style.maskImage = "";
+          pn.el.style.webkitMaskImage = "";
+          maskKey.current[i] = "";
+          pn.inner.style.opacity = (1 - nxt).toFixed(3);
           pn.inner.style.transform = "none";
         }
         // painel coberto pelo seguinte: fora do teclado e dos leitores de tela
