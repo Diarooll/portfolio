@@ -97,10 +97,34 @@ export default function Landscape() {
     root.setProperty("--wind-vis", cam.wind > 0.003 ? "visible" : "hidden");
     cam.bg.forEach((w, i) => root.setProperty(`--alt-w${i + 1}`, `${(w * 100).toFixed(1)}%`));
 
-    // fundo: cada fase é uma camada que aparece por cima da anterior (o céu é a base)
+    // fundo: cada fase é uma camada que aparece por cima da anterior (o céu é a base). O dourado só faz
+    // crossfade; o anoitecer, o azul profundo e o espaço SOBEM: a borda suave da nova cor avança de baixo
+    // para cima (a câmera está subindo), em vez de a tela inteira escurecer de uma vez
+    const band = vh * 0.6;
     cam.bg.forEach((w, i) => {
       const el = bgRefs.current[i + 1];
-      if (el) el.style.opacity = w.toFixed(3);
+      if (!el) return;
+      if (i === 0 || reduced) {
+        el.style.opacity = w.toFixed(3);
+        el.style.transform = "none";
+        el.style.maskImage = "none";
+        el.style.webkitMaskImage = "none";
+        const fill = el.firstElementChild as HTMLElement | null;
+        if (fill) fill.style.transform = "none";
+        return;
+      }
+      el.style.opacity = w > 0.001 ? "1" : "0";
+      el.style.height = `${(vh + band).toFixed(0)}px`;
+      const mk = `linear-gradient(to bottom, transparent 0, #000 ${band.toFixed(0)}px)`;
+      el.style.maskImage = mk;
+      el.style.webkitMaskImage = mk;
+      const wt = vh - w * (vh + band);
+      el.style.transform = `translate3d(0, ${wt.toFixed(1)}px, 0)`;
+      const fill = el.firstElementChild as HTMLElement | null;
+      if (fill) {
+        fill.style.height = `${vh}px`;
+        fill.style.transform = `translate3d(0, ${(-wt).toFixed(1)}px, 0)`;
+      }
     });
     if (stars.current) {
       stars.current.style.opacity = cam.stars.toFixed(3);
@@ -117,9 +141,11 @@ export default function Landscape() {
           ref={(el) => {
             bgRefs.current[i] = el;
           }}
-          className={`ls-bg ls-bg-${id}`}
+          className={`ls-bg ls-bg-${id}${i >= 2 ? " ls-rise" : ""}`}
           style={{ zIndex: Z.bg, opacity: i === 0 ? 1 : 0 }}
-        />
+        >
+          {i >= 2 ? <div className="ls-fill" /> : null}
+        </div>
       ))}
       <div ref={stars} className="ls-stars" style={{ zIndex: Z.stars }} />
       {LAYERS.map((L, i) => (

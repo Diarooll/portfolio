@@ -274,13 +274,31 @@ a {
 .ls-bg-gold {
   background: linear-gradient(to bottom, var(--bg-gold-a), var(--bg-gold-m) 52%, var(--bg-gold-b));
 }
-.ls-bg-dusk {
+/* as três últimas fases SOBEM (a borda suave da cor nova avança de baixo para cima): a camada é uma
+   faixa com máscara que se move por transform, e o preenchimento anda ao contrário, ficando parado na tela */
+.ls-rise {
+  inset: auto;
+  top: 0;
+  left: 0;
+  right: 0;
+  min-height: 0;
+  will-change: transform;
+}
+.ls-fill {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 100lvh;
+  will-change: transform;
+}
+.ls-bg-dusk .ls-fill {
   background: linear-gradient(to bottom, var(--bg-dusk-a), var(--bg-dusk-m) 50%, var(--bg-dusk-b));
 }
-.ls-bg-deep {
+.ls-bg-deep .ls-fill {
   background: linear-gradient(to bottom, var(--bg-deep-a), var(--bg-deep-m) 55%, var(--bg-deep-b));
 }
-.ls-bg-space {
+.ls-bg-space .ls-fill {
   background: linear-gradient(to bottom, var(--bg-space-a), var(--bg-space-b));
 }
 /* estrelas: duas camadas da mesma textura, em escalas diferentes */
@@ -1651,11 +1669,26 @@ html.js .tree.v .tn {
   }
 }
 
-/* ---------- jornada: marcos em zigue-zague ligados por uma raiz ---------- */
+/* ---------- jornada: o site sobe ---------- */
+/* Seção presa: o conteúdo desce com a rolagem (como a paisagem), então a Jornada começa por baixo.
+   O marco mais antigo fica embaixo e o mais recente em cima (column-reverse: a ordem no HTML segue
+   cronológica, para leitores de tela). A altura da seção vem do Jornada.tsx. */
 .jornada {
   position: relative;
-  /* o título só aparece depois que a nuvem de transição passou (ela termina ~0,55 vh abaixo do topo) */
-  padding-block: clamp(560px, 86vh, 980px) clamp(110px, 16vh, 200px);
+}
+.j-scene {
+  position: relative;
+  padding-block: clamp(1.2rem, 4vh, 2.4rem) clamp(6rem, 16vh, 11rem);
+  will-change: transform;
+}
+.rm .jornada > .stage,
+html:not(.fx) .jornada > .stage {
+  position: relative;
+  height: auto;
+  overflow: visible;
+}
+.rm .j-scene {
+  will-change: auto;
 }
 .j-root {
   position: absolute;
@@ -1665,7 +1698,7 @@ html.js .tree.v .tn {
   overflow: visible;
   pointer-events: none;
 }
-.jornada > .wrap {
+.j-scene > .wrap {
   position: relative;
 }
 .j-root path {
@@ -1673,35 +1706,39 @@ html.js .tree.v .tn {
   stroke-linecap: round;
   stroke-linejoin: round;
 }
-/* trilho apagado: mostra o caminho inteiro antes de o traço chegar */
+/* trilho apagado: mostra o caminho inteiro antes de a linha chegar */
 .j-root .jr-track {
-  stroke: url(#jrInk);
+  stroke: var(--accent-2);
   stroke-width: 1;
-  opacity: 0.14;
+  opacity: 0.3;
 }
-/* traço que se desenha com a rolagem (fino e limpo) */
+/* traço que sobe com a rolagem (fino e limpo), na cor de destaque */
 .j-root .jr-line {
-  stroke: url(#jrInk);
-  stroke-width: 1.75;
-  opacity: 0.8;
+  stroke: var(--accent-2);
+  stroke-width: 2;
+  opacity: 0.95;
   stroke-dasharray: 1;
   stroke-dashoffset: 1;
 }
+.rm .j-root .jr-line,
+html:not(.fx) .j-root .jr-line {
+  stroke-dashoffset: 0;
+}
 .j-root .jr-node {
   fill: var(--sand);
-  stroke: var(--fg);
-  stroke-opacity: 0.45;
+  stroke: var(--accent-2);
+  stroke-opacity: 0.5;
   stroke-width: 1.5;
   transition:
     fill 0.25s,
     stroke-opacity 0.25s;
 }
 .j-root .jr-node.on {
-  fill: var(--leaf);
-  stroke-opacity: 0.9;
+  fill: var(--accent-2);
+  stroke-opacity: 1;
 }
 .j-root .jr-tip {
-  fill: #f3e9d8;
+  fill: var(--accent-2);
   transition: opacity 0.2s;
 }
 .j-head {
@@ -1712,6 +1749,11 @@ html.js .tree.v .tn {
   text-align: center;
   margin-bottom: clamp(3.5rem, 10vh, 6.5rem);
 }
+/* o título aparece já no alto, sobre o céu quase espacial: tom claro nos dois temas */
+.j-head .title {
+  color: #f3e9d8;
+  text-shadow: 0 2px 28px rgba(4, 8, 28, 0.55);
+}
 .j-head p {
   font-size: var(--fs-lead);
   padding: 0.3rem 1rem;
@@ -1719,7 +1761,8 @@ html.js .tree.v .tn {
 }
 .zig {
   position: relative;
-  display: grid;
+  display: flex;
+  flex-direction: column-reverse;
   gap: clamp(3rem, 10vh, 6rem);
 }
 .zi {
@@ -1731,18 +1774,20 @@ html.js .tree.v .tn {
   gap: 0.35rem;
   padding: 1rem 1.25rem 1.15rem;
   border-radius: 16px;
+  transition:
+    background-color 0.4s,
+    border-color 0.4s,
+    box-shadow 0.4s;
 }
 .zi:nth-child(odd) {
   margin-left: 56%;
-  padding-left: 2.4rem;
 }
 .zi:nth-child(even) {
   margin-left: auto;
   margin-right: 56%;
-  padding-right: 2.4rem;
   text-align: right;
 }
-/* âncora de posição do nó: quem desenha o nó é o SVG */
+/* âncora de posição do nó (celular): quem desenha o nó é o SVG */
 .knot {
   position: absolute;
   top: 1.4rem;
@@ -1757,13 +1802,28 @@ html.js .tree.v .tn {
 .zi:nth-child(even) .knot {
   right: -6px;
 }
-.fx .zi {
-  opacity: 0.2;
-}
 .tl-when {
   color: var(--muted);
   font: 500 var(--fs-mono) var(--font-mono);
   letter-spacing: 0.05em;
+  transition: color 0.4s;
+}
+.tl-when::before {
+  content: "";
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  margin-right: 0.55rem;
+  border-radius: 50%;
+  background: var(--accent);
+  vertical-align: 0.05em;
+  transition: background-color 0.4s;
+}
+.zi:nth-child(even) .tl-when::before {
+  margin-right: 0;
+  margin-left: 0.55rem;
+  float: right;
+  margin-top: 0.28em;
 }
 .tl-what {
   font-size: clamp(1.5rem, 2.8vw, 2.2rem);
@@ -1776,6 +1836,33 @@ html.js .tree.v .tn {
 }
 .zi:nth-child(even) .tl-desc {
   margin-left: auto;
+}
+/* cartões neutros até a linha chegar; aí ganham a cor de destaque (movimento completo; no reduzido já vêm coloridos) */
+.fx:not(.rm) .zi:not(.on) .zi-card {
+  border-color: var(--glass-line);
+  box-shadow: none;
+  filter: saturate(0.2);
+}
+.fx:not(.rm) .zi:not(.on) .tl-when {
+  color: color-mix(in srgb, var(--muted) 80%, transparent);
+}
+.fx:not(.rm) .zi:not(.on) .tl-when::before {
+  background: var(--line-2);
+}
+.zi-card {
+  border-color: color-mix(in srgb, var(--accent) 70%, var(--glass-line));
+  box-shadow:
+    var(--shadow),
+    0 0 0 1px color-mix(in srgb, var(--accent) 22%, transparent);
+}
+.zi-card.glass {
+  background: color-mix(in srgb, var(--accent) 17%, var(--glass-strong));
+}
+.tl-when {
+  color: var(--link);
+}
+.fx:not(.rm) .zi:not(.on) .zi-card.glass {
+  background: var(--glass-strong);
 }
 @media (max-width: 859px) {
   .zi,
@@ -1793,6 +1880,10 @@ html.js .tree.v .tn {
   }
   .zi:nth-child(even) .tl-desc {
     margin-left: 0;
+  }
+  .zi:nth-child(even) .tl-when::before {
+    float: none;
+    margin: 0 0.55rem 0 0;
   }
 }
 
