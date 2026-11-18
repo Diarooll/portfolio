@@ -140,6 +140,9 @@ export function cameraAt(s: number, M: Partial<Record<SectionId, Metrics>>, vh: 
     ],
     s,
   );
+  // a Jornada fica presa por (altura - tela) px: é nesse trecho que o conteúdo desce e a câmera sobe
+  const jTop = top("jornada");
+  const jPin = Math.max(1, (M.jornada?.h ?? vh) - vh);
   // altitude: um valor por seção, interpolado
   const alt = keyframes(
     [
@@ -150,9 +153,13 @@ export function cameraAt(s: number, M: Partial<Record<SectionId, Metrics>>, vh: 
       // subida suave pela Stack e pela abertura de Projetos (nada de salto): o tom dourado vem de "warm"
       { y: top("projetos", 0), v: 2.45 },
       { y: top("projetos", 0.4), v: ALTITUDE.projetos },
-      { y: top("jornada", 0.1), v: 3.5 },
-      { y: top("jornada", 0.9), v: 4.4 },
-      { y: top("contato", 0.35), v: ALTITUDE.contato },
+      // a Jornada é uma seção presa (a câmera sobe enquanto os marcos descem): o céu já escurece no começo,
+      // chega ao azul profundo e às primeiras estrelas na METADE da parte presa e está quase no espaço pleno
+      // no fim dela, antes de o Contato entrar (o espaço fecha logo depois)
+      { y: jTop, v: 3.4 },
+      { y: jTop + 0.5 * jPin, v: 4.25 },
+      { y: jTop + jPin, v: 4.95 },
+      { y: jTop + jPin + 0.35 * vh, v: ALTITUDE.contato },
     ],
     s,
     (t) => t, // linear entre as seções: a curva já é suave por ter muitas paradas
@@ -167,11 +174,11 @@ export function cameraAt(s: number, M: Partial<Record<SectionId, Metrics>>, vh: 
     hill,
     alt,
     sky: 1 - ramp(alt, 1.3, 2.1),
-    bg: [warm, ramp(alt, 3.2, 3.9), ramp(alt, 3.8, 4.5), ramp(alt, 4.4, 5)],
+    bg: [warm, ramp(alt, 3.2, 3.9), ramp(alt, 3.7, 4.4), ramp(alt, 4.2, 4.95)],
     clouds,
     dense: ramp(alt, 1.2, 1.7) * (1 - ramp(alt, 2.0, 2.6)),
     gilt: warm,
-    stars: ramp(alt, 4.2, 5),
+    stars: ramp(alt, 4.05, 4.9),
     wind: 1 - ramp(alt, 1.8, 2.5),
   };
 }
