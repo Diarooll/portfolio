@@ -84,6 +84,8 @@ export default function Landscape() {
 
     // cor do body = a mesma curva de altitude (nunca azul-claro chapado atrás das camadas)
     const root = document.documentElement.style;
+    root.setProperty("--wind", cam.wind.toFixed(3));
+    root.setProperty("--wind-vis", cam.wind > 0.003 ? "visible" : "hidden");
     cam.bg.forEach((w, i) => root.setProperty(`--alt-w${i + 1}`, `${(w * 100).toFixed(1)}%`));
 
     // fundo: cada fase é uma camada que aparece por cima da anterior (o céu é a base)

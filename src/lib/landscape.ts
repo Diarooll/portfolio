@@ -92,6 +92,8 @@ export interface CameraState {
   gilt: number;
   /** estrelas (0..1) */
   stars: number;
+  /** intensidade do vento (1 perto do chão, 0 no ar rarefeito e sobre os fundos escuros) */
+  wind: number;
 }
 
 /** quanto o morro já desceu (em vh) quando o hero termina */
@@ -149,5 +151,6 @@ export function cameraAt(s: number, M: Partial<Record<SectionId, Metrics>>, vh: 
     dense: ramp(alt, 1.2, 1.7) * (1 - ramp(alt, 2.0, 2.6)),
     gilt: ramp(alt, 2.2, 2.9),
     stars: ramp(alt, 4.2, 5),
+    wind: 1 - ramp(alt, 2.0, 3.0),
   };
 }

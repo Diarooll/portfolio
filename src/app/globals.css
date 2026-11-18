@@ -1987,6 +1987,9 @@ html.js .tree.v .tn {
   inset: 0;
   pointer-events: none;
   overflow: hidden;
+  /* as rajadas somem com a altitude (--wind vem da paisagem): nenhuma no ar rarefeito nem sobre fundos escuros */
+  opacity: var(--wind, 1);
+  visibility: var(--wind-vis, visible);
 }
 .gust {
   position: absolute;
