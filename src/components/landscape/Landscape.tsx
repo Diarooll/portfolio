@@ -98,8 +98,8 @@ export default function Landscape() {
     cam.bg.forEach((w, i) => root.setProperty(`--alt-w${i + 1}`, `${(w * 100).toFixed(1)}%`));
 
     // fundo: cada fase é uma camada que aparece por cima da anterior (o céu é a base). O dourado só faz
-    // crossfade; o anoitecer, o azul profundo e o espaço SOBEM: a borda suave da nova cor avança de baixo
-    // para cima (a câmera está subindo), em vez de a tela inteira escurecer de uma vez
+    // crossfade; o anoitecer, o azul profundo e o espaço DESCEM: a borda suave da nova cor avança de cima
+    // para baixo (o topo escurece primeiro), em vez de a tela inteira escurecer de uma vez
     const band = vh * 0.6;
     cam.bg.forEach((w, i) => {
       const el = bgRefs.current[i + 1];
@@ -115,10 +115,10 @@ export default function Landscape() {
       }
       el.style.opacity = w > 0.001 ? "1" : "0";
       el.style.height = `${(vh + band).toFixed(0)}px`;
-      const mk = `linear-gradient(to bottom, transparent 0, #000 ${band.toFixed(0)}px)`;
+      const mk = `linear-gradient(to top, transparent 0, #000 ${band.toFixed(0)}px)`;
       el.style.maskImage = mk;
       el.style.webkitMaskImage = mk;
-      const wt = vh - w * (vh + band);
+      const wt = (w - 1) * (vh + band);
       el.style.transform = `translate3d(0, ${wt.toFixed(1)}px, 0)`;
       const fill = el.firstElementChild as HTMLElement | null;
       if (fill) {
@@ -128,7 +128,7 @@ export default function Landscape() {
     });
     if (stars.current) {
       stars.current.style.opacity = cam.stars.toFixed(3);
-      stars.current.style.transform = reduced ? "none" : `translate3d(0, ${((cam.alt - 4.2) * -3).toFixed(2)}vh, 0)`;
+      stars.current.style.transform = reduced ? "none" : `translate3d(0, ${((cam.alt - 4.2) * 2).toFixed(2)}vh, 0)`;
     }
   }, -10);
 
