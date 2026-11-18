@@ -291,6 +291,13 @@ a {
   will-change: transform, opacity;
   contain: layout style;
 }
+/* o topo das camadas de foto se dissolve: em telas bem largas o "cover" corta a copa por cima
+   e, sem isso, a borda da imagem apareceria como uma linha reta enquanto o morro desce */
+.ls-far img,
+.ls-front img {
+  -webkit-mask-image: linear-gradient(to bottom, transparent 0, #000 9%);
+  mask-image: linear-gradient(to bottom, transparent 0, #000 9%);
+}
 /* nuvens persistentes de fundo: a mesma foto em 3 profundidades (só transform e opacity) */
 .ls-clouds {
   position: fixed;
