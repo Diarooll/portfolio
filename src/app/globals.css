@@ -2392,3 +2392,6 @@ html:not(.fx) .j-head .title {
 :root[data-theme="dark"] .contato .closing {
   text-shadow: none;
 }
+html.js .tree .leaf .txt {
+  white-space: nowrap;
+}
