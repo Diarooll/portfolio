@@ -1186,6 +1186,14 @@ html.js .tree.v .tn {
   --pl: color-mix(in srgb, var(--pf) 24%, transparent);
   --pm: color-mix(in srgb, var(--pf) 74%, transparent);
 }
+/* abertura: sem fundo, só o texto sobre o céu (o céu nunca some); $ents, ALERA e Sito's: painéis de cor */
+.pn0 {
+  background: transparent;
+}
+.pn0 .p-big,
+.pn0 .p-line {
+  text-shadow: 0 2px 28px color-mix(in srgb, var(--bg-gold-a) 80%, transparent);
+}
 /* abertura e Sito's: cores do site (vidro claro); $ents e ALERA: cores das marcas */
 .pn0 {
   --pb: #f6efe2;

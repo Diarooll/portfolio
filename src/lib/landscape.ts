@@ -130,9 +130,8 @@ export function cameraAt(s: number, M: Partial<Record<SectionId, Metrics>>, vh: 
       { y: heroEnd, v: 0.5 },
       { y: top("sobre", 0.5), v: ALTITUDE.sobre },
       { y: top("stack", 0.5), v: ALTITUDE.stack },
-      // a luz dourada já está completa quando a intro de Projetos entra
-      { y: top("projetos", 0) - 1.1 * vh, v: 2.1 },
-      { y: top("projetos", 0), v: 2.95 },
+      // subida suave pela Stack e pela abertura de Projetos (nada de salto): o tom dourado vem de "warm"
+      { y: top("projetos", 0), v: 2.45 },
       { y: top("projetos", 0.4), v: ALTITUDE.projetos },
       { y: top("jornada", 0.1), v: 3.5 },
       { y: top("jornada", 0.9), v: 4.4 },
@@ -141,16 +140,21 @@ export function cameraAt(s: number, M: Partial<Record<SectionId, Metrics>>, vh: 
     s,
     (t) => t, // linear entre as seções: a curva já é suave por ter muitas paradas
   );
+  // mistura longa e gradual do azul do dia para a luz dourada (céu + nuvens), da metade da Stack
+  // até o começo de Projetos, dependente só da rolagem: não existe corte entre uma cor e outra
+  const w0 = top("stack", 0.3);
+  const w1 = top("projetos", 0.14);
+  const warm = sstep(sstep(clamp((s - w0) / Math.max(1, w1 - w0))));
   const clouds = ramp(alt, 0.2, 1.3) * (1 - 0.45 * ramp(alt, 2, 3)) * (1 - ramp(alt, 3.1, 3.8));
   return {
     hill,
     alt,
     sky: 1 - ramp(alt, 1.3, 2.1),
-    bg: [ramp(alt, 2.15, 2.85), ramp(alt, 3.2, 3.9), ramp(alt, 3.8, 4.5), ramp(alt, 4.4, 5)],
+    bg: [warm, ramp(alt, 3.2, 3.9), ramp(alt, 3.8, 4.5), ramp(alt, 4.4, 5)],
     clouds,
     dense: ramp(alt, 1.2, 1.7) * (1 - ramp(alt, 2.0, 2.6)),
-    gilt: ramp(alt, 2.2, 2.9),
+    gilt: warm,
     stars: ramp(alt, 4.2, 5),
-    wind: 1 - ramp(alt, 2.0, 3.0),
+    wind: 1 - ramp(alt, 1.8, 2.5),
   };
 }
