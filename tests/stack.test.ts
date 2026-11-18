@@ -1,7 +1,7 @@
 // Stack: cada tecnologia tem cor de marca e a face escolhida deixa o logo visível.
 import { describe, expect, it } from "vitest";
 import { techs } from "@/content/techs";
-import { BRAND, DARK_FACE, contrast, faceTone } from "@/content/brands";
+import { BRAND, DARK_FACE, contrast, enamel, faceTone } from "@/content/brands";
 import { stackCopy } from "@/content/stack";
 
 describe("cores de marca da Stack", () => {
@@ -21,5 +21,15 @@ describe("cores de marca da Stack", () => {
   });
   it("o rótulo da Stack não fala mais de centro nem de órbita desenhada", () => {
     expect(stackCopy.label.pt).not.toMatch(/terminal|centro|órbita/i);
+  });
+
+  it("peças esmaltadas: corpo na cor da marca e logo legível", () => {
+    for (const t of techs) {
+      const e = enamel(t.id);
+      expect(e.top).toMatch(/^#[0-9a-f]{6}$/i);
+      expect(e.body).toMatch(/^#[0-9a-f]{6}$/i);
+      expect(contrast(e.ink, BRAND[t.id].colors[0])).toBeGreaterThanOrEqual(3);
+    }
+    expect(enamel("python").logo).toEqual(["#ffffff", "#FFD43B"]);
   });
 });

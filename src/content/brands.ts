@@ -44,3 +44,37 @@ export function contrast(a: string, b: string) {
 export function faceTone(id: IconId): "dark" | "light" {
   return BRAND[id].colors.some((c) => contrast(c, DARK_FACE) >= 3) ? "dark" : "light";
 }
+
+function mixHex(a: string, b: string, t: number) {
+  const pa = parseInt(a.slice(1), 16);
+  const pb = parseInt(b.slice(1), 16);
+  const ch = (sh: number) => Math.round(((pa >> sh) & 255) * (1 - t) + ((pb >> sh) & 255) * t);
+  return "#" + ((1 << 24) | (ch(16) << 16) | (ch(8) << 8) | ch(0)).toString(16).slice(1);
+}
+
+/** peça esmaltada na cor da marca: corpo e face coloridos, logo e nome em branco (ou quase preto, se a cor for clara) */
+export interface Enamel {
+  /** degradê da face (cima, baixo) */
+  top: string;
+  bottom: string;
+  /** corpo e borda da peça (um tom mais fundo que a face) */
+  body: string;
+  ink: string;
+  dim: string;
+  /** cores do logo (1 ou 2, na ordem do BRAND) */
+  logo: [string] | [string, string];
+}
+
+export function enamel(id: IconId): Enamel {
+  const c = BRAND[id].colors[0];
+  const ink = contrast(c, "#ffffff") >= 3 ? "#ffffff" : "#1d160f";
+  return {
+    top: mixHex(c, "#ffffff", 0.1),
+    bottom: mixHex(c, "#000000", 0.14),
+    body: mixHex(c, "#000000", 0.24),
+    ink,
+    dim: mixHex(ink, c, 0.3),
+    // Python: a cobra de cima em branco e a de baixo no amarelo da marca; Java e o resto: logo de uma cor
+    logo: BRAND[id].colors.length === 2 && BRAND[id].split === "diag" ? [ink, BRAND[id].colors[1]] : [ink],
+  };
+}

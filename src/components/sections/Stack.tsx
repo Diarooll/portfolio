@@ -42,6 +42,7 @@ export default function Stack() {
   const svg = useRef<SVGSVGElement>(null);
   const wrapEl = useRef<HTMLDivElement>(null);
   const sub = useRef<HTMLParagraphElement>(null);
+  const head = useRef<HTMLDivElement>(null);
   const noteEl = useRef<HTMLParagraphElement>(null);
   const fb = useRef<FallbackOrbit | null>(null);
   useSection("stack", section);
@@ -56,6 +57,7 @@ export default function Stack() {
     () => ({
       p: 0,
       fade: 0,
+      exit: 0,
       rot: { y: 0, v: 0, drag: false, idle: 99 },
       hover: techs.map(() => false),
       focus: techs.map(() => false),
@@ -113,25 +115,34 @@ export default function Stack() {
     const p = clamp((y - m.top) / denom);
     bus.p = p;
     bus.reduced = s.reduced;
-    bus.fade = sstep(clamp((y - (m.top - 0.9 * vh)) / (0.6 * vh))) * (1 - sstep(clamp((y - (pj.top + 0.15 * vh)) / (0.5 * vh))));
+    // saída: as tecnologias se espalham em direções diferentes e somem, antes de Projetos chegar.
+    // Com movimento reduzido (ou sem 3D) o conteúdo só some num crossfade.
+    const spread = gl3d && !s.reduced;
+    const enter = sstep(clamp((y - (m.top - 0.9 * vh)) / (0.6 * vh)));
+    const ex = spread ? clamp((y - (pj.top - 1.15 * vh)) / (0.85 * vh)) : 0;
+    bus.exit = ex;
+    bus.fade = spread ? enter : enter * (1 - sstep(clamp((y - (pj.top + 0.15 * vh)) / (0.5 * vh))));
     bus.cursor.x = pointer.seen ? (pointer.x / s.vw) * 2 - 1 : 0;
     bus.cursor.y = pointer.seen ? (pointer.y / vh) * 2 - 1 : 0;
-    // todo o conteúdo some (fade rápido) antes da intro de Projetos e fica fora do tab order
     const wrap = wrapEl.current;
     if (wrap) {
-      const o = 1 - sstep(clamp((y - (pj.top - 0.85 * vh)) / (0.3 * vh)));
-      const inView = o > 0.004 && y > m.top - 1.3 * vh;
+      const o = spread ? 1 : 1 - sstep(clamp((y - (pj.top - 0.85 * vh)) / (0.3 * vh)));
+      const inView = o > 0.004 && y > m.top - 1.3 * vh && ex < 0.999;
       wrap.style.opacity = o.toFixed(3);
       wrap.style.visibility = inView ? "visible" : "hidden";
-      wrap.style.pointerEvents = o > 0.5 ? "" : "none";
+      wrap.style.pointerEvents = o > 0.5 && ex < 0.3 ? "" : "none";
     }
+    // movimento reduzido: as peças entram num crossfade (sem escala)
+    if (tree.current) tree.current.style.opacity = s.reduced ? enter.toFixed(3) : "";
+    const textOut = spread ? 1 - sstep(clamp((y - (pj.top - 1.1 * vh)) / (0.4 * vh))) : 1;
+    if (head.current) head.current.style.opacity = textOut.toFixed(3);
     const inRange = y > m.top - 1.2 * vh && y < pj.top + 0.9 * vh;
     if (gl3d && inRange) bus.invalidate?.();
     if (!s.changed) return;
     if (!gl3d) fb.current?.update(p, s.reduced);
     const se = sstep(clamp((y - (m.top - 0.6 * vh)) / (0.55 * vh)));
     if (sub.current) sub.current.style.opacity = se.toFixed(3);
-    if (noteEl.current) noteEl.current.style.opacity = sstep(clamp((y - (m.top - 0.2 * vh)) / (0.4 * vh))).toFixed(3);
+    if (noteEl.current) noteEl.current.style.opacity = (sstep(clamp((y - (m.top - 0.2 * vh)) / (0.4 * vh))) * textOut).toFixed(3);
   });
 
   // arrastar para girar (só na horizontal; na vertical a página rola)
@@ -248,7 +259,7 @@ export default function Stack() {
     <section ref={section} className={`pin stack ${styles.section}${gl3d ? " gl3d" : ""}`} id="stack" aria-labelledby="stackT">
       <div ref={stage} className="stage">
         <div ref={wrapEl} className="wrap st-wrap">
-          <div className="st-head">
+          <div ref={head} className="st-head">
             <Dissolve as="h2" className="title" id="stackT" text={t("title")} seed={5} progress={titleP} />
             <p ref={sub} className="st-sub glass">
               {t("sub")}

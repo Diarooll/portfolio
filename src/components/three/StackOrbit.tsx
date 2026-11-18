@@ -14,15 +14,17 @@ import { useEffect, useMemo } from "react";
 import * as THREE from "three";
 import { clamp, easeOut, rng } from "@/lib/math";
 import { iconSrc, type IconId } from "@/content/techs";
-import { BRAND, faceTone } from "@/content/brands";
+import { BRAND, enamel } from "@/content/brands";
 import { cssColor } from "./assets";
 import { useThemeDark } from "@/hooks/useThemeDark";
 
 export interface OrbitBus {
   /** chegada das peças, 0..1 (rolagem) */
   p: number;
-  /** opacidade geral 0..1 (entra e sai com a seção) */
+  /** opacidade geral 0..1 (entra com a seção; no movimento reduzido também sai) */
   fade: number;
+  /** saída: 0 = peças no círculo, 1 = já se espalharam e sumiram */
+  exit: number;
   rot: { y: number; v: number; drag: boolean; idle: number };
   hover: boolean[];
   focus: boolean[];
@@ -50,12 +52,6 @@ const TAN = Math.tan((FOV * Math.PI) / 360);
 /** inclinação do círculo: visto um pouco de cima e levemente torto, como no esboço */
 const TILT_X = 0.44;
 const TILT_Z = -0.12;
-
-/** faces: escura (padrão) ou clara e neutra (para logos escuros, como Django e PostgreSQL) */
-const FACE = {
-  dark: { bg: ["#3b332c", "#2a241f"], ink: "#f2e4c9", dim: "#c4b096", body: "#2c2621" },
-  light: { bg: ["#f3eee5", "#e1d9cc"], ink: "#231e2b", dim: "#6a5847", body: "#d9cfbf" },
-} as const;
 
 export default function StackOrbit(props: { bus: OrbitBus; tiles: OrbitTile[] }) {
   return (
@@ -127,24 +123,25 @@ function fit(x: CanvasRenderingContext2D, s: string, w: number, h: number, max: 
 
 /** pinta o logo (SVG de uma cor) nas cores da marca; logos de duas cores são divididos por região */
 function brandLogo(img: HTMLImageElement, id: IconId, s: number, mono?: string) {
+  const cols = mono ? [mono] : enamel(id).logo;
   const c = document.createElement("canvas");
   c.width = c.height = s;
   const x = c.getContext("2d")!;
   x.drawImage(img, 0, 0, s, s);
   x.globalCompositeOperation = "source-in";
   const b = BRAND[id];
-  x.fillStyle = mono ?? b.colors[0];
+  x.fillStyle = cols[0];
   x.fillRect(0, 0, s, s);
-  if (!mono && b.colors.length === 2) {
-    x.fillStyle = b.colors[1];
+  if (cols.length === 2) {
+    x.fillStyle = cols[1];
     x.beginPath();
     if (b.split === "diag") {
-      // Python: cobra de cima/esquerda azul, a de baixo/direita amarela
+      // Python: cobra de cima/esquerda clara, a de baixo/direita amarela
       x.moveTo(s, 0);
       x.lineTo(s, s);
       x.lineTo(0, s);
     } else {
-      // Java: vapor em cima (1ª cor), xícara embaixo (2ª cor)
+      // vapor em cima (1ª cor), xícara embaixo (2ª cor)
       x.rect(0, s * 0.5, s, s * 0.5);
     }
     x.closePath();
@@ -155,13 +152,13 @@ function brandLogo(img: HTMLImageElement, id: IconId, s: number, mono?: string) 
 
 /**
  * Face da peça: duas texturas no mesmo layout.
- * - cor: fundo (escuro ou claro), logo na cor da marca e o nome "impressos";
+ * - cor: fundo esmaltado na cor da marca, logo e nome "impressos" em tom contrastante;
  * - relevo (bumpMap): branco = alto, preto = baixo, então o logo fica gravado.
  */
 function faceTextures(t: OrbitTile, onLoad: () => void) {
   const W = 512;
   const H = Math.round(512 * (TH / TW));
-  const tone = FACE[faceTone(t.id)];
+  const tone = enamel(t.id);
   const mk = () => {
     const c = document.createElement("canvas");
     c.width = W;
@@ -189,8 +186,8 @@ function faceTextures(t: OrbitTile, onLoad: () => void) {
     const cx = color.getContext("2d")!;
     // leve degradê e um "grão" quase invisível: a face não fica chapada
     const g = cx.createLinearGradient(0, 0, 0, H);
-    g.addColorStop(0, tone.bg[0]);
-    g.addColorStop(1, tone.bg[1]);
+    g.addColorStop(0, tone.top);
+    g.addColorStop(1, tone.bottom);
     layout(cx, g, tone.ink, tone.dim, img ? brandLogo(img, t.id, 224) : undefined);
     const n = cx.getImageData(0, 0, W, H);
     for (let i = 0; i < n.data.length; i += 4) {
@@ -249,7 +246,7 @@ function Scene({ bus, tiles }: { bus: OrbitBus; tiles: OrbitTile[] }) {
     let R = 6.4;
     let tileS = 1.3;
     for (; R > 1.6; R -= 0.05) {
-      tileS = clamp(R * 0.22, 0.7, 1.3);
+      tileS = clamp(R * 0.19, 0.62, 1.12);
       const half = (TH / 2) * tileS * 1.25;
       const near = CAMZ / (CAMZ - R * cosT);
       const far = CAMZ / (CAMZ + R * cosT);
@@ -277,9 +274,9 @@ function Scene({ bus, tiles }: { bus: OrbitBus; tiles: OrbitTile[] }) {
             metalness: 0,
             clearcoat: 0.55,
             clearcoatRoughness: 0.32,
-            sheen: 0.35,
-            sheenColor: new THREE.Color("#8a6e52"),
-            sheenRoughness: 0.6,
+            sheen: 0.25,
+            sheenColor: new THREE.Color("#ffffff"),
+            sheenRoughness: 0.7,
           }),
         );
       return bodyMats.get(color)!;
@@ -306,7 +303,9 @@ function Scene({ bus, tiles }: { bus: OrbitBus; tiles: OrbitTile[] }) {
       g.add(front, back);
       // "vento": cada peça com fase e velocidade um pouco diferentes
       const wind = { ph: r() * Math.PI * 2, f: 0.55 + r() * 0.35, spin: (r() < 0.5 ? -1 : 1) * (0.16 + r() * 0.12), spin0: (r() - 0.5) * 0.6 };
-      return { g, mat, a: angles[i], hv: 0, depth: 0, vis: false, wind };
+      // saída: cada peça se espalha numa direção própria (ângulo, alcance, giro e profundidade)
+      const out = { ang: r() * Math.PI * 2, reach: 0.9 + r() * 0.8, tw: (r() < 0.5 ? -1 : 1) * (0.8 + r() * 1.4), dz: r() * 2.2 };
+      return { g, mat, a: angles[i], hv: 0, depth: 0, vis: false, wind, out };
     });
     const root = new THREE.Group();
     root.add(...items.map((it) => it.g));
@@ -378,6 +377,11 @@ function Scene({ bus, tiles }: { bus: OrbitBus; tiles: OrbitTile[] }) {
 
     const p = RM ? 1 : bus.p;
     const fade = bus.fade;
+    // saída por espalhamento (não existe com movimento reduzido: aí a seção só some num crossfade)
+    const ex = RM ? 0 : bus.exit;
+    const exE = ex * ex * (3 - 2 * ex);
+    const hh = CAMZ * TAN;
+    const hw = hh * (state.size.width / Math.max(1, state.size.height));
     const n = built.items.length;
     built.items.forEach((it, i) => {
       const on = bus.hover[i] || bus.focus[i];
@@ -391,18 +395,29 @@ function Scene({ bus, tiles }: { bus: OrbitBus; tiles: OrbitTile[] }) {
       V.set(Math.cos(a) * R * ki, float, Math.sin(a) * R * ki).applyQuaternion(tmp.Q);
       // no hover a peça vem um pouco para a frente
       V.z += it.hv * 0.6;
+      if (exE > 0) {
+        // vai para fora: mistura da direção radial (de onde a peça está) com a direção sorteada dela
+        const rx = Math.atan2(V.y, V.x);
+        const ang = rx + Math.sin(it.out.ang) * 1.1;
+        V.x += Math.cos(ang) * hw * 1.15 * it.out.reach * exE;
+        V.y += Math.sin(ang) * hh * 1.15 * it.out.reach * exE;
+        V.z += it.out.dz * exE;
+      }
       it.g.position.copy(V);
-      const spin = RM ? w.spin0 : w.spin0 + T * w.spin;
+      // as peças só oscilam perto de "de frente" (nunca ficam de lado nem mostram o verso)
+      const spin = RM ? w.spin0 * 0.8 : w.spin0 * 0.8 + Math.sin(T * w.f * 0.7 + w.ph * 1.7) * 0.34;
       const sway = RM ? 0 : Math.sin(T * w.f * 1.3 + w.ph * 2) * 0.07;
       const nod = RM ? -0.06 : -0.06 + Math.sin(T * w.f * 0.9 + w.ph) * 0.05;
       // no hover/foco ela fica de frente para quem olha
       const yaw = (spin + Math.cos(a) * 0.25) * (1 - it.hv);
-      it.g.rotation.set(nod, yaw, sway * (1 - it.hv));
-      const s = tileS * (0.35 + 0.65 * ki) * (1 + it.hv * 0.14) * Math.max(0.001, fade);
+      it.g.rotation.set(nod, yaw, sway * (1 - it.hv) + it.out.tw * exE);
+      // sai encolhendo: some quando já está longe do círculo
+      const gone = 1 - clamp((ex - 0.5) / 0.45);
+      const s = tileS * (0.35 + 0.65 * ki) * (1 + it.hv * 0.14) * (RM ? 1 : Math.max(0.001, fade)) * Math.max(0.001, gone);
       it.g.scale.setScalar(s);
-      it.g.visible = ki > 0.01 && fade > 0.01;
+      it.g.visible = ki > 0.01 && fade > 0.01 && gone > 0.002;
       it.depth = clamp((V.z + R) / (2 * R + 1));
-      it.vis = ki > 0.6 && fade > 0.3;
+      it.vis = ki > 0.6 && fade > 0.3 && ex < 0.1;
     });
 
     // alvos do DOM em cima de cada peça (tamanho pela peça de frente, sem contar o giro)
