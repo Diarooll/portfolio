@@ -1682,6 +1682,12 @@ html.js .tree.v .tn {
   padding-block: clamp(1.2rem, 4vh, 2.4rem) clamp(6rem, 16vh, 11rem);
   will-change: transform;
 }
+/* a base da cena se dissolve (nada de corte reto): os marcos antigos nascem dessa névoa embaixo
+   e, quando a seção solta, o fundo do palco some em gradiente em vez de cortar os cartões */
+.fx:not(.rm) .jornada > .stage {
+  -webkit-mask-image: linear-gradient(to bottom, #000 calc(100% - 16svh), transparent);
+  mask-image: linear-gradient(to bottom, #000 calc(100% - 16svh), transparent);
+}
 .rm .jornada > .stage,
 html:not(.fx) .jornada > .stage {
   position: relative;
@@ -1754,6 +1760,12 @@ html:not(.fx) .j-root .jr-line {
 .j-head .title {
   color: #f3e9d8;
   text-shadow: 0 2px 28px rgba(4, 8, 28, 0.55);
+}
+/* sem a seção presa (movimento reduzido) o título fica no começo da seção, sobre o céu ainda claro: tom do tema */
+.rm .j-head .title,
+html:not(.fx) .j-head .title {
+  color: var(--fg);
+  text-shadow: 0 2px 28px color-mix(in srgb, var(--glass-strong) 70%, transparent);
 }
 .j-head p {
   font-size: var(--fs-lead);
