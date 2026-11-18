@@ -36,7 +36,9 @@ export default function Landscape() {
 
     const cam = cameraAt(s.y, M, vh);
     const dark = document.documentElement.dataset.theme === "dark";
-    const key = `${dark}|${s.y.toFixed(1)}|${cur.current.x.toFixed(4)}|${cur.current.y.toFixed(4)}|${vh}|${reduced}`;
+    // o fundo nunca fica parado: além da rolagem, o céu e as nuvens têm uma deriva lenta no tempo (~15 quadros/s)
+    const tick = reduced ? 0 : Math.floor(s.t * 15);
+    const key = `${dark}|${s.y.toFixed(1)}|${cur.current.x.toFixed(4)}|${cur.current.y.toFixed(4)}|${vh}|${reduced}|${tick}`;
     if (key === last.current) return;
     last.current = key;
 
@@ -50,7 +52,10 @@ export default function Landscape() {
         // o céu é o plano mais distante: desce devagar (até ~9% da tela) desde o primeiro pixel
         const t = clamp(cam.hill / 0.8);
         const rise = reduced ? 0 : (1 - (1 - t) * (1 - t)) * 0.09 * vh;
-        el.style.transform = `translate3d(${x.toFixed(2)}px, ${(rise - cur.current.y * L.mouse * 0.5).toFixed(2)}px, 0)`;
+        // depois que o morro sai (Sobre/Stack) o céu continuava parado: ele agora desliza de lado com a subida
+        // (até ~7% da largura, dentro da sobra do quadro) e deriva devagar no tempo
+        const slide = reduced ? 0 : -clamp(cam.alt - 0.4, 0, 1.7) * 0.04 * vw + Math.sin(s.t * 0.11) * 0.012 * vw;
+        el.style.transform = `translate3d(${(x + slide).toFixed(2)}px, ${(rise - cur.current.y * L.mouse * 0.5).toFixed(2)}px, 0)`;
         el.style.opacity = cam.sky.toFixed(3);
       } else if (reduced) {
         // movimento reduzido: o morro some num crossfade (sem se mover)
@@ -78,8 +83,11 @@ export default function Landscape() {
     CLOUD_LAYERS.forEach((L, i) => {
       const el = cloudRefs.current[i];
       if (!el) return;
+      // (a posição vertical segue a altitude, como antes, para o mar de nuvens de Projetos não mudar) + uma deriva
+      // lateral ligada à rolagem e ao tempo: entre o Sobre e a Stack o fundo não fica mais parado
       const shift = reduced ? 0 : (cam.alt - 1.6) * L.speed;
-      el.style.transform = `translate3d(${(-cur.current.x * 6 * (i + 1)).toFixed(2)}px, ${shift.toFixed(2)}vh, 0)`;
+      const drift = reduced ? 0 : (cam.alt * L.speed * 0.06 + Math.sin(s.t * (0.07 + i * 0.015) + i * 1.7) * (1.4 + i * 0.5)) * (vw / 100);
+      el.style.transform = `translate3d(${(-cur.current.x * 6 * (i + 1) + drift).toFixed(2)}px, ${shift.toFixed(2)}vh, 0)`;
       el.style.opacity = (cam.clouds * L.opacity * (L.dense ? cam.dense : 1)).toFixed(3);
     });
 
