@@ -71,7 +71,7 @@
     "copyFail": "selected. Press Ctrl+C."
   },
   "footer": {
-    "text": "© {year} Diego Olalla. Built with Next.js and React Three Fiber.",
+    "text": "© {year} Diego Olalla. Built with Next.js.",
     "top": "Back to top"
   }
 }

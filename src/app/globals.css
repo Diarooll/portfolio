@@ -1936,17 +1936,6 @@ html.js .tree.v .tn {
     opacity: 0;
   }
 }
-/* meteoro: fixo, atrás do conteúdo e acima da paisagem; nunca pega clique */
-.meteor {
-  position: fixed;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  z-index: -10;
-  pointer-events: none;
-  opacity: 0;
-  transition: opacity 0.9s ease;
-}
 /* o nome gigante do fim afunda atrás do morro, ao anoitecer */
 .wordmark {
   position: relative;

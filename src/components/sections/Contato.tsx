@@ -8,7 +8,6 @@ import { clamp, easeOut, sstep } from "@/lib/math";
 import { docTop } from "@/lib/scroll-engine";
 import { contactSnippet, site } from "@/content/site";
 import Dissolve from "@/components/ui/Dissolve";
-import Meteor from "./Meteor";
 import CopyEmail from "@/components/ui/CopyEmail";
 import { useMeasure, useScrollFrame } from "@/hooks/useScrollFrame";
 import { useSection } from "@/hooks/useSection";
@@ -42,8 +41,6 @@ export default function Contato() {
   const entries = contactSnippet.entries;
   return (
     <section ref={section} className="contato" id="contato" aria-labelledby="contT">
-      {/* no espaço: um meteoro vindo na direção de quem olha, atrás do terminal */}
-      <Meteor target={section} />
       <div className="wrap">
         <Dissolve as="h2" className="closing" id="contT" text={t("closing")} seed={7} />
       </div>
