@@ -763,6 +763,24 @@ html:not(.fx) .hero-front {
   letter-spacing: -0.03em;
   line-height: 1.05;
 }
+.role-want {
+  margin-top: 0.35rem;
+  color: var(--fg);
+  font: 500 0.8125rem var(--font-mono);
+  letter-spacing: 0.02em;
+}
+.st-use {
+  min-height: 1.2em;
+  color: var(--fg);
+  font: 500 0.8125rem var(--font-mono);
+  letter-spacing: 0.04em;
+  text-align: right;
+}
+@media (max-width: 768px) {
+  :root:not([data-theme="dark"]) .ls-front {
+    filter: saturate(0.85);
+  }
+}
 .role-sub {
   margin-top: 0.4rem;
   color: var(--muted);
@@ -2030,9 +2048,6 @@ html:not(.fx) .j-root .jr-line {
   }
   .code-link {
     font-size: 0.92em;
-  }
-  :root:not([data-theme="dark"]) .tree-canvas {
-    filter: saturate(0.85);
   }
 }
 .code .ind {
