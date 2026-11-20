@@ -1815,6 +1815,44 @@ html.stack-fade body { opacity: 0; }
 :root[data-stack="python"] .for-java,
 :root[data-stack="java"] .for-python { display: none; }
 
-/* Java: JavaNelio e Sito's primeiro; depois $ents e ALERA */
-:root[data-stack="java"] .card[data-proj="p2"] { order: -2; }
+/* Java: Sito's primeiro; depois $ents e ALERA */
 :root[data-stack="java"] .card[data-proj="p1"] { order: -1; }
+
+/* ==========================================================
+   CORES ORIGINAIS DOS PROJETOS ($ents, ALERA, Sito's)
+   Fixas: não mudam com stack nem com claro/escuro. Cada card tem fundo
+   escuro da marca e redefine, só dentro dele, os tokens de texto/acento,
+   então hover, links e tags existentes herdam as cores certas.
+   --proj-accent: borda, selo e hover (identidade).  --proj-accent-text: texto.
+   Contraste do texto no fundo do card (WCAG):
+   - $ents  (#3B3226): fg #F4EFE6 11.0, muted #CDBFAA 6.9, accent #D9B98A 6.6
+   - ALERA  (#1E2A5A): fg #FFFFFF 13.7, muted #C3CAE6 8.4, accent #F2C200 8.6
+   - Sito's (#0B0B0B): fg #FFFFFF 19.5, muted #B3B3B3 9.3, accent texto #FF4D55 6.0
+   Fontes: $ents = marrom #3B3226 do protótipo (sem logo no repo);
+   ALERA = tokens/favicon do projeto; Sito's = css/base.css do site. ========================================================== */
+.card--brand {
+  --surface: var(--proj-bg);
+  --fg: var(--proj-fg);
+  --muted: var(--proj-muted);
+  --line: var(--proj-line);
+  --accent: var(--proj-accent-text);
+  --warm: var(--proj-accent-text);
+  color: var(--proj-fg);
+  border-color: var(--proj-line);
+}
+.card--brand .tag--learning { color: var(--proj-accent-text); }
+.card--brand .lang-dot--wip { border-color: var(--proj-accent-text); }
+.card--brand:hover,
+.card--brand:has(:focus-visible) { border-color: var(--proj-accent); }
+.card[data-proj="p4"] {
+  --proj-bg: #3B3226; --proj-fg: #F4EFE6; --proj-muted: #CDBFAA;
+  --proj-line: #5A4B39; --proj-accent: #D9B98A; --proj-accent-text: #D9B98A;
+}
+.card[data-proj="p5"] {
+  --proj-bg: #1E2A5A; --proj-fg: #FFFFFF; --proj-muted: #C3CAE6;
+  --proj-line: #3A4A87; --proj-accent: #F2C200; --proj-accent-text: #F2C200;
+}
+.card[data-proj="p1"] {
+  --proj-bg: #0B0B0B; --proj-fg: #FFFFFF; --proj-muted: #B3B3B3;
+  --proj-line: #2A2A2A; --proj-accent: #ED1C24; --proj-accent-text: #FF4D55;
+}

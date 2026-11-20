@@ -60,20 +60,14 @@
       "desc": "A marketing landing page I built as a freelancer for a parking business with two locations in Méier, Rio de Janeiro. It shows each location's prices, maps with a 360° tour and an \"Open now\" status calculated in São Paulo's time zone.",
       "learned": "Local SEO with JSON-LD, isolated JS modules with import(), a lite mode that turns off heavy effects on slow machines, and cache busting with versioned URLs."
     },
-    "p2": {
-      "title": "JavaNelio",
-      "desc": "Exercises from Nelio Alves' Java course. The InterestService interface calculates interest and has two implementations, BrazilInterestService and UsaInterestService.",
-      "learned": "Interfaces, polymorphism and default methods. Each country follows the same contract with its own rate.",
-      "tagOop": "OOP"
-    },
     "p3": {
       "title": "This portfolio",
       "desc": "Built with plain HTML, CSS and JavaScript, no framework. It comes in Portuguese and English, has a light and a dark theme, and an animated topographic map at the top that reacts to the mouse.",
       "learned": "IntersectionObserver, fetching JSON, custom events, Canvas and accessibility."
     },
     "wip": {
-      "title": "Next project: a Spring Boot API",
-      "desc": "I'm studying to build my first REST API with Spring Boot and a database. Follow along on GitHub.",
+      "title": "Next project: a FastAPI API",
+      "desc": "I'm studying to build my first REST API with FastAPI and a database. Follow along on GitHub.",
       "link": "See my GitHub"
     },
     "p4": {
@@ -150,6 +144,13 @@
     "journey": {
       "next": {
         "desc": "I want to join a team where I can learn from more experienced people and help on the back-end with Java and Spring Boot."
+      }
+    },
+    "projects": {
+      "wip": {
+        "title": "Next project: a Spring Boot API",
+        "desc": "I'm studying to build my first REST API with Spring Boot and a database. Follow along on GitHub.",
+        "link": "See my GitHub"
       }
     }
   }

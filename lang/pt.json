@@ -60,20 +60,14 @@
       "desc": "Landing page de marketing que fiz como freelancer para um estacionamento com duas unidades no Méier (RJ). Mostra os preços de cada unidade, mapas com tour 360° e um aviso de \"Aberto agora\" calculado no fuso de São Paulo.",
       "learned": "SEO local com JSON-LD, módulos JS isolados com import(), um modo leve que desliga efeitos pesados em máquinas fracas e cache-busting com versão na URL."
     },
-    "p2": {
-      "title": "JavaNelio",
-      "desc": "Exercícios do curso de Java do Nelio Alves. A interface InterestService calcula juros e tem duas implementações, BrazilInterestService e UsaInterestService.",
-      "learned": "Interfaces, polimorfismo e default methods. Cada país segue o mesmo contrato com a sua própria taxa.",
-      "tagOop": "POO"
-    },
     "p3": {
       "title": "Este portfólio",
       "desc": "Feito com HTML, CSS e JavaScript puros, sem framework. Tem versão em português e inglês, tema claro e escuro, e um mapa topográfico animado no topo que reage ao mouse.",
       "learned": "IntersectionObserver, fetch de JSON, eventos customizados, Canvas e acessibilidade."
     },
     "wip": {
-      "title": "Próximo projeto: uma API com Spring Boot",
-      "desc": "Estou estudando para construir a primeira API REST com Spring Boot e banco de dados. Acompanhe pelo GitHub.",
+      "title": "Próximo projeto: uma API com FastAPI",
+      "desc": "Estou estudando para construir a primeira API REST com FastAPI e banco de dados. Acompanhe pelo GitHub.",
       "link": "Ver meu GitHub"
     },
     "p4": {
@@ -150,6 +144,13 @@
     "journey": {
       "next": {
         "desc": "Quero entrar num time em que eu aprenda com pessoas mais experientes e ajude no back-end com Java e Spring Boot."
+      }
+    },
+    "projects": {
+      "wip": {
+        "title": "Próximo projeto: uma API com Spring Boot",
+        "desc": "Estou estudando para construir a primeira API REST com Spring Boot e banco de dados. Acompanhe pelo GitHub.",
+        "link": "Ver meu GitHub"
       }
     }
   }
