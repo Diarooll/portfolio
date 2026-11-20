@@ -826,6 +826,13 @@ html:not(.fx) .hero-front {
   :root[data-theme="dark"] .hero-name {
     text-shadow: 0 1px 18px rgba(0, 0, 0, 0.6);
   }
+  /* tema claro: o nome cai sobre a copa verde-escura, então vai em creme com sombra escura (>= 4,5:1) */
+  :root:not([data-theme="dark"]) .hero-name {
+    color: #fbf7ee;
+    text-shadow:
+      0 1px 2px rgba(8, 16, 30, 0.7),
+      0 0 16px rgba(8, 16, 30, 0.55);
+  }
   .hero-info {
     grid-template-columns: 1fr;
     gap: 0.5rem;
@@ -1372,6 +1379,7 @@ html[data-motion="reduced"] .tree .leaf {
   gap: 0.5rem;
 }
 .unit {
+  transform-origin: top center;
   position: relative;
   border: 1px solid var(--pl);
   border-radius: 16px;
@@ -2423,4 +2431,16 @@ html:not(.fx) .j-root .jr-line {
 }
 html.js .tree .leaf .txt {
   white-space: nowrap;
+}
+
+/* movimento reduzido: nada de LED ou cursor piscando sem parar */
+html[data-motion="reduced"] .led.warn,
+html[data-motion="reduced"] .caret {
+  animation: none !important;
+}
+@media (prefers-reduced-motion: reduce) {
+  .led.warn,
+  .caret {
+    animation: none !important;
+  }
 }
