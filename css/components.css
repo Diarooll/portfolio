@@ -674,7 +674,7 @@
 }
 
 /* ==========================================================
-   DECLARAÇÃO: Developer diego = new Developer("Java Backend");
+   DECLARAÇÃO: diego = Developer("Python Backend")
    Uma faixa entre o hero e o Sobre. Ela "cria" o objeto diego,
    e os títulos das seções chamam métodos dele (diego.getAbout()...).
    ========================================================== */

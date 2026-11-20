@@ -1,7 +1,7 @@
 {
   "meta": {
-    "title": "Diego Olalla · Back-end Java",
-    "description": "Portfólio de Diego Olalla, estudante de Engenharia de Software na FIAP com foco em back-end Java e Spring Boot."
+    "title": "Diego Olalla · Back-end Python",
+    "description": "Portfólio de Diego Olalla, estudante de Engenharia de Software na FIAP com foco em back-end Python, com FastAPI e Django."
   },
   "nav": {
     "label": "Navegação principal",
@@ -30,16 +30,16 @@
       "APIs",
       "sistemas",
       "regras de negócio",
-      "projetos em Java"
+      "projetos em Python"
     ],
-    "lead": "Estudante de Engenharia de Software na FIAP, aprendendo back-end com Java e Spring Boot.",
+    "lead": "Estudante de Engenharia de Software na FIAP, aprendendo back-end com Python, FastAPI e Django.",
     "ctaProjects": "Ver projetos",
     "ctaContact": "Falar comigo"
   },
   "about": {
     "photoAlt": "Diego de óculos e camiseta preta, com a cabeça apoiada na mão",
     "p1": "Estudo Engenharia de Software e gosto mais do back-end, a parte que fica por trás da tela: APIs, regras de negócio e dados.",
-    "p2": "Hoje trabalho como freelancer fazendo landing pages e, em breve, vou partir para sistemas mais complexos. Ao mesmo tempo, firmo a base em Java e estudo Spring Boot e SQL. Aprendo melhor construindo projetos, e o código deles está aqui."
+    "p2": "Hoje trabalho como freelancer fazendo landing pages e, em breve, vou partir para sistemas mais complexos. Ao mesmo tempo, firmo a base em Python e estudo FastAPI e Django, além de Java e Spring Boot e SQL. Aprendo melhor construindo projetos, e o código deles está aqui."
   },
   "stack": {
     "focus": "Foco",
@@ -100,7 +100,7 @@
     "next": {
       "date": "próximo passo",
       "title": "Estágio ou vaga júnior em back-end",
-      "desc": "Quero entrar num time em que eu aprenda com pessoas mais experientes e ajude no back-end com Java e Spring Boot."
+      "desc": "Quero entrar num time em que eu aprenda com pessoas mais experientes e ajude no back-end com Python, FastAPI e Django."
     }
   },
   "contact": {

@@ -1,7 +1,7 @@
 {
   "meta": {
-    "title": "Diego Olalla · Java Back-end",
-    "description": "Portfolio of Diego Olalla, a Software Engineering student at FIAP focused on Java and Spring Boot back-end."
+    "title": "Diego Olalla · Python Back-end",
+    "description": "Portfolio of Diego Olalla, a Software Engineering student at FIAP focused on Python back-end with FastAPI and Django."
   },
   "nav": {
     "label": "Main navigation",
@@ -30,16 +30,16 @@
       "APIs",
       "systems",
       "business rules",
-      "Java projects"
+      "Python projects"
     ],
-    "lead": "Software Engineering student at FIAP, learning back-end with Java and Spring Boot.",
+    "lead": "Software Engineering student at FIAP, learning back-end with Python, FastAPI and Django.",
     "ctaProjects": "See projects",
     "ctaContact": "Get in touch"
   },
   "about": {
     "photoAlt": "Diego wearing glasses and a black T-shirt, resting his head on his hand",
     "p1": "I study Software Engineering and the back-end is the part I like most, the side behind the screen: APIs, business rules and data.",
-    "p2": "I currently work as a freelancer building landing pages, and soon I'll move on to more complex systems. At the same time, I'm building a solid base in Java and studying Spring Boot and SQL. I learn best by building projects, and their code is here."
+    "p2": "I currently work as a freelancer building landing pages, and soon I'll move on to more complex systems. At the same time, I'm building a solid base in Python and studying FastAPI and Django, as well as Java, Spring Boot and SQL. I learn best by building projects, and their code is here."
   },
   "stack": {
     "focus": "Focus",
@@ -100,7 +100,7 @@
     "next": {
       "date": "next step",
       "title": "Back-end internship or junior role",
-      "desc": "I want to join a team where I can learn from more experienced people and help on the back-end with Java and Spring Boot."
+      "desc": "I want to join a team where I can learn from more experienced people and help on the back-end with Python, FastAPI and Django."
     }
   },
   "contact": {
