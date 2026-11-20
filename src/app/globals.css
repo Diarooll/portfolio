@@ -773,11 +773,31 @@ html:not(.fx) .hero-front {
   position: absolute;
   top: clamp(0.8rem, 3vh, 2rem);
   right: 0;
-  min-height: 1.2em;
+  z-index: 3;
+  max-width: min(60%, 26rem);
+  margin: 0;
+  padding: 0.4rem 0.7rem;
+  border: 1px solid var(--glass-line);
+  border-radius: 10px;
+  background: var(--glass-strong);
+  box-shadow: var(--shadow);
   color: var(--fg);
-  font: 500 0.8125rem var(--font-mono);
+  font: 500 0.8125rem/1.4 var(--font-mono);
   letter-spacing: 0.04em;
   text-align: right;
+  opacity: 0;
+  translate: 0 -4px;
+  transition:
+    opacity 0.16s ease-out,
+    translate 0.16s ease-out;
+  pointer-events: none;
+}
+.st-use.on {
+  opacity: var(--st-text, 1);
+  translate: 0 0;
+}
+.st-use b {
+  font-weight: 700;
 }
 @media (max-width: 768px) {
   :root:not([data-theme="dark"]) .ls-front {

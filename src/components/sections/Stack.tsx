@@ -75,6 +75,8 @@ export default function Stack() {
     // o título, o subtítulo e a dica somem ANTES de as placas começarem a sair
     const textOut = s.reduced ? 1 : 1 - sstep(clamp((y - (pj.top - 1.07 * vh)) / (0.24 * vh)));
     if (head.current) head.current.style.opacity = textOut.toFixed(3);
+    // o rótulo "usado em" some junto com o título (não fica sobrando quando as placas se espalham)
+    wrap?.style.setProperty("--st-text", textOut.toFixed(3));
     const tr = tree.current;
     if (!tr) return;
     if (s.reduced) {
@@ -135,8 +137,14 @@ export default function Stack() {
           <div ref={head} className="st-head">
             <Dissolve as="h2" className="title" id="stackT" text={t("title")} seed={5} progress={titleP} />
           </div>
-          <p className="st-use" aria-hidden="true">
-            {use}
+          {/* rótulo "usado em": nomeia a tecnologia em foco (fica claro a qual placa se refere, mesmo longe dela);
+              tecnologias sem projeto não mostram nada */}
+          <p className={`st-use${use ? " on" : ""}`} aria-hidden="true">
+            {use && activeTech ? (
+              <>
+                <b>{activeTech.name}</b> · {use}
+              </>
+            ) : null}
           </p>
           <div ref={tree} className="tree" tabIndex={0} role="group" aria-label={pick(stackCopy.label, locale)}>
             {techGroups.map((g) => (
