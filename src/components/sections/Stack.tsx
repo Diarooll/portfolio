@@ -4,7 +4,7 @@
 // As tecnologias são sempre botões de verdade (teclado, leitor de tela).
 import { useEffect, useRef, useState } from "react";
 import { useLocale, useTranslations } from "next-intl";
-import { clamp, sstep, easeOut } from "@/lib/math";
+import { clamp, sstep, sstep5, easeOut } from "@/lib/math";
 import { M } from "@/lib/scroll-engine";
 import { techGroups, techs } from "@/content/techs";
 import { stackCopy } from "@/content/stack";
@@ -61,7 +61,7 @@ export default function Stack() {
     // entrada suave; saída: as placas se espalham para os cantos da tela, antes de Projetos chegar.
     // Com movimento reduzido o conteúdo só some num crossfade.
     const enter = sstep(clamp((y - (m.top - 0.9 * vh)) / (0.6 * vh)));
-    const ex = s.reduced ? 0 : clamp((y - (pj.top - 0.8 * vh)) / (0.85 * vh));
+    const ex = s.reduced ? 0 : clamp((y - (pj.top - 0.8 * vh)) / (0.68 * vh));
     // as placas entram DEPOIS do título (que usa titleP), uma após a outra
     const enterP = sstep(clamp((y - (m.top - 0.5 * vh)) / (0.75 * vh)));
     const wrap = wrapEl.current;
@@ -83,7 +83,7 @@ export default function Stack() {
       return;
     }
     // faixas de névoa NA FRENTE de algumas placas: aparecem com a entrada e somem com a saída
-    const mo = enterP * (1 - sstep(clamp(ex / 0.5)));
+    const mo = enterP * (1 - sstep5(clamp(ex / 0.4)));
     mist.current.forEach((el, i) => {
       if (!el) return;
       el.style.opacity = (mo * (i ? 0.38 : 0.46)).toFixed(3);

@@ -10,6 +10,8 @@ export const ease = (t: number) => (t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * 
 export const easeOut = (t: number) => 1 - Math.pow(1 - t, 3);
 /** smoothstep: transição suave sem exagero */
 export const sstep = (t: number) => t * t * (3 - 2 * t);
+/** smootherstep (quíntica): começa e termina com velocidade E aceleração zero, sem "tranco" nas pontas */
+export const sstep5 = (t: number) => t * t * t * (t * (t * 6 - 15) + 10);
 
 /** ruído determinístico 0..1: a mesma entrada dá sempre o mesmo valor (ordem "aleatória" estável) */
 export const noise = (i: number, s: number) => {

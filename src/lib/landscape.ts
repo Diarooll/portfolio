@@ -8,7 +8,7 @@
 // Para trocar uma foto: substitua o arquivo em public/landscape/ (mesmo nome)
 // e, se precisar, ajuste depth/mouse/fit abaixo. Veja o README.
 
-import { clamp, keyframes, sstep } from "./math";
+import { clamp, keyframes, sstep5 } from "./math";
 import type { Metrics, SectionId } from "./scroll-engine";
 
 export type LayerId = "sky" | "far" | "front" | "grass";
@@ -116,8 +116,8 @@ export interface CameraState {
 /** quanto o morro já desceu (em vh) quando o hero termina */
 export const HERO_HILL = 0.4;
 
-/** sobe de 0 a 1 entre a e b (suave) */
-const ramp = (v: number, a: number, b: number) => sstep(clamp((v - a) / (b - a)));
+/** sobe de 0 a 1 entre a e b (quíntica: sem tranco no começo nem no fim da rampa) */
+const ramp = (v: number, a: number, b: number) => sstep5(clamp((v - a) / (b - a)));
 
 /**
  * Onde a câmera está para uma rolagem s. Tudo depende da altitude contínua, então
@@ -160,19 +160,19 @@ export function cameraAt(s: number, M: Partial<Record<SectionId, Metrics>>, vh: 
     s,
     (t) => t, // linear entre as seções: a curva já é suave por ter muitas paradas
   );
-  // mistura longa e gradual do azul do dia para a luz dourada (céu + nuvens), da metade da Stack
-  // até o começo de Projetos, dependente só da rolagem: não existe corte entre uma cor e outra
-  const w0 = top("stack", 0.3);
-  const w1 = top("projetos", 0.14);
-  const warm = sstep(sstep(clamp((s - w0) / Math.max(1, w1 - w0))));
-  const clouds = ramp(alt, 0.2, 1.3) * (1 - 0.45 * ramp(alt, 2, 3)) * (1 - ramp(alt, 3.1, 3.8));
+  // mistura do azul do dia para a luz dourada (céu + nuvens), da metade da Stack até a abertura de
+  // Projetos: trecho mais curto que antes, numa única curva quíntica (sem o meio abrupto do smoothstep duplo)
+  const w0 = top("stack", 0.45);
+  const w1 = top("projetos", 0.06);
+  const warm = sstep5(clamp((s - w0) / Math.max(1, w1 - w0)));
+  const clouds = ramp(alt, 0.2, 1.1) * (1 - 0.45 * ramp(alt, 2.1, 2.9)) * (1 - ramp(alt, 3.1, 3.6));
   return {
     hill,
     alt,
-    sky: 1 - ramp(alt, 1.3, 2.1),
+    sky: 1 - ramp(alt, 1.3, 1.9),
     bg: [warm, ramp(alt, 3.0, 3.7), ramp(alt, 3.5, 4.3), ramp(alt, 4.1, 4.95)],
     clouds,
-    dense: ramp(alt, 1.2, 1.7) * (1 - ramp(alt, 2.0, 2.6)),
+    dense: ramp(alt, 1.2, 1.6) * (1 - ramp(alt, 2.0, 2.45)),
     gilt: warm,
     stars: ramp(alt, 3.9, 4.8),
     wind: 1 - ramp(alt, 1.8, 2.5),
