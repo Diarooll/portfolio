@@ -1778,15 +1778,21 @@ html:not(.fx) .j-root .jr-line {
   text-align: center;
   margin-bottom: clamp(3.5rem, 10vh, 6.5rem);
 }
-/* o título fica escuro até o céu escurecer de verdade (só vira creme no fim da transição) e, no meio dela,
-   ganha um vidro claro atrás para manter >= 4,5:1 */
+/* tema claro: o título nunca passa por cinza. Até o céu escurecer ele é escuro sobre um vidro creme;
+   no fim do anoitecer TROCA de uma vez (--jf é 0 ou 1, com transição curta no tempo) para creme sobre
+   um vidro azul-noite, que só some quando o azul profundo já cobre o fundo. Os dois vidros são densos o
+   bastante para garantir >= 4,5:1 sobre qualquer céu atrás (do dourado ao azul profundo) */
 .j-head .title {
-  --jt: clamp(0%, calc((var(--alt-w2, 0%) - 80%) * 5), 100%);
-  color: color-mix(in srgb, #f3e9d8 var(--jt), var(--fg));
-  background: color-mix(in srgb, transparent var(--jt), rgba(251, 247, 238, 0.62));
+  --jf: clamp(0%, calc((var(--alt-w2, 0%) - 85%) * 1000), 100%);
+  --jfade: clamp(0%, calc((var(--alt-w3, 0%) - 60%) * 2.5), 100%);
+  color: color-mix(in srgb, #f3e9d8 var(--jf), var(--fg));
+  background: color-mix(in srgb, color-mix(in srgb, transparent var(--jfade), rgba(10, 16, 40, 0.62)) var(--jf), rgba(251, 247, 238, 0.82));
   padding: 0.1em 0.5em;
   border-radius: 0.3em;
   text-shadow: none;
+  transition:
+    color 0.3s ease-out,
+    background-color 0.3s ease-out;
 }
 :root[data-theme="dark"] .j-head .title {
   background: none;
