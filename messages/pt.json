@@ -24,7 +24,8 @@
     "roleSub": "back-end · Python · Java",
     "lead": "Estudante de Engenharia de Software na FIAP. Construo back-ends com Python e Java, empacoto com Docker e entrego com CI/CD.",
     "ctaProjects": "Ver projetos",
-    "ctaContact": "Contato"
+    "ctaContact": "Contato",
+    "want": "Procuro estágio ou vaga júnior em back-end."
   },
   "sobre": {
     "statement": "Gosto da parte que fica por trás da tela.",
@@ -48,7 +49,8 @@
     "hint": "Passe o mouse ou foque em uma tecnologia.",
     "hintTouch": "Toque em uma tecnologia.",
     "hintDrag": "Arraste para girar.",
-    "rootRef": "root · diego"
+    "rootRef": "root · diego",
+    "usedIn": "Usado em {projects}"
   },
   "projetos": {
     "title": "Projetos",

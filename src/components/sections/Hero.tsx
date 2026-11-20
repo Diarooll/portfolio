@@ -149,6 +149,7 @@ export default function Hero() {
             <div>
               <p className="role">{t("role")}</p>
               <p className="role-sub">{t("roleSub")}</p>
+              <p className="role-want">{t("want")}</p>
             </div>
             <div>
               <p className="lead">{t("lead")}</p>

@@ -24,7 +24,8 @@
     "roleSub": "back-end · Python · Java",
     "lead": "Software Engineering student at FIAP. I build back-ends with Python and Java, package them with Docker and ship them with CI/CD.",
     "ctaProjects": "See projects",
-    "ctaContact": "Contact"
+    "ctaContact": "Contact",
+    "want": "Looking for an internship or a junior back-end role."
   },
   "sobre": {
     "statement": "I like the part that lives behind the screen.",
@@ -48,7 +49,8 @@
     "hint": "Hover or focus a technology.",
     "hintTouch": "Tap a technology.",
     "hintDrag": "Drag to rotate.",
-    "rootRef": "root · diego"
+    "rootRef": "root · diego",
+    "usedIn": "Used in {projects}"
   },
   "projetos": {
     "title": "Projects",
