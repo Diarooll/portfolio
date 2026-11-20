@@ -1825,10 +1825,10 @@ html.stack-fade body { opacity: 0; }
    então hover, links e tags existentes herdam as cores certas.
    --proj-accent: borda, selo e hover (identidade).  --proj-accent-text: texto.
    Contraste do texto no fundo do card (WCAG):
-   - $ents  (#3B3226): fg #F4EFE6 11.0, muted #CDBFAA 6.9, accent #D9B98A 6.6
+   - $ents  (#F1EFED, logo): fg #3F3427 10.9, muted #6B5D4A 5.8
    - ALERA  (#1E2A5A): fg #FFFFFF 13.7, muted #C3CAE6 8.4, accent #F2C200 8.6
    - Sito's (#0B0B0B): fg #FFFFFF 19.5, muted #B3B3B3 9.3, accent texto #FF4D55 6.0
-   Fontes: $ents = marrom #3B3226 do protótipo (sem logo no repo);
+   Fontes: $ents = cores da logo (marrom sobre off-white);
    ALERA = tokens/favicon do projeto; Sito's = css/base.css do site. ========================================================== */
 .card--brand {
   --surface: var(--proj-bg);
@@ -1845,8 +1845,9 @@ html.stack-fade body { opacity: 0; }
 .card--brand:hover,
 .card--brand:has(:focus-visible) { border-color: var(--proj-accent); }
 .card[data-proj="p4"] {
-  --proj-bg: #3B3226; --proj-fg: #F4EFE6; --proj-muted: #CDBFAA;
-  --proj-line: #5A4B39; --proj-accent: #D9B98A; --proj-accent-text: #D9B98A;
+  /* logo $ents: tinta marrom #3F3427 sobre off-white #F1EFED (contraste fg 10.9, muted 5.8) */
+  --proj-bg: #F1EFED; --proj-fg: #3F3427; --proj-muted: #6B5D4A;
+  --proj-line: #D8D2CA; --proj-accent: #3F3427; --proj-accent-text: #3F3427;
 }
 .card[data-proj="p5"] {
   --proj-bg: #1E2A5A; --proj-fg: #FFFFFF; --proj-muted: #C3CAE6;
@@ -1856,3 +1857,6 @@ html.stack-fade body { opacity: 0; }
   --proj-bg: #0B0B0B; --proj-fg: #FFFFFF; --proj-muted: #B3B3B3;
   --proj-line: #2A2A2A; --proj-accent: #ED1C24; --proj-accent-text: #FF4D55;
 }
+
+.card__code { display: block; margin: .25rem 0 .75rem; font-family: var(--font-mono, ui-monospace, monospace); font-size: .8125rem; color: var(--muted); }
+.card__code .code__kw { color: var(--accent); }
