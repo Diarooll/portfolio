@@ -9,6 +9,7 @@ import { M } from "@/lib/scroll-engine";
 import { techGroups, techs } from "@/content/techs";
 import { stackCopy } from "@/content/stack";
 import { BRAND, faceTone } from "@/content/brands";
+import { projects } from "@/content/projects";
 import { pick } from "@/content/types";
 import Dissolve from "@/components/ui/Dissolve";
 import TechIcon from "@/components/ui/TechIcon";
@@ -94,7 +95,15 @@ export default function Stack() {
 
   const hint = (touch ? t("hintTouch") : t("hint"));
   const activeTech = active >= 0 ? techs[active] : null;
-  const note = activeTech ? `${activeTech.name}: ${pick(activeTech.note, locale)}.` : hint;
+  // onde a tecnologia é usada, só a partir das tags de stack dos projetos
+  const usedIn = activeTech
+    ? projects
+        .filter((p) => p.stack.some((tag) => tag === activeTech.id || tag.startsWith(`${activeTech.id} `)))
+        .map((p) => p.name)
+        .join(", ")
+    : "";
+  const use = usedIn ? t("usedIn", { projects: usedIn }) : "";
+  const note = activeTech ? `${activeTech.name}: ${pick(activeTech.note, locale)}.${use ? ` ${use}.` : ""}` : hint;
 
   const show = (i: number) => setActive(i);
   const hide = (i: number) => setActive((a) => (a === i ? -1 : a));
@@ -106,6 +115,9 @@ export default function Stack() {
         <div ref={wrapEl} className="wrap st-wrap">
           <div ref={head} className="st-head">
             <Dissolve as="h2" className="title" id="stackT" text={t("title")} seed={5} progress={titleP} />
+            <p className="st-use" aria-hidden="true">
+              {use}
+            </p>
           </div>
           <div ref={tree} className="tree" tabIndex={0} role="group" aria-label={pick(stackCopy.label, locale)}>
             {techGroups.map((g) => (
