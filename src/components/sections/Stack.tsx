@@ -1,10 +1,11 @@
 "use client";
-// Stack: as 10 tecnologias como placas escuras arredondadas (logo na cor da marca e etiqueta embaixo),
-// soltas numa grade, balançando devagar. Na saída elas se espalham para os cantos da tela.
+// Stack: as 10 tecnologias como placas (logo na cor da marca e etiqueta embaixo) num ANEL inclinado que gira
+// devagar; arrastar/deslizar gira com inércia, setas e foco levam a placa para a frente. Profundidade por
+// escala, opacidade e leve desfoque. Entrada: saem do centro e se abrem no anel; saída: espalham para os cantos.
 // As tecnologias são sempre botões de verdade (teclado, leitor de tela).
 import { useEffect, useRef, useState } from "react";
 import { useLocale, useTranslations } from "next-intl";
-import { clamp, sstep, sstep5, easeOut } from "@/lib/math";
+import { clamp, sstep, easeOut } from "@/lib/math";
 import { M } from "@/lib/scroll-engine";
 import { techGroups, techs } from "@/content/techs";
 import { stackCopy } from "@/content/stack";
@@ -29,45 +30,57 @@ export default function Stack() {
   const tree = useRef<HTMLDivElement>(null);
   const wrapEl = useRef<HTMLDivElement>(null);
   const head = useRef<HTMLDivElement>(null);
-  const mist = useRef<(HTMLDivElement | null)[]>([]);
-  const dirs = useRef<{ x: number; y: number }[]>([]);
   useSection("stack", section);
 
   const [touch, setTouch] = useState(false);
   const [active, setActive] = useState(-1);
+  // placa que está na frente do anel (destaque e "Used in" quando ninguém aponta para outra)
+  const [front, setFront] = useState(0);
+  const frontRef = useRef(0);
+
+  // anel: ângulo atual, velocidade (inércia), arrasto e pausa do autoplay
+  const ring = useRef({ rot: 0, vel: 0, target: null as number | null, drag: false, lastX: 0, lastT: 0, moved: 0, pausedUntil: 0, W: 1, H: 1 });
 
   useEffect(() => {
     setTouch(matchMedia("(hover: none)").matches);
   }, []);
 
-  // direção de cada placa em relação ao centro da grade (para se espalhar rumo ao canto mais próximo)
   useMeasure(() => {
     const tr = tree.current;
     if (!tr) return;
-    const W = tr.clientWidth || 1;
-    const H = tr.clientHeight || 1;
-    dirs.current = Array.from(tr.querySelectorAll<HTMLElement>(".leaf")).map((el) => {
-      const dx = (el.offsetLeft + el.offsetWidth / 2 - W / 2) / (W / 2);
-      const dy = (el.offsetTop + el.offsetHeight / 2 - H / 2) / (H / 2);
-      return { x: Math.abs(dx) < 0.08 ? 0.4 : Math.sign(dx), y: Math.abs(dy) < 0.08 ? -0.6 : Math.sign(dy) };
-    });
+    ring.current.W = tr.clientWidth || 1;
+    ring.current.H = tr.clientHeight || 1;
   });
+
+  const n = techs.length;
+  const step = (Math.PI * 2) / n;
+  /** ângulo do anel que põe a placa i na frente (embaixo da elipse, sin = 1) */
+  const rotFor = (i: number) => Math.PI / 2 - i * step;
+  const nearest = (from: number, to: number) => from + ((((to - from) % (Math.PI * 2)) + Math.PI * 3) % (Math.PI * 2)) - Math.PI;
+
+  const goTo = (i: number) => {
+    const r = ring.current;
+    if (r.drag) return;
+    r.target = nearest(r.rot, rotFor(i));
+    r.vel = 0;
+    r.pausedUntil = performance.now() + 4000;
+  };
 
   useScrollFrame((s) => {
     const m = M.stack;
     const pj = M.projetos;
     if (!m || !pj) return;
-    const { y, vh, vw } = s;
-    // entrada suave; saída: as placas se espalham para os cantos da tela, antes de Projetos chegar.
-    // Com movimento reduzido o conteúdo só some num crossfade.
-    const enter = sstep(clamp((y - (m.top - 0.9 * vh)) / (0.6 * vh)));
+    const { y, vh, vw, dt } = s;
+    const r = ring.current;
+    // entrada: as placas saem do centro e se abrem no anel, uma após a outra; saída: espalham para os cantos.
+    // Com movimento reduzido: anel parado, só crossfade
     const ex = s.reduced ? 0 : clamp((y - (pj.top - 0.8 * vh)) / (0.68 * vh));
-    // as placas entram DEPOIS do título (que usa titleP), uma após a outra
-    const enterP = sstep(clamp((y - (m.top - 0.5 * vh)) / (0.75 * vh)));
+    const enterP = s.reduced ? 1 : sstep(clamp((y - (m.top - 0.5 * vh)) / (0.75 * vh)));
     const wrap = wrapEl.current;
+    let inView = false;
     if (wrap) {
       const o = s.reduced ? 1 - sstep(clamp((y - (pj.top - 0.5 * vh)) / (0.3 * vh))) : 1;
-      const inView = o > 0.004 && y > m.top - 1.3 * vh && ex < 0.999;
+      inView = o > 0.004 && y > m.top - 1.3 * vh && ex < 0.999 && y < pj.top + vh;
       wrap.style.opacity = o.toFixed(3);
       wrap.style.visibility = inView ? "visible" : "hidden";
       wrap.style.pointerEvents = o > 0.5 && ex < 0.3 ? "" : "none";
@@ -78,41 +91,111 @@ export default function Stack() {
     // o rótulo "usado em" some junto com o título (não fica sobrando quando as placas se espalham)
     wrap?.style.setProperty("--st-text", textOut.toFixed(3));
     const tr = tree.current;
-    if (!tr) return;
-    if (s.reduced) {
-      tr.style.opacity = enter.toFixed(3);
-      mist.current.forEach((el) => el && (el.style.opacity = "0"));
-      return;
+    if (!tr || !inView) return;
+
+    // rotação: alvo (teclado/foco) > arrasto > inércia > autoplay lento
+    const now = performance.now();
+    if (r.target !== null) {
+      const d = r.target - r.rot;
+      r.rot += d * (1 - Math.exp(-dt * 9));
+      if (Math.abs(d) < 0.001) {
+        r.rot = r.target;
+        r.target = null;
+      }
+    } else if (!r.drag) {
+      if (Math.abs(r.vel) > 0.0005) {
+        r.rot += r.vel * dt;
+        r.vel *= Math.exp(-dt * 2.2);
+      } else if (!s.reduced && now > r.pausedUntil && enterP > 0.99) {
+        r.rot += dt * 0.16;
+      }
     }
-    // faixas de névoa NA FRENTE de algumas placas: aparecem com a entrada e somem com a saída
-    const mo = enterP * (1 - sstep5(clamp(ex / 0.4)));
-    mist.current.forEach((el, i) => {
-      if (!el) return;
-      el.style.opacity = (mo * (i ? 0.38 : 0.46)).toFixed(3);
-      el.style.transform = `translate3d(${clamp((y - m.top) * (i ? -0.05 : 0.04), -90, 90).toFixed(1)}px, 0, 0)`;
-    });
-    const par = clamp((y - m.top) / vh, -1, 1);
-    tr.style.opacity = "";
-    const leaves = tr.querySelectorAll<HTMLElement>(".leaf");
-    const n = leaves.length;
+
+    const W = r.W;
+    const H = r.H;
+    const plate = vw < 560 ? 92 : 112;
+    const rx = Math.max(60, Math.min((W - plate) / 2, 420));
+    const ry = Math.max(40, Math.min(H / 2 - plate * 0.62, rx * (vw < 700 ? 0.95 : 0.36)));
     const out = easeOut(ex);
+    const leaves = tr.querySelectorAll<HTMLElement>(".leaf");
+    let best = 0;
+    let bestZ = -2;
     leaves.forEach((el, i) => {
-      // stagger: cada placa começa um pouco depois da anterior (~60ms de rolagem) e sobe 24px, de .9 a 1
+      const a = r.rot + i * step;
+      const cx = Math.cos(a);
+      const z = Math.sin(a); // 1 = frente (embaixo), -1 = fundo (em cima)
+      if (z > bestZ) {
+        bestZ = z;
+        best = i;
+      }
+      const depth = (z + 1) / 2;
       const k = easeOut(clamp((enterP - (i / n) * 0.45) / 0.55));
-      const back = i % 3 === 1;
-      const d = dirs.current[i] ?? { x: 0, y: 0 };
-      const tx = d.x * vw * 0.75 * out * out;
-      // placas do plano de trás: menores e mais lentas (paralaxe leve), sempre dentro da própria célula
-      const ty = d.y * vh * 0.75 * out * out + (back ? par * 12 : 0);
-      const bs = back ? 0.84 : 1;
-      const rot = d.x * 40 * out;
-      el.style.opacity = (k * (back ? 0.82 : 1)).toFixed(3);
-      el.style.transform = `translate3d(${tx.toFixed(1)}px, ${(ty + (1 - k) * 24).toFixed(1)}px, 0) rotate(${rot.toFixed(1)}deg) scale(${((0.9 + 0.1 * k - 0.2 * out) * bs).toFixed(3)})`;
+      const tx = cx * rx * k + cx * vw * 0.75 * out * out;
+      const ty = z * ry * k + Math.sign(z || 1) * vh * 0.6 * out * out;
+      // no celular o fundo encolhe mais (menos sobreposição), e a frente fica com o ícone >= 56px
+      const sc = (vw < 560 ? 0.55 + 0.5 * depth : 0.6 + 0.48 * depth) * (0.7 + 0.3 * k) * (1 - 0.25 * out);
+      el.style.opacity = (k * (0.42 + 0.58 * depth)).toFixed(3);
+      el.style.zIndex = String(Math.round(depth * 100));
+      el.style.transform = `translate3d(${tx.toFixed(1)}px, ${ty.toFixed(1)}px, 0) translate(-50%, -50%) scale(${sc.toFixed(3)})`;
+      // desfoque leve só no fundo e só com mouse (no toque, filter por quadro custa caro); em degraus, para
+      // não repintar a cada quadro
+      const b = s.coarse || s.reduced ? 0 : depth < 0.25 ? 1.2 : depth < 0.45 ? 0.6 : 0;
+      const fb = b ? `blur(${b}px)` : "";
+      if (el.dataset.fb !== fb) {
+        el.dataset.fb = fb;
+        el.style.filter = fb;
+      }
     });
+    if (best !== frontRef.current) {
+      frontRef.current = best;
+      setFront(best);
+    }
   });
 
+  // arrastar/deslizar gira o anel (mouse e toque); o rolar vertical continua livre (touch-action: pan-y)
+  const onDown = (e: React.PointerEvent) => {
+    const r = ring.current;
+    r.drag = true;
+    r.target = null;
+    r.vel = 0;
+    r.lastX = e.clientX;
+    r.lastT = performance.now();
+    r.moved = 0;
+    r.pausedUntil = Infinity;
+  };
+  const onMove = (e: React.PointerEvent) => {
+    const r = ring.current;
+    if (!r.drag) return;
+    const dx = e.clientX - r.lastX;
+    const now = performance.now();
+    const da = (dx / Math.max(160, r.W * 0.45)) * Math.PI;
+    r.rot += da;
+    r.moved += Math.abs(dx);
+    const dtm = Math.max(1, now - r.lastT) / 1000;
+    r.vel = r.vel * 0.6 + (da / dtm) * 0.4;
+    r.lastX = e.clientX;
+    r.lastT = now;
+    if (r.moved > 6 && !tree.current?.hasPointerCapture(e.pointerId)) tree.current?.setPointerCapture(e.pointerId);
+  };
+  const onUp = () => {
+    const r = ring.current;
+    if (!r.drag) return;
+    r.drag = false;
+    r.vel = clamp(r.vel, -8, 8);
+    r.pausedUntil = performance.now() + 4000;
+  };
+  const onKey = (e: React.KeyboardEvent) => {
+    if (e.key !== "ArrowLeft" && e.key !== "ArrowRight") return;
+    e.preventDefault();
+    const cur = active >= 0 ? active : frontRef.current;
+    const nx = (cur + (e.key === "ArrowRight" ? 1 : n - 1)) % n;
+    goTo(nx);
+    tree.current?.querySelectorAll<HTMLElement>(".leaf")[nx]?.focus({ preventScroll: true });
+  };
+
   const hint = (touch ? t("hintTouch") : t("hint"));
-  const activeTech = active >= 0 ? techs[active] : null;
+  const shown = active >= 0 ? active : front;
+  const activeTech = techs[shown] ?? null;
   // onde a tecnologia é usada, só a partir das tags de stack dos projetos
   // linguagem derivada dos frameworks dos projetos (django/fastapi -> Python; spring -> Java), sem inventar usos
   const LANG: Partial<Record<string, string[]>> = { python: ["django", "fastapi"], java: ["spring"] };
@@ -124,9 +207,14 @@ export default function Stack() {
         .join(", ")
     : "";
   const use = usedIn ? t("usedIn", { projects: usedIn }) : "";
-  const note = activeTech ? `${activeTech.name}: ${pick(activeTech.note, locale)}.${use ? ` ${use}.` : ""}` : hint;
+  const note = active >= 0 && activeTech ? `${activeTech.name}: ${pick(activeTech.note, locale)}.${use ? ` ${use}.` : ""}` : hint;
 
   const show = (i: number) => setActive(i);
+  // foco por teclado ou clique: o anel gira até a placa ficar na frente
+  const focusTo = (i: number) => {
+    setActive(i);
+    goTo(i);
+  };
   const hide = (i: number) => setActive((a) => (a === i ? -1 : a));
 
   let idx = 0;
@@ -146,7 +234,24 @@ export default function Stack() {
               </>
             ) : null}
           </p>
-          <div ref={tree} className="tree" tabIndex={0} role="group" aria-label={pick(stackCopy.label, locale)}>
+          <div
+            ref={tree}
+            className="tree st-ring"
+            role="group"
+            aria-label={pick(stackCopy.label, locale)}
+            onPointerDown={onDown}
+            onPointerMove={onMove}
+            onPointerUp={onUp}
+            onPointerCancel={onUp}
+            onKeyDown={onKey}
+            onClickCapture={(e) => {
+              // um arrasto não vira clique na placa
+              if (ring.current.moved > 6) {
+                e.stopPropagation();
+                e.preventDefault();
+              }
+            }}
+          >
             {techGroups.map((g) => (
               <div key={g.id} className="tgroup">
                 <h3 className={`tn grp chip ${styles.grp}`}>
@@ -159,16 +264,16 @@ export default function Stack() {
                     return (
                       <li key={it.id}>
                         <button
-                          className={`tn leaf${active === i ? " is-on" : ""}${i % 3 === 1 ? " back" : ""}`}
+                          className={`tn leaf${shown === i ? " is-on" : ""}`}
                           style={{ ["--fd" as string]: `${(6 + ((i * 7) % 5) * 0.9).toFixed(1)}s`, ["--fl" as string]: `${(-((i * 13) % 9) * 0.8).toFixed(1)}s` }}
                           aria-label={it.name}
                           type="button"
                           aria-describedby="treeNote"
                           onPointerEnter={() => show(i)}
                           onPointerLeave={() => hide(i)}
-                          onFocus={() => show(i)}
+                          onFocus={() => focusTo(i)}
                           onBlur={() => hide(i)}
-                          onClick={() => show(i)}
+                          onClick={() => focusTo(i)}
                         >
                           <span className="logo chip">
                             <TechIcon id={it.id} color={faceTone(it.id) === "dark" ? BRAND[it.id].colors[0] : undefined} />
@@ -185,8 +290,6 @@ export default function Stack() {
               </div>
             ))}
           </div>
-          <div ref={(el) => void (mist.current[0] = el)} className="st-mist st-mist-a" aria-hidden="true" />
-          <div ref={(el) => void (mist.current[1] = el)} className="st-mist st-mist-b" aria-hidden="true" />
           {/* sem texto de instrução na tela: só um aviso para leitores de tela (a tecnologia em foco) */}
           <p id="treeNote" className="sr" aria-live="polite">
             {note}

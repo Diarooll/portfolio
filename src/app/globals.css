@@ -1041,28 +1041,6 @@ html:not(.fx) .hero-front {
 .st-head .title {
   text-shadow: 0 2px 24px rgba(251, 247, 238, 0.6);
 }
-/* névoa fina na frente de algumas placas (só na Stack; não captura clique) */
-.st-mist {
-  position: absolute;
-  left: -10%;
-  width: 120%;
-  height: clamp(70px, 14vh, 130px);
-  background: url("/landscape/cloud-bank.webp") center / cover no-repeat;
-  -webkit-mask-image: radial-gradient(ellipse closest-side at 50% 50%, #000 35%, transparent 100%);
-  mask-image: radial-gradient(ellipse closest-side at 50% 50%, #000 35%, transparent 100%);
-  pointer-events: none;
-  opacity: 0;
-  z-index: 2;
-}
-.st-mist-a {
-  top: 32%;
-}
-.st-mist-b {
-  top: 62%;
-}
-.leaf.back .logo {
-  filter: blur(1px);
-}
 .tree {
   position: relative;
   flex: 1 1 auto;
@@ -1202,34 +1180,38 @@ html.js .tgroup ul,
 html.js .tgroup li {
   display: contents;
 }
-/* placas escuras soltas numa grade, cada uma balançando devagar (translate/rotate não brigam com o transform da rolagem) */
+/* anel orbital: as placas ficam todas no centro do palco e o JS as distribui na elipse (só transform,
+   opacity e z-index por quadro). touch-action: pan-y deixa o dedo rolar a página na vertical e girar o anel
+   na horizontal */
 html.js .tree {
-  display: grid;
-  grid-template-columns: repeat(5, minmax(0, 1fr));
-  align-content: center;
-  justify-items: center;
-  gap: clamp(1.4rem, 5vh, 3rem) clamp(0.8rem, 2vw, 2rem);
-  padding-block: 1rem;
+  display: block;
+  min-height: clamp(300px, 56vh, 520px);
+  touch-action: pan-y;
+  user-select: none;
+  -webkit-user-select: none;
+  cursor: grab;
 }
-@media (max-width: 899px) {
-  html.js .tree {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-  }
+html.js .tree:active {
+  cursor: grabbing;
 }
 @media (max-width: 560px) {
-  html.js .tree {
-    gap: 1.1rem 0.4rem;
-  }
   html.js .tree .leaf {
     width: 92px;
   }
+  /* celular: só o nome embaixo da placa (a linha "svc · ..." deixava o anel poluído) */
+  html.js .tree .leaf .ref {
+    display: none;
+  }
   html.js .tree .leaf .logo {
-    width: 54px;
-    height: 54px;
+    width: 56px;
+    height: 56px;
   }
 }
 html.js .tree .leaf {
-  position: relative;
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  will-change: transform, opacity;
   width: 112px;
   transform-origin: 50% 50%;
   animation: plate-float var(--fd, 7s) ease-in-out var(--fl, 0s) infinite alternate;
