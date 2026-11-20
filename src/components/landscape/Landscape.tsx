@@ -16,6 +16,13 @@ import { useScrollFrame } from "@/hooks/useScrollFrame";
 
 const BG = ["sky", "gold", "dusk", "deep", "space"] as const;
 
+/**
+ * caixa de uma camada de foto: presa ao PÉ da tela e com altura fixa em vh (no celular, vh = maior viewport).
+ * Com inset em %, a camada mudava de tamanho quando a barra do navegador aparecia/sumia e a foto era
+ * reescalada (e redesenhada) no meio da rolagem; assim ela só acompanha o pé da tela, sem reescalar.
+ */
+const layerBox = (b: number) => ({ left: `${-b}%`, right: `${-b}%`, bottom: `${-b}vh`, height: `${100 + 2 * b}vh` });
+
 export default function Landscape() {
   const layerRefs = useRef<(HTMLDivElement | null)[]>([]);
   const bgRefs = useRef<(HTMLDivElement | null)[]>([]);
@@ -101,11 +108,14 @@ export default function Landscape() {
     // fundo: cada fase é uma camada que aparece por cima da anterior (o céu é a base). O dourado só faz
     // crossfade; o anoitecer, o azul profundo e o espaço DESCEM: a borda suave da nova cor avança de cima
     // para baixo (o topo escurece primeiro), em vez de a tela inteira escurecer de uma vez
-    const band = vh * 0.6;
+    // as faixas de cor cobrem a MAIOR viewport (barra do navegador escondida), para nunca sobrar uma tira
+    // no pé da tela no celular; a geometria fica estável enquanto a barra aparece/some
+    const L = s.lvh || vh;
+    const band = L * 0.6;
     // a barra escurece quando o topo da tela já está no azul da noite: cobertura, em y = 0, das camadas que
     // descem (anoitecer, azul profundo, espaço). Troca de uma vez (0/1) e o CSS faz a transição no tempo,
     // então a barra nunca fica num cinza intermediário nem vira uma faixa clara sobre o céu escuro
-    const topCover = Math.max(...cam.bg.slice(1).map((w) => (reduced ? w : clamp((w * (vh + band)) / band))));
+    const topCover = Math.max(...cam.bg.slice(1).map((w) => (reduced ? w : clamp((w * (L + band)) / band))));
     root.setProperty("--nav-dark", topCover > 0.35 ? "1" : "0");
     cam.bg.forEach((w, i) => {
       const el = bgRefs.current[i + 1];
@@ -120,15 +130,15 @@ export default function Landscape() {
         return;
       }
       el.style.opacity = w > 0.001 ? "1" : "0";
-      el.style.height = `${(vh + band).toFixed(0)}px`;
+      el.style.height = `${(L + band).toFixed(0)}px`;
       const mk = `linear-gradient(to top, transparent 0, #000 ${band.toFixed(0)}px)`;
       el.style.maskImage = mk;
       el.style.webkitMaskImage = mk;
-      const wt = (w - 1) * (vh + band);
+      const wt = (w - 1) * (L + band);
       el.style.transform = `translate3d(0, ${wt.toFixed(1)}px, 0)`;
       const fill = el.firstElementChild as HTMLElement | null;
       if (fill) {
-        fill.style.height = `${vh}px`;
+        fill.style.height = `${L}px`;
         fill.style.transform = `translate3d(0, ${(-wt).toFixed(1)}px, 0)`;
       }
     });
@@ -138,7 +148,6 @@ export default function Landscape() {
     }
   }, -10);
 
-  const bleed = `${-FRAME.bleed * 100}%`;
   return (
     <div className="landscape" aria-hidden="true">
       {BG.map((id, i) => (
@@ -161,7 +170,7 @@ export default function Landscape() {
             layerRefs.current[i] = el;
           }}
           className={`ls-layer ls-${L.id}`}
-          style={{ zIndex: L.z, inset: L.id === "sky" ? "-12%" : bleed }}
+          style={{ zIndex: L.z, ...layerBox(L.id === "sky" ? 12 : FRAME.bleed * 100) }}
         >
           <Image
             src={L.src}

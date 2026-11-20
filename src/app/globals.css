@@ -328,7 +328,11 @@ a {
 /* nuvens persistentes de fundo: a mesma foto em 3 profundidades (só transform e opacity) */
 .ls-clouds {
   position: fixed;
-  inset: 0;
+  /* altura estável (vh = maior viewport no celular), presa ao pé da tela: as nuvens não reposicionam
+     quando a barra do navegador aparece/some */
+  inset: auto 0 0 0;
+  height: 100vh;
+  height: 100lvh;
   overflow: hidden;
   pointer-events: none;
 }
@@ -354,6 +358,13 @@ a {
   -webkit-mask-composite: source-in;
   mask-image: linear-gradient(to top, transparent, #000 24%), linear-gradient(to right, transparent, #000 6%, #000 94%, transparent);
   mask-composite: intersect;
+}
+/* toque: sem desfoque nas camadas de nuvem (camadas enormes no celular; o ganho visual em tela de alta
+   densidade é mínimo e o custo de rasterizar é alto) */
+@media (hover: none) {
+  .ls-cloud-img {
+    filter: none;
+  }
 }
 /* no celular (tela em pé) as nuvens precisam ser bem mais largas para ter altura */
 @media (max-aspect-ratio: 1/1) {
@@ -412,6 +423,14 @@ a {
 }
 html:not(.fx) .nav-bg {
   opacity: 1;
+}
+/* toque: sem backdrop-filter na barra (redesfocar as camadas animadas a cada quadro trava a rolagem no
+   celular); o vidro já é quase opaco */
+@media (hover: none) {
+  .nav-bg {
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+  }
 }
 .nav-in {
   position: relative;

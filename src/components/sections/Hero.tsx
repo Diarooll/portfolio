@@ -46,7 +46,7 @@ export default function Hero() {
   }, []);
 
   // medidas: de onde o nome sai e onde fica a marca da barra
-  useMeasure(() => {
+  useMeasure((ms) => {
     const el = name.current;
     const brand = document.querySelector<HTMLElement>(".brand");
     const stage = backStage.current;
@@ -59,7 +59,7 @@ export default function Hero() {
     if (card && wrapEl && window.innerWidth < 700) {
       const gap = 14;
       const navH = parseFloat(getComputedStyle(document.documentElement).getPropertyValue("--nav-h")) || 96;
-      const pref = navH + 0.3 * window.innerHeight;
+      const pref = navH + 0.3 * ms.vh;
       const fit = wrapEl.clientHeight - parseFloat(getComputedStyle(card).bottom || "16") - card.offsetHeight - gap - el.offsetHeight;
       el.style.setProperty("--hn-top", `${Math.max(8, Math.min(pref, fit)).toFixed(1)}px`);
     } else el.style.removeProperty("--hn-top");

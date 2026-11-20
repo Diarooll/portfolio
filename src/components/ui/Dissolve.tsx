@@ -54,7 +54,8 @@ export default function Dissolve({ as = "span", text, unit = "char", seed = 1, i
       const st = it.el.style;
       st.opacity = (0.06 + 0.94 * kk).toFixed(3);
       if (s.reduced) continue;
-      st.filter = kk >= 1 ? "none" : `blur(${((1 - kk) * 7).toFixed(2)}px)`;
+      // no toque, sem desfoque por letra: animar filter repinta o texto a cada quadro (caro no GPU do celular)
+      if (!s.coarse) st.filter = kk >= 1 ? "none" : `blur(${((1 - kk) * 7).toFixed(2)}px)`;
       st.transform = kk >= 1 ? "none" : `translate3d(0, ${((1 - kk) * 0.2).toFixed(3)}em, 0)`;
     }
   });
