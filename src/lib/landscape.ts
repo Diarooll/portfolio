@@ -140,26 +140,31 @@ export function cameraAt(s: number, M: Partial<Record<SectionId, Metrics>>, vh: 
     ],
     s,
   );
-  // altitude: um valor por seção, interpolado
-  const alt = keyframes(
-    [
-      { y: 0, v: ALTITUDE.hero },
-      { y: heroEnd, v: 0.5 },
-      { y: top("sobre", 0.5), v: ALTITUDE.sobre },
-      { y: top("stack", 0.5), v: ALTITUDE.stack },
-      // subida suave pela Stack e pela abertura de Projetos (nada de salto): o tom dourado vem de "warm"
-      { y: top("projetos", 0), v: 2.45 },
-      { y: top("projetos", 0.4), v: ALTITUDE.projetos },
-      // a Jornada rola normal: o céu escurece no começo, chega ao azul profundo e às estrelas no meio e está
-      // quase no espaço pleno no fim dela, antes de o Contato entrar
-      { y: top("jornada", 0), v: 3.4 },
-      { y: top("jornada", 0.5), v: 4.2 },
-      { y: top("jornada", 1) - vh, v: 4.8 },
-      { y: top("contato", 0.3), v: ALTITUDE.contato },
-    ],
-    s,
-    (t) => t, // linear entre as seções: a curva já é suave por ter muitas paradas
-  );
+  // fim da Jornada: o ponto em que ela sai de cena por cima (topo + altura - vh). Numa Jornada mais baixa que
+  // 2 telas esse ponto caía ANTES do meio dela e as chaves ficavam fora de ordem: a altitude saltava de 4,2
+  // para 4,8 de uma vez (corte duro de cor entre a Jornada e o Contato). O meio agora é derivado do fim
+  const jTop = top("jornada", 0);
+  const jEnd = Math.max(top("jornada", 1) - vh, top("jornada", 0.6));
+  const jMid = jTop + (jEnd - jTop) * 0.55;
+  // altitude: um valor por seção, interpolado (as chaves são forçadas a ficar em ordem crescente)
+  const altKeys = [
+    { y: 0, v: ALTITUDE.hero },
+    { y: heroEnd, v: 0.5 },
+    { y: top("sobre", 0.5), v: ALTITUDE.sobre },
+    { y: top("stack", 0.5), v: ALTITUDE.stack },
+    // subida suave pela Stack e pela abertura de Projetos (nada de salto): o tom dourado vem de "warm"
+    { y: top("projetos", 0), v: 2.45 },
+    { y: top("projetos", 0.4), v: ALTITUDE.projetos },
+    // a Jornada rola normal: o céu escurece no começo, chega ao azul profundo e às estrelas no meio e está
+    // quase no espaço pleno no fim dela, antes de o Contato entrar
+    { y: jTop, v: 3.4 },
+    { y: jMid, v: 4.2 },
+    { y: jEnd, v: 4.8 },
+    { y: top("contato", 0.3), v: ALTITUDE.contato },
+  ];
+  for (let i = 1; i < altKeys.length; i++) altKeys[i].y = Math.max(altKeys[i].y, altKeys[i - 1].y + 1);
+  // linear entre as seções: a curva já é suave por ter muitas paradas
+  const alt = keyframes(altKeys, s, (t) => t);
   // mistura do azul do dia para a luz dourada (céu + nuvens), da metade da Stack até a abertura de
   // Projetos: trecho mais curto que antes, numa única curva quíntica (sem o meio abrupto do smoothstep duplo)
   const w0 = top("stack", 0.45);
