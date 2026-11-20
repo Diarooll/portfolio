@@ -23,6 +23,8 @@
   --topo-line-strong: rgba(210, 168, 106, 0.30);
   --shadow: 0 18px 40px -24px rgba(0, 0, 0, 0.7);
   --brand-linkedin: #3B8FD9; /* azul do LinkedIn, clareado para o fundo escuro */
+  --spark: #F2B84B;       /* detalhes pequenos: vapor do café (Java) */
+  --hot: #F0663A;         /* laranja do logo do Java: 1 ou 2 pontos */
   --icon-sun: block;      /* qual ícone o botão de tema mostra */
   --icon-moon: none;
   color-scheme: dark;
@@ -85,6 +87,8 @@
     --topo-line-strong: rgba(133, 89, 42, 0.30);
     --shadow: 0 18px 40px -24px rgba(40, 52, 30, 0.35);
     --brand-linkedin: #0A66C2;
+    --spark: #D99A1E;
+    --hot: #D9531E;
     --icon-sun: none;
     --icon-moon: block;
     color-scheme: light;
@@ -105,6 +109,80 @@
   --topo-line: rgba(80, 106, 40, 0.16);
   --topo-line-strong: rgba(133, 89, 42, 0.30);
   --shadow: 0 18px 40px -24px rgba(40, 52, 30, 0.35);
+  --brand-linkedin: #0A66C2;
+  --spark: #D99A1E;
+  --hot: #D9531E;
+  --icon-sun: none;
+  --icon-moon: block;
+  color-scheme: light;
+}
+
+/* ==========================================================
+   STACK: data-stack="python|java" no <html>, independente do tema.
+   Java = verde atual (blocos acima). Python = azul, abaixo.
+   Contraste AA medido (texto sobre bg / bg-soft / surface):
+   - Python claro: fg 14.1/13.1/15.7, muted 6.2/5.7/6.9, accent 6.0/5.5/6.7, warm 5.8/5.4/6.5
+   - Python escuro: fg 14.7/13.5/12.4, muted 8.0/7.3/6.7, accent 6.8/6.2/5.8, warm 12.1/11.0/10.2
+   ========================================================== */
+:root[data-stack="python"] {
+  --bg: #0B1B33;
+  --bg-soft: #0F2340;
+  --surface: #13294A;
+  --line: #23406B;
+  --fg: #E6EEF9;
+  --muted: #9DB2CF;
+  --accent: #6FA8DC;
+  --accent-ink: #0B1B33;
+  --warm: #FFD43B;
+  --spark: #FFD43B;
+  --hot: #FFD43B;
+  --topo-line: rgba(111, 168, 220, 0.18);
+  --topo-line-strong: rgba(255, 212, 59, 0.30);
+  --shadow: 0 18px 40px -24px rgba(0, 0, 0, 0.7);
+  --brand-linkedin: #3B8FD9;
+  --icon-sun: block;
+  --icon-moon: none;
+  color-scheme: dark;
+}
+
+@media (prefers-color-scheme: light) {
+  :root[data-stack="python"]:not([data-theme="dark"]) {
+    --bg: #EEF3FA;
+    --bg-soft: #E3EBF6;
+    --surface: #FFFFFF;
+    --line: #CBD7E8;
+    --fg: #12233F;
+    --muted: #4A5B78;
+    --accent: #2B5F92;
+    --accent-ink: #FFFFFF;
+    --warm: #7A5800;
+    --spark: #E0B000;
+    --hot: #3776AB;
+    --topo-line: rgba(55, 118, 171, 0.18);
+    --topo-line-strong: rgba(224, 176, 0, 0.35);
+    --shadow: 0 18px 40px -24px rgba(18, 35, 63, 0.35);
+    --brand-linkedin: #0A66C2;
+    --icon-sun: none;
+    --icon-moon: block;
+    color-scheme: light;
+  }
+}
+
+:root[data-stack="python"][data-theme="light"] {
+  --bg: #EEF3FA;
+  --bg-soft: #E3EBF6;
+  --surface: #FFFFFF;
+  --line: #CBD7E8;
+  --fg: #12233F;
+  --muted: #4A5B78;
+  --accent: #2B5F92;
+  --accent-ink: #FFFFFF;
+  --warm: #7A5800;
+  --spark: #E0B000;
+  --hot: #3776AB;
+  --topo-line: rgba(55, 118, 171, 0.18);
+  --topo-line-strong: rgba(224, 176, 0, 0.35);
+  --shadow: 0 18px 40px -24px rgba(18, 35, 63, 0.35);
   --brand-linkedin: #0A66C2;
   --icon-sun: none;
   --icon-moon: block;

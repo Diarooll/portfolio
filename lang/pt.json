@@ -1,7 +1,7 @@
 {
   "meta": {
-    "title": "Diego Olalla · Back-end Java",
-    "description": "Portfólio de Diego Olalla, estudante de Engenharia de Software na FIAP com foco em back-end Java e Spring Boot."
+    "title": "Diego Olalla · Back-end Python",
+    "description": "Portfólio de Diego Olalla, estudante de Engenharia de Software na FIAP com foco em back-end Python, com FastAPI e Django."
   },
   "nav": {
     "label": "Navegação principal",
@@ -23,6 +23,7 @@
     "contact": "Contato"
   },
   "hero": {
+    "switchLabel": "Engenheiro de software em",
     "greeting": "Olá, eu sou",
     "name": "Diego Olalla",
     "prefix": "eu construo",
@@ -30,21 +31,22 @@
       "APIs",
       "sistemas",
       "regras de negócio",
-      "projetos em Java"
+      "projetos em Python"
     ],
-    "lead": "Estudante de Engenharia de Software na FIAP, aprendendo back-end com Java e Spring Boot.",
+    "lead": "Estudante de Engenharia de Software na FIAP, aprendendo back-end com Python, FastAPI e Django.",
     "ctaProjects": "Ver projetos",
     "ctaContact": "Falar comigo"
   },
   "about": {
     "photoAlt": "Diego de óculos e camiseta preta, com a cabeça apoiada na mão",
     "p1": "Estudo Engenharia de Software e gosto mais do back-end, a parte que fica por trás da tela: APIs, regras de negócio e dados.",
-    "p2": "Hoje trabalho como freelancer fazendo landing pages e, em breve, vou partir para sistemas mais complexos. Ao mesmo tempo, firmo a base em Java e estudo Spring Boot e SQL. Aprendo melhor construindo projetos, e o código deles está aqui."
+    "p2": "Hoje trabalho como freelancer fazendo landing pages e, em breve, vou partir para sistemas mais complexos. Ao mesmo tempo, firmo a base em Python e estudo FastAPI e Django, além de Java e Spring Boot e SQL. Aprendo melhor construindo projetos, e o código deles está aqui."
   },
   "stack": {
     "focus": "Foco",
     "also": "Também já usei",
-    "learning": "estudando"
+    "learning": "estudando",
+    "claude": "Claude Code"
   },
   "projects": {
     "intro": "Projetos de estudo e de freelance, com o que cada um tem de interessante.",
@@ -58,21 +60,27 @@
       "desc": "Landing page de marketing que fiz como freelancer para um estacionamento com duas unidades no Méier (RJ). Mostra os preços de cada unidade, mapas com tour 360° e um aviso de \"Aberto agora\" calculado no fuso de São Paulo.",
       "learned": "SEO local com JSON-LD, módulos JS isolados com import(), um modo leve que desliga efeitos pesados em máquinas fracas e cache-busting com versão na URL."
     },
-    "p2": {
-      "title": "JavaNelio",
-      "desc": "Exercícios do curso de Java do Nelio Alves. A interface InterestService calcula juros e tem duas implementações, BrazilInterestService e UsaInterestService.",
-      "learned": "Interfaces, polimorfismo e default methods. Cada país segue o mesmo contrato com a sua própria taxa.",
-      "tagOop": "POO"
-    },
     "p3": {
       "title": "Este portfólio",
       "desc": "Feito com HTML, CSS e JavaScript puros, sem framework. Tem versão em português e inglês, tema claro e escuro, e um mapa topográfico animado no topo que reage ao mouse.",
       "learned": "IntersectionObserver, fetch de JSON, eventos customizados, Canvas e acessibilidade."
     },
     "wip": {
-      "title": "Próximo projeto: uma API com Spring Boot",
-      "desc": "Estou estudando para construir a primeira API REST com Spring Boot e banco de dados. Acompanhe pelo GitHub.",
+      "title": "Próximo projeto: uma API com FastAPI",
+      "desc": "Estou estudando para construir a primeira API REST com FastAPI e banco de dados. Acompanhe pelo GitHub.",
       "link": "Ver meu GitHub"
+    },
+    "p4": {
+      "title": "$ents",
+      "desc": "App de gestão financeira. A diferença: mostra quanto do seu salário já está comprometido com assinaturas e parcelas.",
+      "status": "EM ANDAMENTO",
+      "kind": "Projeto pessoal"
+    },
+    "p5": {
+      "title": "ALERA",
+      "desc": "Alerta de chuva com o nome da sua rua, entregue no WhatsApp. Cruza a previsão do tempo com as 142 áreas de risco de Juiz de Fora e avisa o morador antes da água subir. Feito em equipe (MonkeyNerds).",
+      "status": "PROTÓTIPO · EM ANDAMENTO",
+      "kind": "FIAP Challenge 2026 · projeto da faculdade"
     }
   },
   "journey": {
@@ -100,7 +108,7 @@
     "next": {
       "date": "próximo passo",
       "title": "Estágio ou vaga júnior em back-end",
-      "desc": "Quero entrar num time em que eu aprenda com pessoas mais experientes e ajude no back-end com Java e Spring Boot."
+      "desc": "Quero entrar num time em que eu aprenda com pessoas mais experientes e ajude no back-end com Python, FastAPI e Django."
     }
   },
   "contact": {
@@ -115,5 +123,35 @@
   },
   "declaration": {
     "comment": "cada seção abaixo é um método deste objeto"
+  },
+  "java": {
+    "meta": {
+      "title": "Diego Olalla · Back-end Java",
+      "description": "Portfólio de Diego Olalla, estudante de Engenharia de Software na FIAP com foco em back-end Java e Spring Boot."
+    },
+    "hero": {
+      "words": [
+        "APIs",
+        "sistemas",
+        "regras de negócio",
+        "projetos em Java"
+      ],
+      "lead": "Estudante de Engenharia de Software na FIAP, aprendendo back-end com Java e Spring Boot."
+    },
+    "about": {
+      "p2": "Hoje trabalho como freelancer fazendo landing pages e, em breve, vou partir para sistemas mais complexos. Ao mesmo tempo, firmo a base em Java e estudo Spring Boot e SQL. Aprendo melhor construindo projetos, e o código deles está aqui."
+    },
+    "journey": {
+      "next": {
+        "desc": "Quero entrar num time em que eu aprenda com pessoas mais experientes e ajude no back-end com Java e Spring Boot."
+      }
+    },
+    "projects": {
+      "wip": {
+        "title": "Próximo projeto: uma API com Spring Boot",
+        "desc": "Estou estudando para construir a primeira API REST com Spring Boot e banco de dados. Acompanhe pelo GitHub.",
+        "link": "Ver meu GitHub"
+      }
+    }
   }
 }

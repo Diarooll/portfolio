@@ -74,7 +74,17 @@
   // getValue(dict, "projects.p1.title") faz:
   //   dict -> dict.projects -> dict.projects.p1 -> dict.projects.p1.title
   // Se algum pedaço não existir, devolve undefined (sem dar erro).
+  // Variante por stack: se data-stack="java" e existe dict.java.<chave>,
+  // usa o texto do Java; senão o texto padrão (Python).
   function getValue(dict, key) {
+    if (document.documentElement.getAttribute("data-stack") === "java" && dict.java) {
+      const v = rawValue(dict.java, key);
+      if (v !== undefined) return v;
+    }
+    return rawValue(dict, key);
+  }
+
+  function rawValue(dict, key) {
     return key.split(".").reduce(function (obj, part) {
       return obj && obj[part] !== undefined ? obj[part] : undefined;
     }, dict);
@@ -138,7 +148,7 @@
     // 5) Avisa os outros scripts. CustomEvent permite mandar dados junto
     //    no campo "detail".
     document.dispatchEvent(
-      new CustomEvent("langchange", { detail: { lang: lang, dict: dict } })
+      new CustomEvent("langchange", { detail: { lang: lang, dict: dict, words: getValue(dict, "hero.words") } })
     );
   }
 
@@ -181,6 +191,11 @@
   // Carrega o idioma inicial. Mesmo sendo PT, baixamos o pt.json para
   // que I18n.t() funcione (o toast precisa dos textos).
   setLang(detectInitialLang());
+
+  // Trocou Java/Python: re-renderiza os textos sem recarregar
+  document.addEventListener("stackchange", function () {
+    if (currentDict) applyDict(currentLang, currentDict);
+  });
 
   // Clique no botão: alterna entre os dois idiomas.
   const toggle = document.getElementById("lang-toggle");

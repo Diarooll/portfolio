@@ -1,10 +1,10 @@
 <!DOCTYPE html>
-<html lang="pt-BR">
+<html lang="pt-BR" data-stack="python">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Diego Olalla · Back-end Java</title>
-  <meta name="description" content="Portfólio Diego Olalla | Software Engineer at FIAP | Java Back-end developer">
+  <title>Diego Olalla · Back-end Python</title>
+  <meta name="description" content="Portfólio Diego Olalla | Software Engineer at FIAP | Python Back-end developer">
   <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
 
   <!-- Antes de qualquer CSS:
@@ -17,6 +17,8 @@
       if (savedTheme === "light" || savedTheme === "dark") {
         document.documentElement.setAttribute("data-theme", savedTheme);
       }
+      var savedStack = localStorage.getItem("stack");
+      document.documentElement.setAttribute("data-stack", savedStack === "java" ? "java" : "python");
     } catch (e) {}
   </script>
 
@@ -89,9 +91,9 @@
         <h1 class="hero__name intro" style="--i: 1" data-i18n="hero.name">Diego Olalla</h1>
         <p class="hero__subtitle intro" style="--i: 2">
           <span data-i18n="hero.prefix">eu construo</span>
-          <span class="typing" id="typing" data-words='["APIs","sistemas","regras de negócio","projetos em Java"]'>APIs</span>
+          <span class="typing" id="typing" data-words='["APIs","sistemas","regras de negócio","projetos em Python"]'>APIs</span>
         </p>
-        <p class="hero__lead intro" style="--i: 3" data-i18n="hero.lead">Estudante de Engenharia de Software na FIAP, aprendendo back-end com Java e Spring Boot.</p>
+        <p class="hero__lead intro" style="--i: 3" data-i18n="hero.lead">Estudante de Engenharia de Software na FIAP, aprendendo back-end com Python, FastAPI e Django.</p>
         <div class="hero__actions intro" style="--i: 4">
           <a href="#projetos" class="btn btn--primary magnetic">
             <span data-i18n="hero.ctaProjects">Ver projetos</span>
@@ -101,6 +103,17 @@
             <span data-i18n="hero.ctaContact">Falar comigo</span>
           </a>
         </div>
+        <div class="stack-switch intro" style="--i: 5" role="group" aria-labelledby="stack-switch-label">
+          <span class="stack-switch__label" id="stack-switch-label" data-i18n="hero.switchLabel">Engenheiro de software em</span>
+          <div class="stack-switch__pills">
+            <button type="button" class="stack-pill" data-stack-btn="java" aria-pressed="false">
+              <i class="devicon-java-plain" aria-hidden="true"></i><span>Java</span>
+            </button>
+            <button type="button" class="stack-pill" data-stack-btn="python" aria-pressed="true">
+              <i class="devicon-python-plain" aria-hidden="true"></i><span>Python</span>
+            </button>
+          </div>
+        </div>
       </div>
     </section>
 
@@ -108,8 +121,8 @@
     <div class="declaration" aria-hidden="true">
       <div class="container">
         <p class="declaration__code reveal">
-          <span class="code__comment declaration__comment">// <span data-i18n="declaration.comment">cada seção abaixo é um método deste objeto</span></span>
-          <span class="code__type">Developer</span> <span class="code__var">diego</span> <span class="code__punct">=</span> <span class="code__keyword">new</span> <span class="code__type">Developer</span><span class="code__punct">(</span><span class="code__string">"Java Backend"</span><span class="code__punct declaration__end">);</span>
+          <span class="code__comment declaration__comment"><span class="for-java">// </span><span class="for-python"># </span><span data-i18n="declaration.comment">cada seção abaixo é um método deste objeto</span></span>
+          <span class="for-python"><span class="code__var">diego</span> <span class="code__punct">=</span> <span class="code__type">Developer</span><span class="code__punct">(</span><span class="code__string">"Python Backend"</span><span class="code__punct declaration__end">)</span></span><span class="for-java"><span class="code__type">Developer</span> <span class="code__var">diego</span> <span class="code__punct">=</span> <span class="code__keyword">new</span> <span class="code__type">Developer</span><span class="code__punct">(</span><span class="code__string">"Java Backend"</span><span class="code__punct declaration__end">);</span></span>
         </p>
       </div>
     </div>
@@ -118,7 +131,7 @@
     <section id="sobre" class="section" aria-labelledby="sobre-title">
       <div class="container">
         <h2 class="section__title reveal" id="sobre-title">
-          <span class="section__code" aria-hidden="true"><span class="code__obj">diego</span><span class="code__punct">.</span><span class="code__method">getAbout</span><span class="code__punct">();</span></span>
+          <span class="section__code" aria-hidden="true"><span class="code__obj">diego</span><span class="code__punct">.</span><span class="for-java"><span class="code__method">getAbout</span><span class="code__punct">();</span></span><span class="for-python"><span class="code__method">get_about</span><span class="code__punct">()</span></span></span>
           <span class="section__label sr-only" data-i18n="sections.about">Sobre mim</span>
         </h2>
 
@@ -132,19 +145,43 @@
 
           <div class="about__text">
             <p class="about__lede reveal" style="--delay: 0.05s" data-i18n="about.p1">Estudo Engenharia de Software e gosto mais do back-end, a parte que fica por trás da tela: APIs, regras de negócio e dados.</p>
-            <p class="reveal" style="--delay: 0.1s" data-i18n="about.p2">Hoje trabalho como freelancer fazendo landing pages e, em breve, vou partir para sistemas mais complexos. Ao mesmo tempo, firmo a base em Java e estudo Spring Boot e SQL. Aprendo melhor construindo projetos, e o código deles está aqui.</p>
+            <p class="reveal" style="--delay: 0.1s" data-i18n="about.p2">Hoje trabalho como freelancer fazendo landing pages e, em breve, vou partir para sistemas mais complexos. Ao mesmo tempo, firmo a base em Python e estudo FastAPI e Django, além de Java e Spring Boot e SQL. Aprendo melhor construindo projetos, e o código deles está aqui.</p>
 
             <div class="stack">
-              <div class="stack__group reveal" style="--delay: 0.15s">
+              <div class="stack__group for-python reveal" style="--delay: 0.15s">
+                <h3 class="stack__title" data-i18n="stack.focus">Foco</h3>
+                <ul class="stack__list">
+                  <li class="stack__item"><i class="devicon-python-plain colored" aria-hidden="true"></i><span>Python</span></li>
+                  <li class="stack__item"><i class="devicon-fastapi-plain colored" aria-hidden="true"></i><span>FastAPI</span><span class="tag tag--learning" data-i18n="stack.learning">estudando</span></li>
+                  <li class="stack__item"><i class="devicon-django-plain" aria-hidden="true"></i><span>Django</span><span class="tag tag--learning" data-i18n="stack.learning">estudando</span></li>
+                  <li class="stack__item"><i class="devicon-postgresql-plain colored" aria-hidden="true"></i><span>PostgreSQL</span><span class="tag tag--learning" data-i18n="stack.learning">estudando</span></li>
+                  <li class="stack__item"><i class="devicon-docker-plain colored" aria-hidden="true"></i><span>Docker</span></li>
+                  <li class="stack__item"><i class="devicon-githubactions-plain colored" aria-hidden="true"></i><span>GitHub Actions</span></li>
+                </ul>
+              </div>
+
+              <div class="stack__group for-python reveal" style="--delay: 0.2s">
+                <h3 class="stack__title" data-i18n="stack.also">Também já usei</h3>
+                <ul class="stack__list">
+                  <li class="stack__item"><i class="devicon-java-plain colored" aria-hidden="true"></i><span>Java</span></li>
+                  <li class="stack__item"><i class="devicon-spring-original colored" aria-hidden="true"></i><span>Spring Boot</span></li>
+                  <li class="stack__item"><i class="devicon-html5-plain colored" aria-hidden="true"></i><span>HTML</span></li>
+                  <li class="stack__item"><i class="devicon-css3-plain colored" aria-hidden="true"></i><span>CSS</span></li>
+                  <li class="stack__item"><i class="devicon-javascript-plain colored" aria-hidden="true"></i><span>JavaScript</span></li>
+                  <li class="stack__item"><i class="devicon-git-plain colored" aria-hidden="true"></i><span>Git</span></li>
+                  <li class="stack__item"><span class="stack__glyph" aria-hidden="true">&gt;_</span><span data-i18n="stack.claude">Claude Code</span></li>
+                </ul>
+              </div>
+
+              <div class="stack__group for-java reveal" style="--delay: 0.15s">
                 <h3 class="stack__title" data-i18n="stack.focus">Foco</h3>
                 <ul class="stack__list">
                   <li class="stack__item"><i class="devicon-java-plain colored" aria-hidden="true"></i><span>Java</span></li>
                   <li class="stack__item"><i class="devicon-spring-original colored" aria-hidden="true"></i><span>Spring Boot</span><span class="tag tag--learning" data-i18n="stack.learning">estudando</span></li>
-                  <li class="stack__item"><i class="devicon-postgresql-plain colored" aria-hidden="true"></i><span>SQL</span><span class="tag tag--learning" data-i18n="stack.learning">estudando</span></li>
                 </ul>
               </div>
 
-              <div class="stack__group reveal" style="--delay: 0.2s">
+              <div class="stack__group for-java reveal" style="--delay: 0.2s">
                 <h3 class="stack__title" data-i18n="stack.also">Também já usei</h3>
                 <ul class="stack__list">
                   <li class="stack__item"><i class="devicon-python-plain colored" aria-hidden="true"></i><span>Python</span></li>
@@ -153,6 +190,7 @@
                   <li class="stack__item"><i class="devicon-css3-plain colored" aria-hidden="true"></i><span>CSS</span></li>
                   <li class="stack__item"><i class="devicon-javascript-plain colored" aria-hidden="true"></i><span>JavaScript</span></li>
                   <li class="stack__item"><i class="devicon-git-plain colored" aria-hidden="true"></i><span>Git</span></li>
+                  <li class="stack__item"><span class="stack__glyph" aria-hidden="true">&gt;_</span><span data-i18n="stack.claude">Claude Code</span></li>
                 </ul>
               </div>
             </div>
@@ -165,17 +203,43 @@
     <section id="projetos" class="section" aria-labelledby="projetos-title">
       <div class="container">
         <h2 class="section__title reveal" id="projetos-title">
-          <span class="section__code section__code--wrap" aria-hidden="true"><span class="code__type">List</span><span class="code__punct">&lt;</span><span class="code__type">Project</span><span class="code__punct">&gt;</span> <span class="code__var">projects</span> <span class="code__punct">=</span> <span class="code__obj">diego</span><span class="code__punct">.</span><span class="code__method">getProjects</span><span class="code__punct">();</span></span>
+          <span class="section__code section__code--wrap" aria-hidden="true"><span class="for-java"><span class="code__type">List</span><span class="code__punct">&lt;</span><span class="code__type">Project</span><span class="code__punct">&gt;</span> <span class="code__var">projects</span> <span class="code__punct">=</span> <span class="code__obj">diego</span><span class="code__punct">.</span><span class="code__method">getProjects</span><span class="code__punct">();</span></span><span class="for-python"><span class="code__var">projects</span> <span class="code__punct">=</span> <span class="code__obj">diego</span><span class="code__punct">.</span><span class="code__method">get_projects</span><span class="code__punct">()</span></span></span>
           <span class="section__label sr-only" data-i18n="sections.projects">Projetos</span>
         </h2>
         <p class="section__intro reveal" data-i18n="projects.intro">Projetos de estudo e de freelance, com o que cada um tem de interessante.</p>
 
         <!-- O "for each" do Java em volta dos cards: cada card é um "p" -->
         <div class="loop">
-          <p class="loop__line reveal" aria-hidden="true"><span class="code__keyword">for</span> <span class="code__punct">(</span><span class="code__type">Project</span> <span class="code__var loop__p">p</span> <span class="code__punct">:</span> <span class="code__var">projects</span><span class="code__punct">) {</span></p>
+          <p class="loop__line reveal" aria-hidden="true"><span class="for-java"><span class="code__keyword">for</span> <span class="code__punct">(</span><span class="code__type">Project</span> <span class="code__var loop__p">p</span> <span class="code__punct">:</span> <span class="code__var">projects</span><span class="code__punct">) {</span></span><span class="for-python"><span class="code__keyword">for</span> <span class="code__var loop__p">p</span> <span class="code__keyword">in</span> <span class="code__var">projects</span><span class="code__punct">:</span></span></p>
           <div class="loop__body">
             <div class="projects">
-              <article class="card reveal" style="--delay: 0s">
+              <article class="card card--brand reveal" data-proj="p4" style="--delay: 0s">
+                <div class="card__head">
+                  <span class="card__file"><span class="for-python">models.py</span><span class="for-java">Subscription.java</span></span>
+                  <span class="card__lang"><span class="lang-dot lang-dot--py"></span>Python</span>
+                </div>
+                <h3 class="card__title" data-i18n="projects.p4.title">$ents</h3>
+                <p class="card__desc" data-i18n="projects.p4.desc">App de gestão financeira. A diferença: mostra quanto do seu salário já está comprometido com assinaturas e parcelas.</p>
+                <p class="card__meta"><span data-i18n="projects.p4.kind">Projeto pessoal</span> · <strong data-i18n="projects.p4.status">EM ANDAMENTO</strong></p>
+                <ul class="card__tags" aria-label="Tecnologias" data-i18n-attr="aria-label:projects.tagsLabel">
+                  <li class="tag">Django</li><li class="tag">FastAPI</li>
+                </ul>
+              </article>
+
+              <article class="card card--brand reveal" data-proj="p5" style="--delay: 0.08s">
+                <div class="card__head">
+                  <span class="card__file"><span class="for-python">views.py</span><span class="for-java">AlertController.java</span></span>
+                  <span class="card__lang"><span class="lang-dot lang-dot--py"></span>Python</span>
+                </div>
+                <h3 class="card__title" data-i18n="projects.p5.title">ALERA</h3>
+                <p class="card__desc" data-i18n="projects.p5.desc">Alerta de chuva com o nome da sua rua, entregue no WhatsApp. Cruza a previsão do tempo com as 142 áreas de risco de Juiz de Fora e avisa o morador antes da água subir. Feito em equipe (MonkeyNerds).</p>
+                <p class="card__meta"><span data-i18n="projects.p5.kind">FIAP Challenge 2026 · projeto da faculdade</span> · <strong data-i18n="projects.p5.status">PROTÓTIPO · EM ANDAMENTO</strong></p>
+                <ul class="card__tags" aria-label="Tecnologias" data-i18n-attr="aria-label:projects.tagsLabel">
+                  <li class="tag">Django</li><li class="tag">Django REST Framework</li><li class="tag">PostgreSQL</li>
+                </ul>
+              </article>
+
+              <article class="card card--brand reveal" data-proj="p1" style="--delay: 0.16s">
                 <div class="card__head">
                   <span class="card__file">hours.js</span>
                   <span class="card__lang"><span class="lang-dot lang-dot--js"></span>JavaScript</span>
@@ -201,30 +265,8 @@
                 </div>
               </article>
     
-              <article class="card reveal" style="--delay: 0.08s">
-                <div class="card__head">
-                  <span class="card__file">InterestService.java</span>
-                  <span class="card__lang"><span class="lang-dot lang-dot--java"></span>Java</span>
-                </div>
-                <h3 class="card__title" data-i18n="projects.p2.title">JavaNelio</h3>
-                <p class="card__desc" data-i18n="projects.p2.desc">Exercícios do curso de Java do Nelio Alves. A interface InterestService calcula juros e tem duas implementações, BrazilInterestService e UsaInterestService.</p>
-                <div class="card__learned">
-                  <strong data-i18n="projects.learned">O que aprendi</strong>
-                  <p data-i18n="projects.p2.learned">Interfaces, polimorfismo e default methods. Cada país segue o mesmo contrato com a sua própria taxa.</p>
-                </div>
-                <ul class="card__tags" aria-label="Tecnologias" data-i18n-attr="aria-label:projects.tagsLabel">
-                  <li class="tag">Java</li>
-                  <li class="tag" data-i18n="projects.p2.tagOop">POO</li>
-                  <li class="tag">Interfaces</li>
-                </ul>
-                <div class="card__links">
-                  <a class="card__link" href="https://github.com/Diarooll/JavaNelio" target="_blank" rel="noopener">
-                    <i class="devicon-github-original" aria-hidden="true"></i><span data-i18n="projects.code">Código</span>
-                  </a>
-                </div>
-              </article>
-    
-              <article class="card reveal" style="--delay: 0.16s">
+   
+              <article class="card reveal" style="--delay: 0.32s">
                 <div class="card__head">
                   <span class="card__file">main.js</span>
                   <span class="card__lang"><span class="lang-dot lang-dot--js"></span>JavaScript</span>
@@ -247,9 +289,9 @@
                 </div>
               </article>
     
-              <a class="card card--wip reveal" style="--delay: 0.24s" href="https://github.com/Diarooll" target="_blank" rel="noopener">
+              <a class="card card--wip reveal" style="--delay: 0.4s" href="https://github.com/Diarooll" target="_blank" rel="noopener">
                 <div class="card__head">
-                  <span class="card__file">Application.java</span>
+                  <span class="card__file"><span class="for-python">main.py</span><span class="for-java">Application.java</span></span>
                   <span class="card__lang"><span class="lang-dot lang-dot--wip"></span>WIP</span>
                 </div>
                 <h3 class="card__title" data-i18n="projects.wip.title">Próximo projeto: uma API com Spring Boot</h3>
@@ -260,7 +302,7 @@
               </a>
             </div>
           </div>
-          <p class="loop__line loop__line--close reveal" aria-hidden="true"><span class="code__punct">}</span></p>
+          <p class="loop__line loop__line--close for-java reveal" aria-hidden="true"><span class="code__punct">}</span></p>
         </div>
       </div>
     </section>
@@ -269,7 +311,7 @@
     <section id="jornada" class="section" aria-labelledby="jornada-title">
       <div class="container">
         <h2 class="section__title reveal" id="jornada-title">
-          <span class="section__code" aria-hidden="true"><span class="code__obj">diego</span><span class="code__punct">.</span><span class="code__method">getJourney</span><span class="code__punct">();</span></span>
+          <span class="section__code" aria-hidden="true"><span class="code__obj">diego</span><span class="code__punct">.</span><span class="for-java"><span class="code__method">getJourney</span><span class="code__punct">();</span></span><span class="for-python"><span class="code__method">get_journey</span><span class="code__punct">()</span></span></span>
           <span class="section__label sr-only" data-i18n="sections.journey">Jornada</span>
         </h2>
         <p class="section__intro reveal" data-i18n="journey.intro">O caminho até aqui, em ordem.</p>
@@ -299,7 +341,7 @@
           <li class="timeline__item timeline__item--next reveal">
             <span class="timeline__date" data-i18n="journey.next.date">próximo passo</span>
             <h3 class="timeline__title" data-i18n="journey.next.title">Estágio ou vaga júnior em back-end</h3>
-            <p class="timeline__desc" data-i18n="journey.next.desc">Quero entrar num time em que eu aprenda com pessoas mais experientes e ajude no back-end com Java e Spring Boot.</p>
+            <p class="timeline__desc" data-i18n="journey.next.desc">Quero entrar num time em que eu aprenda com pessoas mais experientes e ajude no back-end com Python, FastAPI e Django.</p>
           </li>
         </ol>
       </div>
@@ -309,7 +351,7 @@
     <section id="contato" class="section section--contact" aria-labelledby="contato-title">
       <div class="container">
         <h2 class="section__title reveal" id="contato-title">
-          <span class="section__code" aria-hidden="true"><span class="code__obj">diego</span><span class="code__punct">.</span><span class="code__method">contact</span><span class="code__punct">();</span></span>
+          <span class="section__code" aria-hidden="true"><span class="code__obj">diego</span><span class="code__punct">.</span><span class="for-java"><span class="code__method">contact</span><span class="code__punct">();</span></span><span class="for-python"><span class="code__method">contact</span><span class="code__punct">()</span></span></span>
           <span class="section__label sr-only" data-i18n="sections.contact">Contato</span>
         </h2>
 
@@ -322,29 +364,29 @@
                (counter) e destaca a linha no hover, como num editor. -->
           <div class="code-card reveal" style="--delay: 0.1s">
             <div class="code-card__bar" aria-hidden="true">
-              <span class="code-card__file">Contact.java</span>
+              <span class="code-card__file"><span class="for-python">contact.py</span><span class="for-java">Contact.java</span></span>
             </div>
             <ol class="code-card__lines">
               <li class="code-line code-line--static" aria-hidden="true">
-                <span class="code-line__code"><span class="code__type">Contact</span> <span class="code__var">diego</span> <span class="code__punct">=</span> <span class="code__type">Contact</span><span class="code__punct">.</span><span class="code__method">builder</span><span class="code__punct">()</span></span>
+                <span class="code-line__code"><span class="for-java"><span class="code__type">Contact</span> <span class="code__var">diego</span> <span class="code__punct">=</span> <span class="code__type">Contact</span><span class="code__punct">.</span><span class="code__method">builder</span><span class="code__punct">()</span></span><span class="for-python"><span class="code__var">diego</span> <span class="code__punct">=</span> <span class="code__type">Contact</span><span class="code__punct">(</span></span></span>
               </li>
               <li class="code-line code-line--key">
                 <a class="code-line__link" href="mailto:diego.aleola@gmail.com" aria-label="Email: diego.aleola@gmail.com">
-                  <span class="code-line__icon code-line__icon--email" aria-hidden="true"><svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3.5 6.5 8.5 6.5 8.5-6.5"/></svg></span><span class="code__punct">.</span><span class="code__method">email</span><span class="code__punct">(</span><span class="code__string">"<span id="email-address">diego.aleola@gmail.com</span>"</span><span class="code__punct">)</span>
+                  <span class="code-line__icon code-line__icon--email" aria-hidden="true"><svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3.5 6.5 8.5 6.5 8.5-6.5"/></svg></span><span class="for-java"><span class="code__punct">.</span><span class="code__method">email</span><span class="code__punct">(</span></span><span class="for-python"><span class="code__method">email</span><span class="code__punct">=</span></span><span class="code__string">"<span id="email-address">diego.aleola@gmail.com</span>"</span><span class="for-java"><span class="code__punct">)</span></span><span class="for-python"><span class="code__punct">,</span></span>
                 </a>
                 <button class="code-line__action" type="button" id="copy-email" data-email="diego.aleola@gmail.com">
-                  <span class="code__comment">// </span><span data-i18n="contact.copy">copiar</span>
+                  <span class="code__comment"><span class="for-java">// </span><span class="for-python"># </span></span><span data-i18n="contact.copy">copiar</span>
                 </button>
               </li>
               <li class="code-line code-line--key">
                 <a class="code-line__link" href="https://www.linkedin.com/in/diego-olalla/" target="_blank" rel="noopener" aria-label="LinkedIn: in/diego-olalla">
-                  <span class="code-line__icon code-line__icon--linkedin" aria-hidden="true"><i class="devicon-linkedin-plain"></i></span><span class="code__punct">.</span><span class="code__method">linkedin</span><span class="code__punct">(</span><span class="code__string">"in/diego-olalla"</span><span class="code__punct">)</span>
+                  <span class="code-line__icon code-line__icon--linkedin" aria-hidden="true"><i class="devicon-linkedin-plain"></i></span><span class="for-java"><span class="code__punct">.</span><span class="code__method">linkedin</span><span class="code__punct">(</span></span><span class="for-python"><span class="code__method">linkedin</span><span class="code__punct">=</span></span><span class="code__string">"in/diego-olalla"</span><span class="for-java"><span class="code__punct">)</span></span><span class="for-python"><span class="code__punct">,</span></span>
                   <svg class="code-line__arrow" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 17 17 7M8 7h9v9"/></svg>
                 </a>
               </li>
               <li class="code-line code-line--key">
                 <a class="code-line__link" href="https://github.com/Diarooll" target="_blank" rel="noopener" aria-label="GitHub: Diarooll">
-                  <span class="code-line__icon code-line__icon--github" aria-hidden="true"><i class="devicon-github-original"></i></span><span class="code__punct">.</span><span class="code__method">github</span><span class="code__punct">(</span><span class="code__string">"Diarooll"</span><span class="code__punct">)</span>
+                  <span class="code-line__icon code-line__icon--github" aria-hidden="true"><i class="devicon-github-original"></i></span><span class="for-java"><span class="code__punct">.</span><span class="code__method">github</span><span class="code__punct">(</span></span><span class="for-python"><span class="code__method">github</span><span class="code__punct">=</span></span><span class="code__string">"Diarooll"</span><span class="for-java"><span class="code__punct">)</span></span><span class="for-python"><span class="code__punct">,</span></span>
                   <svg class="code-line__arrow" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 17 17 7M8 7h9v9"/></svg>
                 </a>
               </li>
@@ -353,15 +395,15 @@
                    voltar a ser um <a class="code-line__link" href="assets/cv.pdf" download>. -->
               <li class="code-line code-line--key code-line--soon">
                 <span class="code-line__code">
-                  <span class="code-line__icon code-line__icon--cv" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5M12 11v6M9 14.5l3 3 3-3"/></svg></span><span class="code__punct">.</span><span class="code__method">cv</span><span class="code__punct">(</span><span class="code__const">null</span><span class="code__punct">)</span>
-                  <span class="code__comment code-line__hint"> // <span data-i18n="contact.cvSoon">currículo ainda não disponível</span></span>
+                  <span class="code-line__icon code-line__icon--cv" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5M12 11v6M9 14.5l3 3 3-3"/></svg></span><span class="for-java"><span class="code__punct">.</span><span class="code__method">cv</span><span class="code__punct">(</span><span class="code__const">null</span><span class="code__punct">)</span></span><span class="for-python"><span class="code__method">cv</span><span class="code__punct">=</span><span class="code__const">None</span><span class="code__punct">,</span></span>
+                  <span class="code__comment code-line__hint"> <span class="for-java">//</span><span class="for-python">#</span> <span data-i18n="contact.cvSoon">currículo ainda não disponível</span></span>
                 </span>
               </li>
               <li class="code-line code-line--static" aria-hidden="true">
-                <span class="code-line__code"><span class="code__indent"></span><span class="code__punct">.</span><span class="code__method">openTo</span><span class="code__punct">(</span><span class="code__const">INTERNSHIP</span><span class="code__punct">,</span> <span class="code__const">JUNIOR</span><span class="code__punct">)</span></span>
+                <span class="code-line__code"><span class="code__indent"></span><span class="for-java"><span class="code__punct">.</span><span class="code__method">openTo</span><span class="code__punct">(</span><span class="code__const">INTERNSHIP</span><span class="code__punct">,</span> <span class="code__const">JUNIOR</span><span class="code__punct">)</span></span><span class="for-python"><span class="code__method">open_to</span><span class="code__punct">=[</span><span class="code__const">INTERNSHIP</span><span class="code__punct">,</span> <span class="code__const">JUNIOR</span><span class="code__punct">],</span></span></span>
               </li>
               <li class="code-line code-line--static" aria-hidden="true">
-                <span class="code-line__code"><span class="code__indent"></span><span class="code__punct">.</span><span class="code__method">build</span><span class="code__punct">();</span></span>
+                <span class="code-line__code"><span class="for-java"><span class="code__indent"></span><span class="code__punct">.</span><span class="code__method">build</span><span class="code__punct">();</span></span><span class="for-python"><span class="code__punct">)</span></span></span>
               </li>
             </ol>
           </div>
@@ -389,5 +431,6 @@
   <script src="js/reveal.js" defer></script>
   <script src="js/topo.js" defer></script>
   <script src="js/main.js" defer></script>
+  <script src="js/stack.js" defer></script>
 </body>
 </html>
