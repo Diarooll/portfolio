@@ -49,12 +49,13 @@ export default function Landscape() {
       if (!el) return;
       const x = -cur.current.x * L.mouse;
       if (L.id === "sky") {
-        // o céu é o plano mais distante: desce devagar (até ~9% da tela) desde o primeiro pixel
+        // o céu é o plano mais distante: desce bem devagar, sem parar, até as nuvens (~10% da tela no máximo,
+        // dentro da sobra de 12% do quadro, então a borda nunca aparece). A deriva lateral é só a do tempo
+        // (minúscula); a que seguia a rolagem foi tirada: ela empurrava o céu de lado quando a foto acabava
         const t = clamp(cam.hill / 0.8);
-        const rise = reduced ? 0 : (1 - (1 - t) * (1 - t)) * 0.09 * vh;
-        // depois que o morro sai (Sobre/Stack) o céu continuava parado: ele agora desliza de lado com a subida
-        // (até ~7% da largura, dentro da sobra do quadro) e deriva devagar no tempo
-        const slide = reduced ? 0 : -clamp(cam.alt - 0.4, 0, 1.7) * 0.04 * vw + Math.sin(s.t * 0.11) * 0.012 * vw;
+        const late = clamp((cam.alt - 0.5) / 1.6);
+        const rise = reduced ? 0 : ((1 - (1 - t) * (1 - t)) * 0.04 + late * 0.06) * vh;
+        const slide = reduced ? 0 : Math.sin(s.t * 0.11) * 0.008 * vw * (1 - late);
         el.style.transform = `translate3d(${(x + slide).toFixed(2)}px, ${(rise - cur.current.y * L.mouse * 0.5).toFixed(2)}px, 0)`;
         el.style.opacity = cam.sky.toFixed(3);
       } else if (reduced) {
