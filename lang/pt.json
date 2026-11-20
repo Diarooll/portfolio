@@ -23,6 +23,7 @@
     "contact": "Contato"
   },
   "hero": {
+    "switchLabel": "Engenheiro de software em",
     "greeting": "Olá, eu sou",
     "name": "Diego Olalla",
     "prefix": "eu construo",

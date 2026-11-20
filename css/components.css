@@ -1726,3 +1726,85 @@
   opacity: 1;
   transform: translate(-50%, 0);
 }
+
+/* ==========================================================
+   SELETOR DE STACK (Java | Python) + animação do círculo
+   ========================================================== */
+.stack-switch {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-xs) var(--space-sm);
+  margin-top: var(--space-md);
+}
+
+.stack-switch__label {
+  font-family: var(--font-mono);
+  font-size: var(--text-sm);
+  color: var(--muted);
+}
+
+.stack-switch__pills {
+  display: inline-flex;
+  gap: var(--space-xs);
+}
+
+.stack-pill {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  min-height: 44px;
+  min-width: 44px;
+  padding: 0 1.1rem;
+  font: 500 var(--text-sm) var(--font-body);
+  color: var(--fg);
+  background: transparent;
+  border: 1.5px solid var(--line);
+  border-radius: var(--radius-pill);
+  cursor: pointer;
+  transition: background var(--dur-fast), border-color var(--dur-fast), color var(--dur-fast), box-shadow var(--dur-fast);
+}
+
+.stack-pill i { font-size: 1.15rem; }
+
+.stack-pill:hover { border-color: var(--accent); }
+
+.stack-pill[aria-pressed="true"] {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: var(--accent-ink);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--spark) 35%, transparent);
+}
+
+/* ícone ativo ganha o detalhe pequeno: amarelo (Python) / âmbar (Java) */
+.stack-pill[aria-pressed="true"] i { color: var(--spark); }
+:root[data-stack="python"][data-theme="light"] .stack-pill[aria-pressed="true"] i { color: #FFD43B; }
+.stack-pill[data-stack-btn="java"][aria-pressed="true"]::after {
+  content: "";
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--hot);
+}
+
+/* detalhes pequenos na cor "spark" */
+.typing::after { background: var(--spark); }
+.navbar__indicator { background: var(--spark); }
+::selection { background: color-mix(in srgb, var(--spark) 70%, var(--bg)); color: var(--fg); }
+
+/* ----- Animação de troca: círculo que cresce a partir do botão ----- */
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation: none;
+  mix-blend-mode: normal;
+}
+::view-transition-new(root) { z-index: 2; }
+::view-transition-old(root) { z-index: 1; }
+
+body { transition: opacity 0.15s linear; }
+html.stack-fade body { opacity: 0; }
+
+@media (prefers-reduced-motion: reduce) {
+  .stack-pill { transition: none; }
+}
