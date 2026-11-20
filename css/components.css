@@ -1036,6 +1036,9 @@
 .lang-dot--java { background: #B07219; }
 .lang-dot--css { background: #663399; }
 .lang-dot--js { background: #F1E05A; }
+.lang-dot--py { background: #3572A5; }
+.card__meta { margin: 0 0 0.75rem; font-size: 0.8125rem; opacity: 0.85; }
+.stack__glyph { display: inline-block; min-width: 1.5em; font-family: ui-monospace, monospace; font-weight: 700; text-align: center; }
 .lang-dot--wip { border: 1.5px dashed var(--warm); }
 
 .card__title {

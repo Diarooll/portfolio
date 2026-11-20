@@ -44,7 +44,8 @@
   "stack": {
     "focus": "Foco",
     "also": "Também já usei",
-    "learning": "estudando"
+    "learning": "estudando",
+    "claude": "Claude Code"
   },
   "projects": {
     "intro": "Projetos de estudo e de freelance, com o que cada um tem de interessante.",
@@ -73,6 +74,18 @@
       "title": "Próximo projeto: uma API com Spring Boot",
       "desc": "Estou estudando para construir a primeira API REST com Spring Boot e banco de dados. Acompanhe pelo GitHub.",
       "link": "Ver meu GitHub"
+    },
+    "p4": {
+      "title": "$ents",
+      "desc": "App de gestão financeira. A diferença: mostra quanto do seu salário já está comprometido com assinaturas e parcelas.",
+      "status": "EM ANDAMENTO",
+      "kind": "Projeto pessoal"
+    },
+    "p5": {
+      "title": "ALERA",
+      "desc": "Alerta de chuva com o nome da sua rua, entregue no WhatsApp. Cruza a previsão do tempo com as 142 áreas de risco de Juiz de Fora e avisa o morador antes da água subir. Feito em equipe (MonkeyNerds).",
+      "status": "PROTÓTIPO · EM ANDAMENTO",
+      "kind": "FIAP Challenge 2026 · projeto da faculdade"
     }
   },
   "journey": {
