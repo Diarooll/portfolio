@@ -29,6 +29,7 @@ export default function Stack() {
   const tree = useRef<HTMLDivElement>(null);
   const wrapEl = useRef<HTMLDivElement>(null);
   const head = useRef<HTMLDivElement>(null);
+  const mist = useRef<(HTMLDivElement | null)[]>([]);
   const dirs = useRef<{ x: number; y: number }[]>([]);
   useSection("stack", section);
 
@@ -60,45 +61,63 @@ export default function Stack() {
     // entrada suave; saída: as placas se espalham para os cantos da tela, antes de Projetos chegar.
     // Com movimento reduzido o conteúdo só some num crossfade.
     const enter = sstep(clamp((y - (m.top - 0.9 * vh)) / (0.6 * vh)));
-    const ex = s.reduced ? 0 : clamp((y - (pj.top - 1.15 * vh)) / (0.85 * vh));
+    const ex = s.reduced ? 0 : clamp((y - (pj.top - 0.8 * vh)) / (0.85 * vh));
+    // as placas entram DEPOIS do título (que usa titleP), uma após a outra
+    const enterP = sstep(clamp((y - (m.top - 0.5 * vh)) / (0.75 * vh)));
     const wrap = wrapEl.current;
     if (wrap) {
-      const o = s.reduced ? 1 - sstep(clamp((y - (pj.top - 0.85 * vh)) / (0.3 * vh))) : 1;
+      const o = s.reduced ? 1 - sstep(clamp((y - (pj.top - 0.5 * vh)) / (0.3 * vh))) : 1;
       const inView = o > 0.004 && y > m.top - 1.3 * vh && ex < 0.999;
       wrap.style.opacity = o.toFixed(3);
       wrap.style.visibility = inView ? "visible" : "hidden";
       wrap.style.pointerEvents = o > 0.5 && ex < 0.3 ? "" : "none";
     }
     // o título, o subtítulo e a dica somem ANTES de as placas começarem a sair
-    const textOut = s.reduced ? 1 : 1 - sstep(clamp((y - (pj.top - 1.42 * vh)) / (0.24 * vh)));
+    const textOut = s.reduced ? 1 : 1 - sstep(clamp((y - (pj.top - 1.07 * vh)) / (0.24 * vh)));
     if (head.current) head.current.style.opacity = textOut.toFixed(3);
     const tr = tree.current;
     if (!tr) return;
     if (s.reduced) {
       tr.style.opacity = enter.toFixed(3);
+      mist.current.forEach((el) => el && (el.style.opacity = "0"));
       return;
     }
+    // faixas de névoa NA FRENTE de algumas placas: aparecem com a entrada e somem com a saída
+    const mo = enterP * (1 - sstep(clamp(ex / 0.5)));
+    mist.current.forEach((el, i) => {
+      if (!el) return;
+      el.style.opacity = (mo * (i ? 0.38 : 0.46)).toFixed(3);
+      el.style.transform = `translate3d(${clamp((y - m.top) * (i ? -0.05 : 0.04), -90, 90).toFixed(1)}px, 0, 0)`;
+    });
+    const par = clamp((y - m.top) / vh, -1, 1);
     tr.style.opacity = "";
     const leaves = tr.querySelectorAll<HTMLElement>(".leaf");
     const n = leaves.length;
     const out = easeOut(ex);
     leaves.forEach((el, i) => {
-      const k = easeOut(clamp((enter - (i / n) * 0.35) / 0.65));
+      // stagger: cada placa começa um pouco depois da anterior (~60ms de rolagem) e sobe 24px, de .9 a 1
+      const k = easeOut(clamp((enterP - (i / n) * 0.45) / 0.55));
+      const back = i % 3 === 1;
       const d = dirs.current[i] ?? { x: 0, y: 0 };
       const tx = d.x * vw * 0.75 * out * out;
-      const ty = d.y * vh * 0.75 * out * out;
+      // placas do plano de trás: menores e mais lentas (paralaxe leve), sempre dentro da própria célula
+      const ty = d.y * vh * 0.75 * out * out + (back ? par * 12 : 0);
+      const bs = back ? 0.84 : 1;
       const rot = d.x * 40 * out;
-      el.style.opacity = k.toFixed(3);
-      el.style.transform = `translate3d(${tx.toFixed(1)}px, ${(ty + (1 - k) * 18).toFixed(1)}px, 0) rotate(${rot.toFixed(1)}deg) scale(${(0.88 + 0.12 * k - 0.2 * out).toFixed(3)})`;
+      el.style.opacity = (k * (back ? 0.82 : 1)).toFixed(3);
+      el.style.transform = `translate3d(${tx.toFixed(1)}px, ${(ty + (1 - k) * 24).toFixed(1)}px, 0) rotate(${rot.toFixed(1)}deg) scale(${((0.9 + 0.1 * k - 0.2 * out) * bs).toFixed(3)})`;
     });
   });
 
   const hint = (touch ? t("hintTouch") : t("hint"));
   const activeTech = active >= 0 ? techs[active] : null;
   // onde a tecnologia é usada, só a partir das tags de stack dos projetos
+  // linguagem derivada dos frameworks dos projetos (django/fastapi -> Python; spring -> Java), sem inventar usos
+  const LANG: Partial<Record<string, string[]>> = { python: ["django", "fastapi"], java: ["spring"] };
+  const hasTag = (tag: string, id: string) => tag === id || tag.startsWith(`${id} `);
   const usedIn = activeTech
     ? projects
-        .filter((p) => p.stack.some((tag) => tag === activeTech.id || tag.startsWith(`${activeTech.id} `)))
+        .filter((p) => p.stack.some((tag) => hasTag(tag, activeTech.id) || (LANG[activeTech.id] ?? []).some((f) => hasTag(tag, f))))
         .map((p) => p.name)
         .join(", ")
     : "";
@@ -115,10 +134,10 @@ export default function Stack() {
         <div ref={wrapEl} className="wrap st-wrap">
           <div ref={head} className="st-head">
             <Dissolve as="h2" className="title" id="stackT" text={t("title")} seed={5} progress={titleP} />
-            <p className="st-use" aria-hidden="true">
-              {use}
-            </p>
           </div>
+          <p className="st-use" aria-hidden="true">
+            {use}
+          </p>
           <div ref={tree} className="tree" tabIndex={0} role="group" aria-label={pick(stackCopy.label, locale)}>
             {techGroups.map((g) => (
               <div key={g.id} className="tgroup">
@@ -132,7 +151,7 @@ export default function Stack() {
                     return (
                       <li key={it.id}>
                         <button
-                          className={`tn leaf${active === i ? " is-on" : ""}`}
+                          className={`tn leaf${active === i ? " is-on" : ""}${i % 3 === 1 ? " back" : ""}`}
                           style={{ ["--fd" as string]: `${(6 + ((i * 7) % 5) * 0.9).toFixed(1)}s`, ["--fl" as string]: `${(-((i * 13) % 9) * 0.8).toFixed(1)}s` }}
                           aria-label={it.name}
                           type="button"
@@ -158,6 +177,8 @@ export default function Stack() {
               </div>
             ))}
           </div>
+          <div ref={(el) => void (mist.current[0] = el)} className="st-mist st-mist-a" aria-hidden="true" />
+          <div ref={(el) => void (mist.current[1] = el)} className="st-mist st-mist-b" aria-hidden="true" />
           {/* sem texto de instrução na tela: só um aviso para leitores de tela (a tecnologia em foco) */}
           <p id="treeNote" className="sr" aria-live="polite">
             {note}

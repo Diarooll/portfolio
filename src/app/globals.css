@@ -770,6 +770,9 @@ html:not(.fx) .hero-front {
   letter-spacing: 0.02em;
 }
 .st-use {
+  position: absolute;
+  top: clamp(0.8rem, 3vh, 2rem);
+  right: 0;
   min-height: 1.2em;
   color: var(--fg);
   font: 500 0.8125rem var(--font-mono);
@@ -985,6 +988,28 @@ html:not(.fx) .hero-front {
 }
 .st-head .title {
   text-shadow: 0 2px 24px rgba(251, 247, 238, 0.6);
+}
+/* névoa fina na frente de algumas placas (só na Stack; não captura clique) */
+.st-mist {
+  position: absolute;
+  left: -10%;
+  width: 120%;
+  height: clamp(70px, 14vh, 130px);
+  background: url("/landscape/cloud-bank.webp") center / cover no-repeat;
+  -webkit-mask-image: radial-gradient(ellipse closest-side at 50% 50%, #000 35%, transparent 100%);
+  mask-image: radial-gradient(ellipse closest-side at 50% 50%, #000 35%, transparent 100%);
+  pointer-events: none;
+  opacity: 0;
+  z-index: 2;
+}
+.st-mist-a {
+  top: 32%;
+}
+.st-mist-b {
+  top: 62%;
+}
+.leaf.back .logo {
+  filter: blur(1px);
 }
 .tree {
   position: relative;
