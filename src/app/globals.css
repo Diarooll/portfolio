@@ -1176,7 +1176,7 @@ html[data-motion="reduced"] .tree .leaf {
 }
 .pnl {
   position: relative;
-  background: color-mix(in srgb, var(--pb) 94%, transparent);
+  background: var(--pb);
   color: var(--pf);
   --pl: color-mix(in srgb, var(--pf) 24%, transparent);
   --pm: color-mix(in srgb, var(--pf) 74%, transparent);
@@ -1510,14 +1510,15 @@ html[data-motion="reduced"] .tree .leaf {
   .fx .strip-lb {
     display: block;
     position: absolute;
-    top: 50%;
-    left: calc(var(--j) * var(--S) + var(--sk) / 2 + 8px);
+    top: auto;
+    bottom: 14vh;
+    left: calc(var(--j) * var(--S) + var(--sk) * 0.2 + var(--S) / 2 - 0.5em);
     writing-mode: vertical-rl;
-    transform: translateY(-50%) rotate(180deg);
+    transform: rotate(calc(180deg + var(--phi, 0rad)));
     font: 500 var(--fs-mono) var(--font-mono);
     letter-spacing: 0.08em;
     white-space: nowrap;
-    color: var(--pm);
+    color: var(--pf);
     z-index: 2;
   }
   .fx:not(.rm) .edge {

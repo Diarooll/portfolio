@@ -60,6 +60,7 @@ export default function Projetos() {
       P.fm = clamp(s.vw * 0.11, 100, 200);
       tr.style.setProperty("--S", `${P.S.toFixed(1)}px`);
       tr.style.setProperty("--sk", `${P.sk.toFixed(1)}px`);
+      tr.style.setProperty("--phi", `${P.phi.toFixed(4)}rad`);
     } else {
       panels.current.forEach((pn) => {
         if (pn.el) {
@@ -105,9 +106,9 @@ export default function Projetos() {
           pn.el.style.visibility = a <= 0 ? "hidden" : "visible";
           pn.el.style.opacity = "";
           if (i > 0) {
-            const F = lerp(26, P.fm, Math.pow(1 - a, 0.8));
+            const F = lerp(0, P.fm, Math.pow(1 - a, 0.8));
             const t0 = (L + sk) * Math.cos(P.phi);
-            const mk = a <= 0 ? "" : `linear-gradient(${(90 + (P.phi * 180) / Math.PI).toFixed(3)}deg, transparent ${t0.toFixed(1)}px, #000 ${(t0 + F).toFixed(1)}px)`;
+            const mk = a <= 0 || a >= 0.995 ? "" : `linear-gradient(${(90 + (P.phi * 180) / Math.PI).toFixed(3)}deg, transparent ${t0.toFixed(1)}px, #000 ${(t0 + F).toFixed(1)}px)`;
             if (maskKey.current[i] !== mk) {
               maskKey.current[i] = mk;
               pn.el.style.maskImage = mk;
@@ -140,23 +141,14 @@ export default function Projetos() {
         pn.el.inert = c > 0.98;
         pp.current[i] = RM ? (raw > 0 ? 1 : 0) * clamp((p - A[i][0]) / 0.05) : clamp((p - A[i][0] + 0.01) / 0.16);
       });
-      // saída: o trilho se dissolve na cor do fundo (sem blur) e a base some
-      // por uma máscara vertical longa, sem corte reto; a Jornada nasce daqui
+      // saída: o trilho só perde opacidade, sem máscara, nos últimos ~0,4 de tela
       const pEnd = m.top + m.h - vh;
-      const pe = sstep(clamp((y - (pEnd - 0.3 * vh)) / (0.9 * vh)));
-      tr.style.opacity = (1 - pe * pe).toFixed(3);
+      const pe = clamp((y - (pEnd - 0.4 * vh)) / (0.4 * vh));
+      tr.style.opacity = (1 - pe).toFixed(3);
       tr.style.filter = "";
       tr.style.transform = "";
-      if (pe > 0.001) {
-        const a0 = (100 - 70 * pe).toFixed(2);
-        const a1 = (100 - 30 * pe).toFixed(2);
-        const mk = `linear-gradient(to bottom, #000 ${a0}%, transparent ${a1}%)`;
-        tr.style.maskImage = mk;
-        tr.style.webkitMaskImage = mk;
-      } else {
-        tr.style.maskImage = "";
-        tr.style.webkitMaskImage = "";
-      }
+      tr.style.maskImage = "";
+      tr.style.webkitMaskImage = "";
     } else {
       tr.style.opacity = "";
       tr.style.filter = "";
