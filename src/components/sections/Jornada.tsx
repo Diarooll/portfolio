@@ -1,14 +1,11 @@
 "use client";
-// Jornada: o site SOBE. A seção fica presa na tela e o conteúdo desce com a rolagem (como a paisagem), então
-// a Jornada começa por baixo: o marco mais antigo fica embaixo e o mais recente em cima. Uma linha fina
-// (motion graphics) nasce no pé da cena e sobe passando pelo meio de cada cartão; o cartão fica colorido
-// (cor de destaque) quando a linha chega nele e é neutro antes disso. Movimento reduzido: sem seção presa,
-// linha toda desenhada e todos os cartões já coloridos.
+// Jornada: rolagem NORMAL, sem seção presa. Tudo acompanha a rolagem 1:1, sempre de baixo para cima, em ordem
+// cronológica (o mais antigo em cima, o mais recente embaixo). Os cartões fazem zigue-zague ligados por uma
+// linha em S; a ponta da linha fica fixa a 62% da altura da tela e o traço vai até ela. Cada cartão acende
+// quando a ponta passa de 30% da altura dele. Movimento reduzido: linha toda desenhada e cartões acesos.
 // Desenho em SVG: o caminho é calculado uma vez (no resize) e só o stroke-dashoffset muda com a rolagem.
 import { useRef } from "react";
 import { useLocale, useTranslations } from "next-intl";
-import { clamp, lerp } from "@/lib/math";
-import { M, requestMeasure } from "@/lib/scroll-engine";
 import { journey } from "@/content/journey";
 import { pick } from "@/content/types";
 import Dissolve from "@/components/ui/Dissolve";
@@ -24,12 +21,8 @@ interface LineGeo {
   cards: { top: number; h: number }[];
   nodes: SVGCircleElement[];
   knotAt: number[];
-  /** quanto o conteúdo precisa descer durante a seção presa (px) */
-  travel: number;
-  /** altura útil do palco (tela menos a barra) */
-  win: number;
-  /** fim do título na cena (px): quando ele já cabe na tela */
-  headBottom: number;
+  /** topo da cena no documento (px) */
+  sceneTop: number;
   rm: boolean;
 }
 
@@ -48,7 +41,7 @@ export default function Jornada() {
   const items = useRef<(HTMLLIElement | null)[]>([]);
   const geo = useRef<LineGeo | null>(null);
   const lastTi = useRef(-2);
-  const titleP = useRef(0);
+  const dirty = useRef(true);
   useSection("jornada", section);
 
   useMeasure((s) => {
@@ -57,29 +50,11 @@ export default function Jornada() {
     const sv = svg.current;
     const hd = head.current;
     if (!sec || !sc || !sv || !hd || !list.current) return;
-    const { vw, vh } = s;
+    const { vw } = s;
     const rm = document.documentElement.dataset.motion === "reduced";
-    const navH = parseFloat(getComputedStyle(document.documentElement).getPropertyValue("--nav-h")) || 64;
-    sc.style.transform = "none";
-    const Hc = sc.offsetHeight;
-    const win = Math.max(1, vh - navH);
-    const travel = rm ? 0 : Math.max(0, Hc - win);
-    // a seção presa dura a altura da tela + o quanto o conteúdo desce (rolagem 1:1); depois de ajustar a altura
-    // pede uma nova medida (os tops das seções de baixo mudam)
-    if (rm) {
-      if (sec.style.height) {
-        sec.style.height = "";
-        requestMeasure();
-      }
-    } else {
-      const want = Math.round(vh + travel);
-      if (Math.abs(sec.offsetHeight - want) > 1) {
-        sec.style.height = `${want}px`;
-        requestMeasure();
-      }
-    }
     const sr = sc.getBoundingClientRect();
     const W = sr.width;
+    const Hc = sc.offsetHeight;
     sv.setAttribute("viewBox", `0 0 ${W.toFixed(0)} ${Hc.toFixed(0)}`);
     sv.style.height = `${Hc}px`;
     const mob = vw < 860;
@@ -93,18 +68,17 @@ export default function Jornada() {
       const r = rect(c);
       return { top: r.top, h: r.h };
     });
-    // âncoras: no desktop a linha passa pelo MEIO de cada cartão (o vidro cobre o traço); no celular ela
-    // corre na trilha da esquerda, ao lado dos cartões
-    const knots = lis.map((li, i) => {
+    // âncoras: a borda interna de cada cartão (onde fica o nó), na altura da data; no celular a linha corre
+    // na trilha da esquerda
+    const knots = lis.map((li) => {
       const kn = rect(li.querySelector(".knot")!);
-      const c = rect(cardsEl[i]);
-      return [mob ? kn.x : c.x, c.y] as Pt;
+      return [kn.x, kn.y] as Pt;
     });
     const cx = mob ? (knots[0]?.[0] ?? 24) : W / 2;
     const hb = rect(hd);
-    const headBottom = hb.top + hb.h;
-    const start: Pt = [cx, Hc - 4];
-    const end: Pt = [cx, headBottom + 18];
+    const start: Pt = [cx, hb.top + hb.h + 14];
+    const last = knots[knots.length - 1];
+    const end: Pt = [last ? last[0] : cx, (last ? last[1] : start[1]) + 36];
     const pts: Pt[] = [start];
     const curve = (p: Pt, q: Pt, n: number) => {
       const dy = q[1] - p[1];
@@ -152,57 +126,47 @@ export default function Jornada() {
           return c;
         })
       : [];
-    geo.current = { P: pts, L, main, cards, nodes, knotAt, travel, win, headBottom, rm };
+    geo.current = { P: pts, L, main, cards, nodes, knotAt, sceneTop: sr.top + window.scrollY, rm };
     lastTi.current = -2;
+    dirty.current = true;
   });
 
   useScrollFrame((s) => {
-    if (!s.changed) return;
-    const m = M.jornada;
     const G = geo.current;
-    const sc = scene.current;
-    if (!m || !G || !sc) return;
-    const { y, vh } = s;
-    const { P, L, travel, win, cards } = G;
+    if (!G || (!s.changed && !dirty.current)) return;
+    dirty.current = false;
+    const { P, L, cards } = G;
     const total = L[L.length - 1] || 1;
 
-    // movimento reduzido: tudo desenhado e colorido, nada se mexe
+    // movimento reduzido: tudo desenhado e aceso, nada se mexe
     if (G.rm || s.reduced) {
       if (lastTi.current !== -1) {
         lastTi.current = -1;
-        sc.style.transform = "";
         G.main.style.strokeDashoffset = "0";
         G.nodes.forEach((n) => n.classList.add("on"));
         items.current.forEach((li) => li?.classList.add("on"));
         if (tip.current) tip.current.style.opacity = "0";
       }
-      titleP.current = 1;
       return;
     }
 
-    // progresso da seção presa: o conteúdo DESCE (a câmera sobe), mostrando de baixo para cima
-    const q = clamp((y - m.top) / Math.max(1, m.h - vh));
-    const u = clamp((q - 0.04) / 0.92);
-    const ty = -travel * (1 - u);
-    sc.style.transform = `translate3d(0, ${ty.toFixed(2)}px, 0)`;
-    // a "ponta" da linha fica numa altura da tela que sobe de 92% (embaixo) a 20% (em cima)
-    const c = lerp(0.92, 0.2, u) * win - ty;
-    titleP.current = clamp((u - (1 - G.headBottom / Math.max(1, travel))) / 0.12);
-
-    // cartões: ficam coloridos quando a linha chega neles
+    // ponta da linha: fixa a 62% da altura da tela, em coordenadas da cena
+    const c = s.y + 0.62 * s.vh - G.sceneTop;
     items.current.forEach((li, i) => {
       if (!li || !cards[i]) return;
-      li.classList.toggle("on", c <= cards[i].top + cards[i].h * 0.72);
+      li.classList.toggle("on", c >= cards[i].top + 0.3 * cards[i].h);
     });
-    // linha: do pé da cena para cima (os pontos vão de baixo para cima: y decrescente)
-    let ti = P.length - 1;
-    if (P[0][1] <= c) ti = 0;
+    // último ponto do caminho com y <= c (os pontos vão de cima para baixo: y crescente)
+    let lo = 0;
+    let hi = P.length - 1;
+    if (P[0][1] > c) hi = 0;
     else
-      for (let i = 0; i < P.length; i++)
-        if (P[i][1] <= c) {
-          ti = i;
-          break;
-        }
+      while (lo < hi) {
+        const mid = (lo + hi + 1) >> 1;
+        if (P[mid][1] <= c) lo = mid;
+        else hi = mid - 1;
+      }
+    const ti = hi;
     if (ti === lastTi.current) return;
     lastTi.current = ti;
     G.main.style.strokeDashoffset = (1 - L[ti] / total).toFixed(4);
@@ -218,16 +182,16 @@ export default function Jornada() {
   }, -1);
 
   return (
-    <section ref={section} className="pin jornada" id="jornada" aria-labelledby="jornT">
-      <div className="stage j-stage">
+    <section ref={section} className="jornada" id="jornada" aria-labelledby="jornT">
+      <div>
         <div ref={scene} className="j-scene">
           <svg ref={svg} className="j-root" aria-hidden="true" focusable="false">
             <g className="jr-main" />
-            <circle ref={tip} className="jr-tip" r="4" style={{ opacity: 0 }} />
+            <circle ref={tip} className="jr-tip" r="5" style={{ opacity: 0 }} />
           </svg>
           <div className="wrap">
             <div ref={head} className="j-head">
-              <Dissolve as="h2" className="title" id="jornT" text={t("title")} seed={6} progress={() => titleP.current} />
+              <Dissolve as="h2" className="title" id="jornT" text={t("title")} seed={6} />
               <p className="glass">{t("sub")}</p>
             </div>
             <ol ref={list} className="zig">

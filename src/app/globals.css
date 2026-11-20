@@ -1633,32 +1633,21 @@ html[data-motion="reduced"] .tree .leaf {
   }
 }
 
-/* ---------- jornada: o site sobe ---------- */
-/* Seção presa: o conteúdo desce com a rolagem (como a paisagem), então a Jornada começa por baixo.
-   O marco mais antigo fica embaixo e o mais recente em cima (column-reverse: a ordem no HTML segue
-   cronológica, para leitores de tela). A altura da seção vem do Jornada.tsx. */
+/* ---------- jornada: rolagem normal ---------- */
+/* Cronológico de cima para baixo (o mais antigo em cima). Tokens noturnos fixos: o cartão escuro funciona
+   tanto no pôr do sol quanto no espaço. */
 .jornada {
   position: relative;
+  padding-block: 140px 180px;
+  --j-card: rgba(12, 16, 38, 0.66);
+  --j-card-on: rgba(16, 22, 50, 0.8);
+  --j-ink: #f3e9d8;
+  --j-muted: #c9bfae;
+  --j-gold: #e8c48a;
+  --j-edge: rgba(243, 233, 216, 0.12);
 }
 .j-scene {
   position: relative;
-  padding-block: clamp(1.2rem, 4vh, 2.4rem) clamp(6rem, 16vh, 11rem);
-  will-change: transform;
-}
-/* a base da cena se dissolve (nada de corte reto): os marcos antigos nascem dessa névoa embaixo
-   e, quando a seção solta, o fundo do palco some em gradiente em vez de cortar os cartões */
-.fx:not(.rm) .jornada > .stage {
-  -webkit-mask-image: linear-gradient(to bottom, #000 calc(100% - 16svh), transparent);
-  mask-image: linear-gradient(to bottom, #000 calc(100% - 16svh), transparent);
-}
-.rm .jornada > .stage,
-html:not(.fx) .jornada > .stage {
-  position: relative;
-  height: auto;
-  overflow: visible;
-}
-.rm .j-scene {
-  will-change: auto;
 }
 .j-root {
   position: absolute;
@@ -1678,15 +1667,13 @@ html:not(.fx) .jornada > .stage {
 }
 /* trilho apagado: mostra o caminho inteiro antes de a linha chegar */
 .j-root .jr-track {
-  stroke: var(--accent-2);
-  stroke-width: 1;
-  opacity: 0.3;
+  stroke: rgba(243, 233, 216, 0.18);
+  stroke-width: 1.5;
 }
 /* traço que sobe com a rolagem (fino e limpo), na cor de destaque */
 .j-root .jr-line {
-  stroke: var(--accent-2);
-  stroke-width: 2;
-  opacity: 0.95;
+  stroke: #e8c48a;
+  stroke-width: 2.5;
   stroke-dasharray: 1;
   stroke-dashoffset: 1;
 }
@@ -1695,8 +1682,8 @@ html:not(.fx) .j-root .jr-line {
   stroke-dashoffset: 0;
 }
 .j-root .jr-node {
-  fill: var(--sand);
-  stroke: var(--accent-2);
+  fill: #0d1230;
+  stroke: #e8c48a;
   stroke-opacity: 0.5;
   stroke-width: 1.5;
   transition:
@@ -1704,11 +1691,11 @@ html:not(.fx) .j-root .jr-line {
     stroke-opacity 0.25s;
 }
 .j-root .jr-node.on {
-  fill: var(--accent-2);
+  fill: #e8c48a;
   stroke-opacity: 1;
 }
 .j-root .jr-tip {
-  fill: var(--accent-2);
+  fill: #f6e3b8;
   transition: opacity 0.2s;
 }
 .j-head {
@@ -1719,16 +1706,9 @@ html:not(.fx) .j-root .jr-line {
   text-align: center;
   margin-bottom: clamp(3.5rem, 10vh, 6.5rem);
 }
-/* o título aparece já no alto, sobre o céu quase espacial: tom claro nos dois temas */
 .j-head .title {
-  color: #f3e9d8;
-  text-shadow: 0 2px 28px rgba(4, 8, 28, 0.55);
-}
-/* sem a seção presa (movimento reduzido) o título fica no começo da seção, sobre o céu ainda claro: tom do tema */
-.rm .j-head .title,
-html:not(.fx) .j-head .title {
-  color: var(--fg);
-  text-shadow: 0 2px 28px color-mix(in srgb, var(--glass-strong) 70%, transparent);
+  color: color-mix(in srgb, #f3e9d8 var(--alt-w2, 0%), var(--fg));
+  text-shadow: none;
 }
 .j-head p {
   font-size: var(--fs-lead);
@@ -1738,7 +1718,7 @@ html:not(.fx) .j-head .title {
 .zig {
   position: relative;
   display: flex;
-  flex-direction: column-reverse;
+  flex-direction: column;
   gap: clamp(3rem, 10vh, 6rem);
 }
 .zi {
@@ -1779,7 +1759,7 @@ html:not(.fx) .j-head .title {
   right: -6px;
 }
 .tl-when {
-  color: var(--muted);
+  color: var(--j-gold);
   font: 500 var(--fs-mono) var(--font-mono);
   letter-spacing: 0.05em;
   transition: color 0.4s;
@@ -1806,39 +1786,38 @@ html:not(.fx) .j-head .title {
   line-height: 1.08;
 }
 .tl-desc {
-  color: var(--fg);
+  color: var(--j-ink);
   max-width: 30rem;
   margin-top: 0.2rem;
 }
 .zi:nth-child(even) .tl-desc {
   margin-left: auto;
 }
-/* cartões neutros até a linha chegar; aí ganham a cor de destaque (movimento completo; no reduzido já vêm coloridos) */
-.fx:not(.rm) .zi:not(.on) .zi-card {
-  border-color: var(--glass-line);
+/* cartões mais apagados até a ponta da linha chegar; aí acendem (movimento reduzido: já acesos via classe) */
+.zi-card.glass {
+  background: var(--j-card);
+  border: 1px solid var(--j-edge);
   box-shadow: none;
-  filter: saturate(0.2);
+  color: var(--j-ink);
 }
-.fx:not(.rm) .zi:not(.on) .tl-when {
-  color: color-mix(in srgb, var(--muted) 80%, transparent);
+.zi.on .zi-card.glass {
+  background: var(--j-card-on);
+  border-color: rgba(232, 196, 138, 0.45);
 }
-.fx:not(.rm) .zi:not(.on) .tl-when::before {
-  background: var(--line-2);
+.zi:not(.on) .zi-card {
+  opacity: 0.6;
 }
 .zi-card {
-  border-color: color-mix(in srgb, var(--accent) 70%, var(--glass-line));
-  box-shadow:
-    var(--shadow),
-    0 0 0 1px color-mix(in srgb, var(--accent) 22%, transparent);
+  transition:
+    background-color 0.4s,
+    border-color 0.4s,
+    opacity 0.4s;
 }
-.zi-card.glass {
-  background: color-mix(in srgb, var(--accent) 17%, var(--glass-strong));
+.tl-when::before {
+  background: var(--j-gold);
 }
-.tl-when {
-  color: var(--link);
-}
-.fx:not(.rm) .zi:not(.on) .zi-card.glass {
-  background: var(--glass-strong);
+.tl-what {
+  color: var(--j-ink);
 }
 @media (max-width: 859px) {
   .zi,
