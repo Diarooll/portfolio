@@ -370,7 +370,9 @@ a {
   right: 0;
   z-index: 60;
   /* a barra acompanha a altitude: texto claro e vidro escuro quando o fundo escurece (azul profundo e espaço) */
-  color: color-mix(in srgb, #fbf8ef calc(var(--nav-top, 0) * 100%), color-mix(in srgb, #f3e9d8 var(--alt-w3, 0%), var(--fg)));
+  /* --nav-dark (0/1) vem da paisagem: 1 quando o topo da tela já está no céu da noite */
+  color: color-mix(in srgb, #fbf8ef calc(var(--nav-top, 0) * 100%), color-mix(in srgb, #f3e9d8 calc(var(--nav-dark, 0) * 100%), var(--fg)));
+  transition: color 0.35s ease-out;
 }
 .fx .nav {
   --nav-top: 1;
@@ -400,7 +402,11 @@ a {
 }
 /* vidro bege com desfoque em qualquer altitude: o texto da barra mantém contraste AA sobre céu, nuvens ou espaço */
 .nav-bg {
-  background: color-mix(in srgb, rgba(8, 12, 32, 0.82) var(--alt-w3, 0%), var(--glass-strong));
+  background: color-mix(in srgb, rgba(10, 16, 40, 0.84) calc(var(--nav-dark, 0) * 100%), var(--glass-strong));
+  border-bottom-color: color-mix(in srgb, rgba(243, 233, 216, 0.14) calc(var(--nav-dark, 0) * 100%), var(--glass-line));
+  transition:
+    background-color 0.35s ease-out,
+    border-color 0.35s ease-out;
   -webkit-backdrop-filter: blur(14px) saturate(1.2);
   backdrop-filter: blur(14px) saturate(1.2);
 }

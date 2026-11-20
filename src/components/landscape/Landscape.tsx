@@ -102,6 +102,11 @@ export default function Landscape() {
     // crossfade; o anoitecer, o azul profundo e o espaço DESCEM: a borda suave da nova cor avança de cima
     // para baixo (o topo escurece primeiro), em vez de a tela inteira escurecer de uma vez
     const band = vh * 0.6;
+    // a barra escurece quando o topo da tela já está no azul da noite: cobertura, em y = 0, das camadas que
+    // descem (anoitecer, azul profundo, espaço). Troca de uma vez (0/1) e o CSS faz a transição no tempo,
+    // então a barra nunca fica num cinza intermediário nem vira uma faixa clara sobre o céu escuro
+    const topCover = Math.max(...cam.bg.slice(1).map((w) => (reduced ? w : clamp((w * (vh + band)) / band))));
+    root.setProperty("--nav-dark", topCover > 0.35 ? "1" : "0");
     cam.bg.forEach((w, i) => {
       const el = bgRefs.current[i + 1];
       if (!el) return;
