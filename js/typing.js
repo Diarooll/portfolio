@@ -99,7 +99,7 @@
   // Troca de idioma: o i18n.js manda o dicionário inteiro no detail
   document.addEventListener("langchange", function (event) {
     const dict = event.detail && event.detail.dict;
-    const list = dict && dict.hero && dict.hero.words;
+    const list = (event.detail && event.detail.words) || (dict && dict.hero && dict.hero.words);
     if (Array.isArray(list) && list.length) {
       // Atualiza também o atributo, para manter o HTML coerente
       el.setAttribute("data-words", JSON.stringify(list));

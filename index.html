@@ -122,7 +122,7 @@
       <div class="container">
         <p class="declaration__code reveal">
           <span class="code__comment declaration__comment">// <span data-i18n="declaration.comment">cada seção abaixo é um método deste objeto</span></span>
-          <span class="code__var">diego</span> <span class="code__punct">=</span> <span class="code__type">Developer</span><span class="code__punct">(</span><span class="code__string">"Python Backend"</span><span class="code__punct declaration__end">)</span>
+          <span class="for-python"><span class="code__var">diego</span> <span class="code__punct">=</span> <span class="code__type">Developer</span><span class="code__punct">(</span><span class="code__string">"Python Backend"</span><span class="code__punct declaration__end">)</span></span><span class="for-java"><span class="code__type">Developer</span> <span class="code__var">diego</span> <span class="code__punct">=</span> <span class="code__keyword">new</span> <span class="code__type">Developer</span><span class="code__punct">(</span><span class="code__string">"Java Backend"</span><span class="code__punct declaration__end">);</span></span>
         </p>
       </div>
     </div>
@@ -148,7 +148,7 @@
             <p class="reveal" style="--delay: 0.1s" data-i18n="about.p2">Hoje trabalho como freelancer fazendo landing pages e, em breve, vou partir para sistemas mais complexos. Ao mesmo tempo, firmo a base em Python e estudo FastAPI e Django, além de Java e Spring Boot e SQL. Aprendo melhor construindo projetos, e o código deles está aqui.</p>
 
             <div class="stack">
-              <div class="stack__group reveal" style="--delay: 0.15s">
+              <div class="stack__group for-python reveal" style="--delay: 0.15s">
                 <h3 class="stack__title" data-i18n="stack.focus">Foco</h3>
                 <ul class="stack__list">
                   <li class="stack__item"><i class="devicon-python-plain colored" aria-hidden="true"></i><span>Python</span></li>
@@ -161,11 +161,33 @@
                 </ul>
               </div>
 
-              <div class="stack__group reveal" style="--delay: 0.2s">
+              <div class="stack__group for-python reveal" style="--delay: 0.2s">
                 <h3 class="stack__title" data-i18n="stack.also">Também já usei</h3>
                 <ul class="stack__list">
                   <li class="stack__item"><i class="devicon-java-plain colored" aria-hidden="true"></i><span>Java</span></li>
                   <li class="stack__item"><i class="devicon-spring-original colored" aria-hidden="true"></i><span>Spring Boot</span></li>
+                  <li class="stack__item"><i class="devicon-html5-plain colored" aria-hidden="true"></i><span>HTML</span></li>
+                  <li class="stack__item"><i class="devicon-css3-plain colored" aria-hidden="true"></i><span>CSS</span></li>
+                  <li class="stack__item"><i class="devicon-javascript-plain colored" aria-hidden="true"></i><span>JavaScript</span></li>
+                  <li class="stack__item"><i class="devicon-git-plain colored" aria-hidden="true"></i><span>Git</span></li>
+                  <li class="stack__item"><span class="stack__glyph" aria-hidden="true">&gt;_</span><span data-i18n="stack.claude">Claude Code</span></li>
+                </ul>
+              </div>
+
+              <div class="stack__group for-java reveal" style="--delay: 0.15s">
+                <h3 class="stack__title" data-i18n="stack.focus">Foco</h3>
+                <ul class="stack__list">
+                  <li class="stack__item"><i class="devicon-java-plain colored" aria-hidden="true"></i><span>Java</span></li>
+                  <li class="stack__item"><i class="devicon-spring-original colored" aria-hidden="true"></i><span>Spring Boot</span><span class="tag tag--learning" data-i18n="stack.learning">estudando</span></li>
+                  <li class="stack__item"><i class="devicon-postgresql-plain colored" aria-hidden="true"></i><span>SQL</span><span class="tag tag--learning" data-i18n="stack.learning">estudando</span></li>
+                </ul>
+              </div>
+
+              <div class="stack__group for-java reveal" style="--delay: 0.2s">
+                <h3 class="stack__title" data-i18n="stack.also">Também já usei</h3>
+                <ul class="stack__list">
+                  <li class="stack__item"><i class="devicon-python-plain colored" aria-hidden="true"></i><span>Python</span></li>
+                  <li class="stack__item"><i class="devicon-django-plain" aria-hidden="true"></i><span>Django</span></li>
                   <li class="stack__item"><i class="devicon-html5-plain colored" aria-hidden="true"></i><span>HTML</span></li>
                   <li class="stack__item"><i class="devicon-css3-plain colored" aria-hidden="true"></i><span>CSS</span></li>
                   <li class="stack__item"><i class="devicon-javascript-plain colored" aria-hidden="true"></i><span>JavaScript</span></li>
@@ -219,7 +241,7 @@
                 </ul>
               </article>
 
-              <article class="card reveal" style="--delay: 0.16s">
+              <article class="card reveal" data-proj="p1" style="--delay: 0.16s">
                 <div class="card__head">
                   <span class="card__file">hours.js</span>
                   <span class="card__lang"><span class="lang-dot lang-dot--js"></span>JavaScript</span>
@@ -245,7 +267,7 @@
                 </div>
               </article>
     
-              <article class="card reveal" style="--delay: 0.24s">
+              <article class="card reveal" data-proj="p2" style="--delay: 0.24s">
                 <div class="card__head">
                   <span class="card__file">InterestService.java</span>
                   <span class="card__lang"><span class="lang-dot lang-dot--java"></span>Java</span>

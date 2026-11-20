@@ -1808,3 +1808,13 @@ html.stack-fade body { opacity: 0; }
 @media (prefers-reduced-motion: reduce) {
   .stack-pill { transition: none; }
 }
+
+/* ==========================================================
+   CONTEÚDO POR STACK: blocos duplicados no HTML e ordem dos projetos
+   ========================================================== */
+:root[data-stack="python"] .for-java,
+:root[data-stack="java"] .for-python { display: none; }
+
+/* Java: JavaNelio e Sito's primeiro; depois $ents e ALERA */
+:root[data-stack="java"] .card[data-proj="p2"] { order: -2; }
+:root[data-stack="java"] .card[data-proj="p1"] { order: -1; }

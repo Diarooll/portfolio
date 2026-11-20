@@ -129,5 +129,28 @@
   },
   "declaration": {
     "comment": "each section below is a method of this object"
+  },
+  "java": {
+    "meta": {
+      "title": "Diego Olalla · Java Back-end",
+      "description": "Portfolio of Diego Olalla, a Software Engineering student at FIAP focused on Java and Spring Boot back-end."
+    },
+    "hero": {
+      "words": [
+        "APIs",
+        "systems",
+        "business rules",
+        "Java projects"
+      ],
+      "lead": "Software Engineering student at FIAP, learning back-end with Java and Spring Boot."
+    },
+    "about": {
+      "p2": "I currently work as a freelancer building landing pages, and soon I'll move on to more complex systems. At the same time, I'm building a solid base in Java and studying Spring Boot and SQL. I learn best by building projects, and their code is here."
+    },
+    "journey": {
+      "next": {
+        "desc": "I want to join a team where I can learn from more experienced people and help on the back-end with Java and Spring Boot."
+      }
+    }
   }
 }
