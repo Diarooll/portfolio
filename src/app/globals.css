@@ -1002,12 +1002,15 @@ html:not(.fx) .hero-front {
   .statement .line:nth-child(3) {
     margin-left: 2vw;
   }
+  /* celular: a foto continua no cartão, pequena, ao lado do texto (antes sumia) */
   .about-card {
     margin-left: 0;
-    grid-template-columns: 1fr;
+    grid-template-columns: 76px 1fr;
+    align-items: start;
+    gap: 1rem;
   }
   .about-photo {
-    display: none;
+    width: 76px;
   }
   .about {
     font-size: 1rem;
@@ -1803,6 +1806,26 @@ html:not(.fx) .j-root .jr-line {
 }
 :root[data-theme="dark"] .j-head .title {
   background: none;
+}
+/* celular: título da Jornada sem caixa de vidro e sem o efeito de letras que se dissolvem (no celular ele
+   deixava letras faltando, "r  ey"); a leitura vem de um halo no tom oposto ao do texto */
+@media (max-width: 768px) {
+  .j-head .title {
+    --jhalo: color-mix(in srgb, rgba(5, 8, 24, 0.85) var(--jf), rgba(251, 247, 238, 0.92));
+    background: none;
+    text-shadow:
+      0 0 3px var(--jhalo),
+      0 0 14px var(--jhalo),
+      0 0 30px var(--jhalo);
+  }
+  :root[data-theme="dark"] .j-head .title {
+    --jhalo: rgba(5, 8, 24, 0.85);
+  }
+  .j-head .title .dz {
+    opacity: 1 !important;
+    filter: none !important;
+    transform: none !important;
+  }
 }
 .j-head p {
   font-size: var(--fs-lead);
