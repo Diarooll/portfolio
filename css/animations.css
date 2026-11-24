@@ -36,6 +36,27 @@
   100% { transform: perspective(120px) rotateX(0); }
 }
 
+/* teclas do Stack: entrada, mola do clique, onda de luz e anel */
+@keyframes key-in {
+  from { opacity: 0; transform: translateY(18px) rotateX(-40deg); }
+}
+
+@keyframes key-spring {
+  0% { transform: translateY(4px); }
+  40% { transform: translateY(-7px) rotateX(8deg); }
+  70% { transform: translateY(1px); }
+}
+
+@keyframes key-wave {
+  from { opacity: 1; scale: 0.3; }
+  to { opacity: 0; scale: 11; }
+}
+
+@keyframes key-ring {
+  from { opacity: 0.9; transform: scale(1); }
+  to { opacity: 0; transform: scale(1.18, 1.4); }
+}
+
 /* setinhas que "chamam" o clique */
 @keyframes nudge-up {
   0%, 100% { transform: translateY(0); }
@@ -91,9 +112,8 @@ html.js .card.reveal {
   transition:
     opacity var(--dur-slow) var(--ease-out) var(--delay, 0s),
     translate var(--dur-slow) var(--ease-out) var(--delay, 0s),
-    transform var(--dur) var(--ease-out),
-    border-color var(--dur),
-    box-shadow var(--dur);
+    border-color var(--dur) var(--ease-out),
+    box-shadow var(--dur) var(--ease-out);
 }
 
 html.js .timeline__item.reveal {

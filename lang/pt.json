@@ -62,7 +62,7 @@
     },
     "p3": {
       "title": "Este portfólio",
-      "desc": "Feito com HTML, CSS e JavaScript puros, sem framework. Tem versão em português e inglês, tema claro e escuro, e um mapa topográfico animado no topo que reage ao mouse.",
+      "desc": "Feito com HTML, CSS e JavaScript sem framework, com three.js no envelope 3D do contato. Tem versão em português e inglês, tema claro e escuro, e um mapa topográfico animado no topo que reage ao mouse.",
       "learned": "IntersectionObserver, fetch de JSON, eventos customizados, Canvas e acessibilidade."
     },
     "wip": {
@@ -112,11 +112,12 @@
     }
   },
   "contact": {
-    "text": "Procuro estágio ou vaga júnior, e também gosto de conversar sobre back-end. O jeito mais rápido de falar comigo é por email.",
+    "text": "Procuro estágio ou vaga júnior, e também gosto de conversar sobre back-end.",
     "copy": "copiar",
     "copied": "Email copiado",
     "copyFail": "Não deu para copiar. Selecione o email e copie manualmente.",
-    "cvSoon": "currículo ainda não disponível"
+    "cvLabel": "Currículo",
+    "cvSoon": "ainda não disponível"
   },
   "footer": {
     "text": "Feito com HTML, CSS e JavaScript, com ajuda de inteligência artificial"
