@@ -1825,10 +1825,10 @@ html.stack-fade body { opacity: 0; }
    então hover, links e tags existentes herdam as cores certas.
    --proj-accent: borda, selo e hover (identidade).  --proj-accent-text: texto.
    Contraste do texto no fundo do card (WCAG):
-   - $ents  (#F1EFED, logo): fg #3F3427 10.9, muted #6B5D4A 5.8
+   - $ents  (#3F3427): fg #FFFFFF 12.2, muted #D9CFC0 7.9
    - ALERA  (#1E2A5A): fg #FFFFFF 13.7, muted #C3CAE6 8.4, accent #F2C200 8.6
    - Sito's (#0B0B0B): fg #FFFFFF 19.5, muted #B3B3B3 9.3, accent texto #FF4D55 6.0
-   Fontes: $ents = cores da logo (marrom sobre off-white);
+   Fontes: $ents = cores da logo, invertidas;
    ALERA = tokens/favicon do projeto; Sito's = css/base.css do site. ========================================================== */
 .card--brand {
   --surface: var(--proj-bg);
@@ -1845,9 +1845,9 @@ html.stack-fade body { opacity: 0; }
 .card--brand:hover,
 .card--brand:has(:focus-visible) { border-color: var(--proj-accent); }
 .card[data-proj="p4"] {
-  /* logo $ents: tinta marrom #3F3427 sobre off-white #F1EFED (contraste fg 10.9, muted 5.8) */
-  --proj-bg: #F1EFED; --proj-fg: #3F3427; --proj-muted: #6B5D4A;
-  --proj-line: #D8D2CA; --proj-accent: #3F3427; --proj-accent-text: #3F3427;
+  /* logo $ents invertida: marrom #3F3427 no fundo, off-white no texto */
+  --proj-bg: #3F3427; --proj-fg: #FFFFFF; --proj-muted: #D9CFC0;
+  --proj-line: #5C4E3D; --proj-accent: #F1EFED; --proj-accent-text: #F1EFED;
 }
 .card[data-proj="p5"] {
   --proj-bg: #1E2A5A; --proj-fg: #FFFFFF; --proj-muted: #C3CAE6;
@@ -1856,6 +1856,21 @@ html.stack-fade body { opacity: 0; }
 .card[data-proj="p1"] {
   --proj-bg: #0B0B0B; --proj-fg: #FFFFFF; --proj-muted: #B3B3B3;
   --proj-line: #2A2A2A; --proj-accent: #ED1C24; --proj-accent-text: #FF4D55;
+}
+
+.card[data-proj="p4"] .card__title { color: #FFFFFF; }
+
+/* ALERA e Sito's: sempre com cara de hover (título na cor e gradiente fraco) */
+.card[data-proj="p1"],
+.card[data-proj="p5"] { border-color: color-mix(in srgb, var(--proj-accent) 60%, var(--proj-line)); }
+.card[data-proj="p1"] .card__title,
+.card[data-proj="p5"] .card__title { color: var(--proj-accent-text); }
+.card[data-proj="p1"]::before,
+.card[data-proj="p5"]::before {
+  opacity: 1;
+  background:
+    radial-gradient(420px circle at var(--mx, 50%) var(--my, 0%), color-mix(in srgb, var(--proj-accent) 12%, transparent), transparent 60%),
+    linear-gradient(160deg, color-mix(in srgb, var(--proj-accent) 16%, transparent), transparent 70%);
 }
 
 .card__code { display: block; margin: .25rem 0 .75rem; font-family: var(--font-mono, ui-monospace, monospace); font-size: .8125rem; color: var(--muted); }

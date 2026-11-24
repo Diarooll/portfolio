@@ -112,7 +112,7 @@
     }
   },
   "contact": {
-    "text": "I'm looking for an internship or a junior role, and I'm always up for talking about back-end. Email is the fastest way to reach me.",
+    "text": "I'm looking for an internship or a junior role, and I'm always up for talking about back-end.",
     "copy": "copy",
     "copied": "Email copied",
     "copyFail": "Couldn't copy. Select the email and copy it manually.",
