@@ -1150,7 +1150,7 @@
 
 @media (hover: hover) {
   .card:hover {
-    transform: translateY(-4px);
+    transform: perspective(900px) translateY(-4px) rotateX(var(--rx, 0deg)) rotateY(var(--ry, 0deg));
     border-color: color-mix(in srgb, var(--accent) 60%, var(--line));
     box-shadow: var(--shadow);
   }

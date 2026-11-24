@@ -398,10 +398,23 @@
     const onMove = rafThrottle(function (event) {
       if (!finePointer.matches) return;
       const rect = card.getBoundingClientRect();
-      card.style.setProperty("--mx", (event.clientX - rect.left).toFixed(1) + "px");
-      card.style.setProperty("--my", (event.clientY - rect.top).toFixed(1) + "px");
+      const x = event.clientX - rect.left;
+      const y = event.clientY - rect.top;
+      card.style.setProperty("--mx", x.toFixed(1) + "px");
+      card.style.setProperty("--my", y.toFixed(1) + "px");
+      if (!canAnimatePointer() || matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+      // inclinação 3D (máx. 6 graus) para o lado do mouse
+      card.style.setProperty("--ry", (clamp((x / rect.width) * 2 - 1) * 6).toFixed(2) + "deg");
+      card.style.setProperty("--rx", (clamp(1 - (y / rect.height) * 2) * 6).toFixed(2) + "deg");
     });
     card.addEventListener("pointermove", onMove, { passive: true });
+    card.addEventListener("pointerleave", function () {
+      // espera o último quadro do rafThrottle antes de zerar
+      requestAnimationFrame(function () {
+        card.style.removeProperty("--rx");
+        card.style.removeProperty("--ry");
+      });
+    });
   });
 
   /* -------------------------------------------------------------------
