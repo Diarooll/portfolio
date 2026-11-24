@@ -352,14 +352,12 @@
     <!-- ===== CONTATO ===== -->
     <section id="contato" class="section section--contact" aria-labelledby="contato-title">
       <div class="container">
-        <h2 class="section__title reveal" id="contato-title">
-          <span class="section__code" aria-hidden="true"><span class="code__obj">diego</span><span class="code__punct">.</span><span class="for-java"><span class="code__method">contact</span><span class="code__punct">();</span></span><span class="for-python"><span class="code__method">contact</span><span class="code__punct">()</span></span></span>
-          <span class="section__label sr-only" data-i18n="sections.contact">Contato</span>
-        </h2>
-
-
         <div class="contact__layout">
           <div class="contact__intro">
+            <h2 class="section__title reveal" id="contato-title">
+              <span class="section__code" aria-hidden="true"><span class="code__obj">diego</span><span class="code__punct">.</span><span class="for-java"><span class="code__method">contact</span><span class="code__punct">();</span></span><span class="for-python"><span class="code__method">contact</span><span class="code__punct">()</span></span></span>
+              <span class="section__label sr-only" data-i18n="sections.contact">Contato</span>
+            </h2>
             <p class="contact__text reveal" data-i18n="contact.text">Procuro estágio ou vaga júnior, e também gosto de conversar sobre back-end.</p>
             <!-- "aberto a estágio e júnior": o texto acima já diz isso; o chip é só o lembrete em código -->
             <p class="contact__open reveal" style="--delay: 0.08s" aria-hidden="true">
@@ -409,8 +407,8 @@
               <!-- Currículo ainda não disponível: o card não é link.
                    TODO: quando existir assets/cv.pdf (versão sem telefone/endereço),
                    trocar o <div> por <a class="ccard__link" href="assets/cv.pdf" download>
-                   e tirar .ccard--soon. -->
-              <li class="ccard ccard--cv ccard--soon">
+                   e tirar .ccard--soon e o atributo hidden. -->
+              <li class="ccard ccard--cv ccard--soon" hidden>
                 <div class="ccard__link">
                   <span class="ccard__icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5M12 11v6M9 14.5l3 3 3-3"/></svg></span>
                   <span class="ccard__body">

@@ -210,7 +210,7 @@ function start(THREE) {
   }
 
   /* ---------- layout: casa a câmera com a perspectiva do CSS ---------- */
-  const cards = Array.from(list.querySelectorAll(".ccard"));
+  const cards = Array.from(list.querySelectorAll(".ccard:not([hidden])"));
   const state = cards.map(() => ({ hover: 0, hoverM: 0, hoverT: 0, nx: 0, ny: 0, w: 0, h: 0 }));
   let W = 0, H = 0, P = 1000, envCenterY = 0, finalRot = [];
 

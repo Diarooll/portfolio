@@ -1505,11 +1505,22 @@
   animation: pulse-ring 2.4s var(--ease-out) infinite;
 }
 
+.contact__intro .section__title { margin: 0; }
+
 @media (min-width: 900px) {
   .contact__layout {
-    grid-template-columns: 4fr 8fr;
+    grid-template-columns: 5fr 7fr;
     gap: var(--space-lg);
   }
+  /* título, frase e chip preenchem a coluna, centrados com o envelope */
+  .contact__intro { gap: var(--space-md); }
+  .contact__intro .section__title .section__code { font-size: clamp(2.75rem, 5vw, 4rem); }
+  .contact__text {
+    max-width: 18ch;
+    font-size: clamp(1.75rem, 3vw, 2.4rem);
+    line-height: 1.3;
+  }
+  .contact__open { font-size: var(--text-sm); }
 }
 
 /* ----- Envelope 3D + cards (js/contact3d.js) -----
@@ -1542,6 +1553,13 @@
     grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: 1rem;
   }
+}
+
+.ccard[hidden] { display: none; }
+
+@media (min-width: 560px) {
+  /* sem o currículo são 3 cards: o email ocupa a linha de cima */
+  .contact3d__cards:has(.ccard--cv[hidden]) .ccard--email { grid-column: 1 / -1; }
 }
 
 /* o JS lê este padding para dimensionar o envelope */
