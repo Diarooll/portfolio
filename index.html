@@ -358,55 +358,67 @@
 
 
         <div class="contact__layout">
-          <p class="contact__text reveal" data-i18n="contact.text">Procuro estágio ou vaga júnior, e também gosto de conversar sobre back-end.</p>
+          <div class="contact__intro">
+            <p class="contact__text reveal" data-i18n="contact.text">Procuro estágio ou vaga júnior, e também gosto de conversar sobre back-end.</p>
+            <!-- "aberto a estágio e júnior": o texto acima já diz isso; o chip é só o lembrete em código -->
+            <p class="contact__open reveal" style="--delay: 0.08s" aria-hidden="true">
+              <span class="contact__pulse"></span><span class="for-python"><span class="code__method">open_to</span><span class="code__punct">=[</span><span class="code__const">INTERNSHIP</span><span class="code__punct">,</span> <span class="code__const">JUNIOR</span><span class="code__punct">]</span></span><span class="for-java"><span class="code__punct">.</span><span class="code__method">openTo</span><span class="code__punct">(</span><span class="code__const">INTERNSHIP</span><span class="code__punct">,</span> <span class="code__const">JUNIOR</span><span class="code__punct">)</span></span>
+            </p>
+          </div>
 
-          <!-- Os contatos escritos como código Java (padrão builder).
-               Cada linha é um link de verdade; o CSS numera as linhas
-               (counter) e destaca a linha no hover, como num editor. -->
-          <div class="code-card reveal" style="--delay: 0.1s">
-            <div class="code-card__bar" aria-hidden="true">
-              <span class="code-card__file"><span class="for-python">contact.py</span><span class="for-java">Contact.java</span></span>
-            </div>
-            <ol class="code-card__lines">
-              <li class="code-line code-line--static" aria-hidden="true">
-                <span class="code-line__code"><span class="for-java"><span class="code__type">Contact</span> <span class="code__var">diego</span> <span class="code__punct">=</span> <span class="code__type">Contact</span><span class="code__punct">.</span><span class="code__method">builder</span><span class="code__punct">()</span></span><span class="for-python"><span class="code__var">diego</span> <span class="code__punct">=</span> <span class="code__type">Contact</span><span class="code__punct">(</span></span></span>
-              </li>
-              <li class="code-line code-line--key">
-                <a class="code-line__link" href="mailto:diego.aleola@gmail.com" aria-label="Email: diego.aleola@gmail.com">
-                  <span class="code-line__icon code-line__icon--email" aria-hidden="true"><svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3.5 6.5 8.5 6.5 8.5-6.5"/></svg></span><span class="for-java"><span class="code__punct">.</span><span class="code__method">email</span><span class="code__punct">(</span></span><span class="for-python"><span class="code__method">email</span><span class="code__punct">=</span></span><span class="code__string">"<span id="email-address">diego.aleola@gmail.com</span>"</span><span class="for-java"><span class="code__punct">)</span></span><span class="for-python"><span class="code__punct">,</span></span>
+          <!-- Envelope 3D (js/contact3d.js). O HTML abaixo JÁ é a versão final:
+               uma grade de cards com links de verdade. Se o three.js não carregar,
+               não houver WebGL ou o JS falhar, a grade aparece como está.
+               Com o 3D ligado (.contact3d--live), o JS desenha o envelope num
+               canvas atrás da lista e anima os cards saindo dele. -->
+          <div class="contact3d reveal" id="contact3d" style="--delay: 0.1s">
+            <ul class="contact3d__cards" id="contact-cards">
+              <li class="ccard ccard--email">
+                <a class="ccard__link" href="mailto:diego.aleola@gmail.com">
+                  <span class="ccard__icon" aria-hidden="true"><svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3.5 6.5 8.5 6.5 8.5-6.5"/></svg></span>
+                  <span class="ccard__body">
+                    <span class="ccard__label">Email</span>
+                    <span class="ccard__value" id="email-address">diego.aleola@gmail.com</span>
+                  </span>
                 </a>
-                <button class="code-line__action" type="button" id="copy-email" data-email="diego.aleola@gmail.com">
-                  <span class="code__comment"><span class="for-java">// </span><span class="for-python"># </span></span><span data-i18n="contact.copy">copiar</span>
+                <button class="ccard__action" type="button" id="copy-email" data-email="diego.aleola@gmail.com">
+                  <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="8" y="8" width="12" height="12" rx="2"/><path d="M16 8V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h2"/></svg><span data-i18n="contact.copy">copiar</span>
                 </button>
               </li>
-              <li class="code-line code-line--key">
-                <a class="code-line__link" href="https://www.linkedin.com/in/diego-olalla/" target="_blank" rel="noopener" aria-label="LinkedIn: in/diego-olalla">
-                  <span class="code-line__icon code-line__icon--linkedin" aria-hidden="true"><i class="devicon-linkedin-plain"></i></span><span class="for-java"><span class="code__punct">.</span><span class="code__method">linkedin</span><span class="code__punct">(</span></span><span class="for-python"><span class="code__method">linkedin</span><span class="code__punct">=</span></span><span class="code__string">"in/diego-olalla"</span><span class="for-java"><span class="code__punct">)</span></span><span class="for-python"><span class="code__punct">,</span></span>
-                  <svg class="code-line__arrow" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 17 17 7M8 7h9v9"/></svg>
+              <li class="ccard ccard--linkedin">
+                <a class="ccard__link" href="https://www.linkedin.com/in/diego-olalla/" target="_blank" rel="noopener">
+                  <span class="ccard__icon" aria-hidden="true"><i class="devicon-linkedin-plain"></i></span>
+                  <span class="ccard__body">
+                    <span class="ccard__label">LinkedIn</span>
+                    <span class="ccard__value">in/diego-olalla</span>
+                  </span>
+                  <svg class="ccard__arrow" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 17 17 7M8 7h9v9"/></svg>
                 </a>
               </li>
-              <li class="code-line code-line--key">
-                <a class="code-line__link" href="https://github.com/Diarooll" target="_blank" rel="noopener" aria-label="GitHub: Diarooll">
-                  <span class="code-line__icon code-line__icon--github" aria-hidden="true"><i class="devicon-github-original"></i></span><span class="for-java"><span class="code__punct">.</span><span class="code__method">github</span><span class="code__punct">(</span></span><span class="for-python"><span class="code__method">github</span><span class="code__punct">=</span></span><span class="code__string">"Diarooll"</span><span class="for-java"><span class="code__punct">)</span></span><span class="for-python"><span class="code__punct">,</span></span>
-                  <svg class="code-line__arrow" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 17 17 7M8 7h9v9"/></svg>
+              <li class="ccard ccard--github">
+                <a class="ccard__link" href="https://github.com/Diarooll" target="_blank" rel="noopener">
+                  <span class="ccard__icon" aria-hidden="true"><i class="devicon-github-original"></i></span>
+                  <span class="ccard__body">
+                    <span class="ccard__label">GitHub</span>
+                    <span class="ccard__value">Diarooll</span>
+                  </span>
+                  <svg class="ccard__arrow" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 17 17 7M8 7h9v9"/></svg>
                 </a>
               </li>
-              <!-- Currículo ainda não disponível: a linha não é link.
+              <!-- Currículo ainda não disponível: o card não é link.
                    TODO: quando existir assets/cv.pdf (versão sem telefone/endereço),
-                   voltar a ser um <a class="code-line__link" href="assets/cv.pdf" download>. -->
-              <li class="code-line code-line--key code-line--soon">
-                <span class="code-line__code">
-                  <span class="code-line__icon code-line__icon--cv" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5M12 11v6M9 14.5l3 3 3-3"/></svg></span><span class="for-java"><span class="code__punct">.</span><span class="code__method">cv</span><span class="code__punct">(</span><span class="code__const">null</span><span class="code__punct">)</span></span><span class="for-python"><span class="code__method">cv</span><span class="code__punct">=</span><span class="code__const">None</span><span class="code__punct">,</span></span>
-                  <span class="code__comment code-line__hint"> <span class="for-java">//</span><span class="for-python">#</span> <span data-i18n="contact.cvSoon">currículo ainda não disponível</span></span>
-                </span>
+                   trocar o <div> por <a class="ccard__link" href="assets/cv.pdf" download>
+                   e tirar .ccard--soon. -->
+              <li class="ccard ccard--cv ccard--soon">
+                <div class="ccard__link">
+                  <span class="ccard__icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5M12 11v6M9 14.5l3 3 3-3"/></svg></span>
+                  <span class="ccard__body">
+                    <span class="ccard__label" data-i18n="contact.cvLabel">Currículo</span>
+                    <span class="ccard__value" data-i18n="contact.cvSoon">ainda não disponível</span>
+                  </span>
+                </div>
               </li>
-              <li class="code-line code-line--static" aria-hidden="true">
-                <span class="code-line__code"><span class="code__indent"></span><span class="for-java"><span class="code__punct">.</span><span class="code__method">openTo</span><span class="code__punct">(</span><span class="code__const">INTERNSHIP</span><span class="code__punct">,</span> <span class="code__const">JUNIOR</span><span class="code__punct">)</span></span><span class="for-python"><span class="code__method">open_to</span><span class="code__punct">=[</span><span class="code__const">INTERNSHIP</span><span class="code__punct">,</span> <span class="code__const">JUNIOR</span><span class="code__punct">],</span></span></span>
-              </li>
-              <li class="code-line code-line--static" aria-hidden="true">
-                <span class="code-line__code"><span class="for-java"><span class="code__indent"></span><span class="code__punct">.</span><span class="code__method">build</span><span class="code__punct">();</span></span><span class="for-python"><span class="code__punct">)</span></span></span>
-              </li>
-            </ol>
+            </ul>
           </div>
         </div>
       </div>
@@ -433,5 +445,7 @@
   <script src="js/topo.js" defer></script>
   <script src="js/main.js" defer></script>
   <script src="js/stack.js" defer></script>
+  <!-- Envelope 3D do contato: módulo; o three.js só é baixado perto da seção -->
+  <script type="module" src="js/contact3d.js"></script>
 </body>
 </html>
