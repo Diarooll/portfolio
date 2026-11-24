@@ -62,7 +62,7 @@
     },
     "p3": {
       "title": "This portfolio",
-      "desc": "Built with plain HTML, CSS and JavaScript, no framework. It comes in Portuguese and English, has a light and a dark theme, and an animated topographic map at the top that reacts to the mouse.",
+      "desc": "Built with HTML, CSS and JavaScript, no framework, with three.js for the 3D envelope in the contact section. It comes in Portuguese and English, has a light and a dark theme, and an animated topographic map at the top that reacts to the mouse.",
       "learned": "IntersectionObserver, fetching JSON, custom events, Canvas and accessibility."
     },
     "wip": {

@@ -62,7 +62,7 @@
     },
     "p3": {
       "title": "Este portfólio",
-      "desc": "Feito com HTML, CSS e JavaScript puros, sem framework. Tem versão em português e inglês, tema claro e escuro, e um mapa topográfico animado no topo que reage ao mouse.",
+      "desc": "Feito com HTML, CSS e JavaScript sem framework, com three.js no envelope 3D do contato. Tem versão em português e inglês, tema claro e escuro, e um mapa topográfico animado no topo que reage ao mouse.",
       "learned": "IntersectionObserver, fetch de JSON, eventos customizados, Canvas e acessibilidade."
     },
     "wip": {

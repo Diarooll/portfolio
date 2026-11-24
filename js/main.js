@@ -390,30 +390,97 @@
   }
 
   /* -------------------------------------------------------------------
-   * 9. Lanterna dos cards
-   * O ::before do card tem um brilho radial centrado em --mx/--my.
-   * Aqui só informamos onde o mouse está DENTRO do card.
+   * 9. Lanterna e inclinação dos cards
+   * O mouse só define o ALVO. A cada quadro, os valores atuais andam uma
+   * fração do caminho até o alvo (interpolação exponencial, igual em
+   * qualquer taxa de quadros), na entrada, no movimento e na saída.
+   * --mx/--my: centro do brilho; --rx/--ry/--lift: inclinação e subida.
    * ------------------------------------------------------------------- */
+  const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
+  const TAU = 110; // ms: quanto maior, mais macio (e mais lento)
+
   document.querySelectorAll(".card").forEach(function (card) {
-    const onMove = rafThrottle(function (event) {
-      if (!finePointer.matches) return;
+    const target = { rx: 0, ry: 0, lift: 0, mx: 0, my: 0 };
+    const now = { rx: 0, ry: 0, lift: 0, mx: 0, my: 0 };
+    let raf = 0;
+    let last = 0;
+
+    function frame(time) {
+      const dt = last ? Math.min(50, time - last) : 16;
+      last = time;
+      const k = reducedMotion.matches ? 1 : 1 - Math.exp(-dt / TAU);
+      let moving = false;
+      Object.keys(now).forEach(function (key) {
+        now[key] += (target[key] - now[key]) * k;
+        if (Math.abs(target[key] - now[key]) > (key === "lift" ? 0.002 : 0.02)) moving = true;
+        else now[key] = target[key];
+      });
+      card.style.setProperty("--mx", now.mx.toFixed(1) + "px");
+      card.style.setProperty("--my", now.my.toFixed(1) + "px");
+      card.style.setProperty("--rx", now.rx.toFixed(3) + "deg");
+      card.style.setProperty("--ry", now.ry.toFixed(3) + "deg");
+      card.style.setProperty("--lift", now.lift.toFixed(3));
+      // parado e sem mouse: tira o transform (texto volta a ficar nítido)
+      card.classList.toggle("is-tilting", moving || now.lift > 0);
+      if (moving) raf = requestAnimationFrame(frame);
+      else { raf = 0; last = 0; }
+    }
+
+    function wake() {
+      if (!raf) raf = requestAnimationFrame(frame);
+    }
+
+    function point(event, entering) {
+      if (!finePointer.matches || event.pointerType === "touch") return;
       const rect = card.getBoundingClientRect();
       const x = event.clientX - rect.left;
       const y = event.clientY - rect.top;
-      card.style.setProperty("--mx", x.toFixed(1) + "px");
-      card.style.setProperty("--my", y.toFixed(1) + "px");
-      if (!canAnimatePointer() || matchMedia("(prefers-reduced-motion: reduce)").matches) return;
-      // inclinação 3D (máx. 6 graus) para o lado do mouse
-      card.style.setProperty("--ry", (clamp((x / rect.width) * 2 - 1) * 6).toFixed(2) + "deg");
-      card.style.setProperty("--rx", (clamp(1 - (y / rect.height) * 2) * 6).toFixed(2) + "deg");
-    });
-    card.addEventListener("pointermove", onMove, { passive: true });
+      target.mx = x;
+      target.my = y;
+      // o brilho nasce onde o mouse entrou, sem atravessar o card
+      if (entering) { now.mx = x; now.my = y; }
+      if (!reducedMotion.matches) {
+        // inclinação 3D (máx. 6 graus) para o lado do mouse
+        target.ry = clamp((x / rect.width) * 2 - 1) * 6;
+        target.rx = clamp(1 - (y / rect.height) * 2) * 6;
+        target.lift = 1;
+      }
+      wake();
+    }
+
+    card.addEventListener("pointerenter", function (e) { point(e, true); }, { passive: true });
+    card.addEventListener("pointermove", function (e) { point(e, false); }, { passive: true });
     card.addEventListener("pointerleave", function () {
-      // espera o último quadro do rafThrottle antes de zerar
-      requestAnimationFrame(function () {
-        card.style.removeProperty("--rx");
-        card.style.removeProperty("--ry");
-      });
+      target.rx = target.ry = target.lift = 0;
+      if (card.classList.contains("is-tilting")) wake();
+    }, { passive: true });
+  });
+
+  /* -------------------------------------------------------------------
+   * 9b. Teclas do Stack
+   * --i escalona a entrada; no clique, onda de luz a partir do ponto
+   * tocado e a mola (classe .is-pressed). Enter/Espaço também disparam
+   * "click" no <button>; aí a onda sai do centro.
+   * ------------------------------------------------------------------- */
+  document.querySelectorAll(".stack__list").forEach(function (list) {
+    list.querySelectorAll(".stack__item").forEach(function (item, i) {
+      item.style.setProperty("--i", i);
+    });
+  });
+
+  document.querySelectorAll(".key").forEach(function (key) {
+    key.addEventListener("click", function (event) {
+      const rect = key.getBoundingClientRect();
+      const fromPointer = event.detail > 0;
+      key.style.setProperty("--px", fromPointer ? (event.clientX - rect.left).toFixed(1) + "px" : "50%");
+      key.style.setProperty("--py", fromPointer ? (event.clientY - rect.top).toFixed(1) + "px" : "50%");
+      key.classList.remove("is-pressed");
+      void key.offsetWidth; // reinicia a animação em cliques seguidos
+      key.classList.add("is-pressed");
+    });
+    key.addEventListener("animationend", function (event) {
+      // a onda é a mais longa: quando ela acaba, o clique terminou
+      if (event.animationName === "key-wave") key.classList.remove("is-pressed");
     });
   });
 

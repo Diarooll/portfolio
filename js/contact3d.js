@@ -109,13 +109,17 @@ function start(THREE) {
     const surface = get("--surface"), fg = get("--fg"), accent = get("--accent"),
       warm = get("--warm"), line = get("--line"), bgSoft = get("--bg-soft");
     const light = surface.getHSL({ h: 0, s: 0, l: 0 }).l > 0.5;
-    renderer.toneMappingExposure = light ? 1.15 : 1;
-    fill.intensity = light ? 2.2 : 0.5;
-    paper.color.copy(surface).lerp(light ? accent : fg, light ? 0.05 : 0.12);
+    renderer.toneMappingExposure = light ? 1.15 : 1.25;
+    fill.intensity = light ? 2.2 : 1.3;
+    // no escuro o envelope puxa bem mais o acento e o texto, para se
+    // destacar do fundo; no claro fica como estava
+    if (light) paper.color.copy(surface).lerp(accent, 0.05);
+    else paper.color.copy(surface).lerp(accent, 0.6).lerp(fg, 0.2);
     paper.sheenColor.copy(accent);
-    paperEdge.color.copy(line).lerp(accent, 0.35);
-    inner.color.copy(bgSoft).lerp(line, 0.5);
-    flapMat.color.copy(surface).lerp(accent, 0.4);
+    paperEdge.color.copy(line).lerp(accent, light ? 0.35 : 0.9);
+    if (light) inner.color.copy(bgSoft).lerp(line, 0.5);
+    else inner.color.copy(line).lerp(accent, 0.55);
+    flapMat.color.copy(surface).lerp(accent, light ? 0.4 : 0.85);
     flapMat.sheenColor.copy(accent);
     seal.color.copy(warm);
     shadowMat.color.set(0x000000);
@@ -207,7 +211,7 @@ function start(THREE) {
 
   /* ---------- layout: casa a câmera com a perspectiva do CSS ---------- */
   const cards = Array.from(list.querySelectorAll(".ccard"));
-  const state = cards.map(() => ({ hover: 0, hoverT: 0, nx: 0, ny: 0, w: 0, h: 0 }));
+  const state = cards.map(() => ({ hover: 0, hoverM: 0, hoverT: 0, nx: 0, ny: 0, w: 0, h: 0 }));
   let W = 0, H = 0, P = 1000, envCenterY = 0, finalRot = [];
 
   wrap.classList.add("contact3d--live");
@@ -261,7 +265,7 @@ function start(THREE) {
     return [((v.x + 1) / 2) * W, ((1 - v.y) / 2) * H];
   }
 
-  function pose(t) {
+  function pose(t, dt = 0) {
     const p = parts;
     const open = done ? 1 : clamp01(t / OPEN);
     p.flapPivot.rotation.x = -easeInOut(open) * 1.04 * Math.PI;
@@ -304,14 +308,19 @@ function start(THREE) {
         rx = lerp(8, 0, ks);
         sc = lerp(restScale, 1, ks);
       }
-      // hover levanta o card
-      s.hover += (s.hoverT - s.hover) * 0.18;
+      // hover levanta o card: duas interpolações em cadeia (por tempo, não
+      // por quadro) para começar e terminar macio
+      const k = 1 - Math.exp(-dt / 0.085);
+      s.hoverM += (s.hoverT - s.hoverM) * k;
+      s.hover += (s.hoverM - s.hover) * k;
       z += s.hover * 22; y += s.hover * 4;
 
       const still = Math.abs(gx) < 1e-4 && Math.abs(gy) < 1e-4 && Math.abs(z) < 0.05 && Math.abs(rx) < 0.01 && sc === 1;
       const tx = (x - s.nx).toFixed(2), ty = (-y - s.ny).toFixed(2);
       c.style.transform = still
-        ? `translate(${tx}px, ${ty}px) rotate(${rz.toFixed(2)}deg)`
+        // mesmo eixo de rotação do ramo 3D (centro do card), senão o card
+        // salta alguns px ao alternar entre os dois
+        ? `translate(${tx}px, ${ty}px) translate(${s.nx.toFixed(2)}px, ${s.ny.toFixed(2)}px) rotate(${rz.toFixed(2)}deg) translate(${(-s.nx).toFixed(2)}px, ${(-s.ny).toFixed(2)}px)`
         : `rotateX(${(-gx / DEG).toFixed(3)}deg) rotateY(${(gy / DEG).toFixed(3)}deg) translate3d(${(x).toFixed(2)}px, ${(-y).toFixed(2)}px, ${z.toFixed(2)}px) rotateX(${(-rx).toFixed(2)}deg) rotate(${rz.toFixed(2)}deg) scale(${sc.toFixed(4)}) translate(${(-s.nx).toFixed(2)}px, ${(-s.ny).toFixed(2)}px)`;
     });
   }
@@ -320,7 +329,7 @@ function start(THREE) {
   let visible = false, raf = 0, last = 0;
   function settled() {
     const m = Math.abs(mouse.tx - mouse.x) + Math.abs(mouse.ty - mouse.y);
-    const h = state.some((s) => Math.abs(s.hoverT - s.hover) > 0.002);
+    const h = state.some((s) => Math.abs(s.hoverT - s.hover) > 0.002 || Math.abs(s.hoverT - s.hoverM) > 0.002);
     return done && m < 0.001 && !h;
   }
   function frame(now) {
@@ -334,7 +343,7 @@ function start(THREE) {
     mouse.x += (mouse.tx - mouse.x) * 0.08;
     mouse.y += (mouse.ty - mouse.y) * 0.08;
     scene.environmentRotation.set(mouse.y * 0.45, -mouse.x * 0.8, 0);
-    pose(clock);
+    pose(clock, dt);
     renderer.render(scene, camera);
     if (visible && !document.hidden && (t0 !== null || done) && !settled()) raf = requestAnimationFrame(frame);
     else last = 0;
@@ -356,7 +365,7 @@ function start(THREE) {
   list.addEventListener("focusin", (e) => {
     if (!done) { done = true; t0 = 0; }
     const i = cards.findIndex((c) => c.contains(e.target));
-    if (i >= 0) state[i].hoverT = 1;
+    if (i >= 0 && !reduced) state[i].hoverT = 1;
     wake();
   });
   list.addEventListener("focusout", (e) => {

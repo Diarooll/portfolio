@@ -837,49 +837,149 @@
 .stack__list {
   display: flex;
   flex-wrap: wrap;
-  gap: var(--space-xs);
+  gap: 0.9rem 0.65rem;
+  padding-bottom: 6px; /* espaço para a lateral das teclas da última linha */
 }
 
+/* ----- Teclas -----
+   li: perspectiva e entrada em sequência (--i vem do main.js).
+   .key: área de clique, fica parada (o hover não "treme" nas bordas).
+   .key__cap: a tecla em si; a espessura é uma sombra sólida embaixo.
+   Ao descer N px, a sombra encolhe N px: a base fica no lugar. */
 .stack__item {
+  display: flex;
+  perspective: 500px;
+  font-size: var(--text-sm);
+}
+
+.stack__group.reveal--visible .stack__item {
+  animation: key-in 0.6s var(--ease-spring) backwards;
+  animation-delay: calc(var(--delay, 0s) + var(--i, 0) * 60ms + 0.1s);
+}
+
+.key {
+  --depth: 5px;
+  --key-side: color-mix(in srgb, var(--accent) 42%, var(--bg));
+  position: relative;
+  display: flex;
+  border-radius: 9px;
+  cursor: pointer;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+  user-select: none;
+}
+
+.key__cap {
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
   display: inline-flex;
   align-items: center;
-  gap: 0.5em;
-  padding: 0.45rem 0.8rem;
-  border: 1px solid var(--line);
-  border-radius: var(--radius-sm);
-  font-size: var(--text-sm);
-  cursor: default;
-  transition: transform var(--dur-fast) var(--ease-out), border-color var(--dur-fast), background-color var(--dur-fast);
+  gap: 0.55em;
+  min-height: 44px;
+  padding: 0.45rem 0.9rem;
+  border: 1px solid color-mix(in srgb, var(--accent) 28%, var(--line));
+  border-radius: inherit;
+  background: linear-gradient(180deg, color-mix(in srgb, var(--fg) 9%, var(--surface)), var(--surface) 70%);
+  box-shadow:
+    inset 0 1px 0 color-mix(in srgb, var(--fg) 16%, transparent),
+    0 var(--depth) 0 var(--key-side),
+    0 calc(var(--depth) + 6px) 12px -4px rgba(0, 0, 0, 0.4);
+  transition:
+    transform 0.3s var(--ease-out),
+    box-shadow 0.3s var(--ease-out),
+    border-color 0.3s var(--ease-out);
 }
 
-/* ícones começam monocromáticos e ganham cor no hover */
-.stack__item i {
-  font-size: 1.15rem;
-  filter: grayscale(1);
-  opacity: 0.7;
-  transition: filter var(--dur), opacity var(--dur), transform var(--dur) var(--ease-spring);
+/* grupo "Foco": borda mais marcada, para vir antes na leitura */
+.stack__group--focus .key__cap {
+  border-color: color-mix(in srgb, var(--accent) 65%, var(--line));
+}
+
+.key i,
+.key .stack__glyph { font-size: 1.3rem; line-height: 1; }
+
+/* amarelos e azul escuro: misturados ao texto para ler nos dois temas */
+.key .devicon-python-plain.colored { color: color-mix(in srgb, #ffd845 68%, var(--fg)); }
+.key .devicon-javascript-plain.colored { color: color-mix(in srgb, #f0db4f 68%, var(--fg)); }
+.key .devicon-postgresql-plain.colored { color: color-mix(in srgb, #336791 55%, var(--fg)); }
+
+.key .tag--learning { font-size: var(--text-xs); }
+
+/* onda de luz dentro da tecla (--px/--py = ponto do toque) */
+.key__cap::after {
+  content: "";
+  position: absolute;
+  left: var(--px, 50%);
+  top: var(--py, 50%);
+  z-index: -1;
+  width: 24px;
+  height: 24px;
+  margin: -12px 0 0 -12px;
+  border-radius: 50%;
+  background: radial-gradient(circle, color-mix(in srgb, var(--accent) 75%, transparent), color-mix(in srgb, var(--accent) 35%, transparent) 55%, transparent 72%);
+  opacity: 0;
+  pointer-events: none;
+}
+
+/* anel que se expande em volta */
+.key::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border: 2px solid var(--accent);
+  border-radius: inherit;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.key:focus-visible { outline: 2px solid var(--accent); outline-offset: 4px; }
+
+.key:focus-visible .key__cap {
+  transform: translateY(-3px) rotateX(10deg);
+  border-color: var(--accent);
+  box-shadow:
+    inset 0 1px 0 color-mix(in srgb, var(--fg) 24%, transparent),
+    0 calc(var(--depth) + 3px) 0 var(--key-side),
+    0 6px 22px color-mix(in srgb, var(--accent) 45%, transparent);
 }
 
 @media (hover: hover) {
-  .stack__item:hover {
-    transform: translateY(-2px);
+  .key:hover .key__cap {
+    transform: translateY(-3px) rotateX(10deg);
     border-color: var(--accent);
-    background: var(--surface);
-  }
-
-  .stack__item:hover i {
-    filter: none;
-    opacity: 1;
-    transform: rotate(-10deg) scale(1.2);
+    box-shadow:
+      inset 0 1px 0 color-mix(in srgb, var(--fg) 24%, transparent),
+      0 calc(var(--depth) + 3px) 0 var(--key-side),
+      0 6px 22px color-mix(in srgb, var(--accent) 45%, transparent);
   }
 }
 
-/* No celular (sem hover) os ícones já aparecem coloridos */
-@media (hover: none) {
-  .stack__item i {
-    filter: none;
-    opacity: 1;
-  }
+.key:active .key__cap {
+  transform: translateY(calc(var(--depth) - 1px));
+  box-shadow:
+    inset 0 1px 0 color-mix(in srgb, var(--fg) 16%, transparent),
+    0 1px 0 var(--key-side),
+    0 2px 14px color-mix(in srgb, var(--accent) 50%, transparent);
+  transition-duration: 0.07s;
+}
+
+.key.is-pressed .key__cap { animation: key-spring 0.55s var(--ease-out); }
+.key.is-pressed .key__cap::after { animation: key-wave 0.65s var(--ease-out); }
+.key.is-pressed::after { animation: key-ring 0.65s var(--ease-out); }
+
+/* sem movimento: só cor e brilho mudam */
+@media (prefers-reduced-motion: reduce) {
+  .stack__group.reveal--visible .stack__item { animation: none; }
+  .key .key__cap,
+  .key:hover .key__cap,
+  .key:focus-visible .key__cap,
+  .key:active .key__cap { transform: none; }
+  .key__cap { transition: border-color 0.3s; }
+  .key:active .key__cap { background: color-mix(in srgb, var(--accent) 22%, var(--surface)); }
+  .key.is-pressed .key__cap,
+  .key.is-pressed .key__cap::after,
+  .key.is-pressed::after { animation: none; }
 }
 
 /* ----- Tags ----- */
@@ -987,7 +1087,12 @@
   border: 1px solid var(--line);
   border-radius: var(--radius);
   min-width: 0;
-  transition: transform var(--dur) var(--ease-out), border-color var(--dur), box-shadow var(--dur);
+  /* transform sem transition: quem suaviza é o main.js, quadro a quadro */
+  transition: border-color var(--dur) var(--ease-out), box-shadow var(--dur) var(--ease-out);
+}
+
+.card.is-tilting {
+  transform: perspective(900px) translateY(calc(var(--lift, 0) * -4px)) rotateX(var(--rx, 0deg)) rotateY(var(--ry, 0deg));
 }
 
 .card::before {
@@ -1150,7 +1255,6 @@
 
 @media (hover: hover) {
   .card:hover {
-    transform: perspective(900px) translateY(-4px) rotateX(var(--rx, 0deg)) rotateY(var(--ry, 0deg));
     border-color: color-mix(in srgb, var(--accent) 60%, var(--line));
     box-shadow: var(--shadow);
   }
@@ -1454,11 +1558,14 @@
   min-width: 0;
   padding: 0.9rem 1rem;
   background: var(--surface);
-  border: 1px solid var(--line);
+  border: 1px solid color-mix(in srgb, var(--accent) 35%, var(--line));
   border-radius: var(--radius);
   box-shadow: var(--shadow);
-  transition: border-color var(--dur-fast), box-shadow var(--dur), translate var(--dur) var(--ease-out);
+  transition: border-color var(--dur) var(--ease-out), box-shadow var(--dur) var(--ease-out), translate var(--dur) var(--ease-out);
 }
+
+/* o email é o contato principal */
+.ccard--email { border-color: color-mix(in srgb, var(--accent) 75%, var(--line)); }
 
 .ccard__link {
   display: flex;
@@ -1534,8 +1641,8 @@
   flex-shrink: 0;
   margin-left: auto;
   color: var(--accent);
-  opacity: 0.55;
-  transition: opacity var(--dur-fast), translate var(--dur) var(--ease-spring);
+  opacity: 0.85;
+  transition: opacity var(--dur) var(--ease-out), translate var(--dur) var(--ease-out);
 }
 
 .ccard__action {
@@ -1543,8 +1650,11 @@
   z-index: 1;
   display: inline-flex;
   align-items: center;
+  justify-content: center;
   gap: 0.35em;
   flex-shrink: 0;
+  min-width: 44px;
+  min-height: 44px; /* alvo de toque */
   padding: 0.35em 0.6em;
   border-radius: var(--radius-sm);
   font-family: var(--font-mono);
@@ -1554,14 +1664,29 @@
 }
 
 .ccard__action svg { width: 0.95rem; height: 0.95rem; }
+
+/* celular: o botão fica só com o ícone (o texto segue para o leitor de
+   tela) e o email cabe numa linha */
+@media (max-width: 559px) {
+  .ccard__action span {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+}
 .ccard__action:active { scale: 0.94; }
 .ccard__action:focus-visible { color: var(--accent); }
 
+/* "ainda não disponível": sem opacidade no card (o envelope vazaria por
+   trás do texto); fica tracejado e em cor secundária, ainda legível */
 .ccard--soon {
-  opacity: 0.7;
   border-style: dashed;
   box-shadow: none;
 }
+.ccard--soon .ccard__value { color: var(--muted); }
 
 /* Telas largas: cards "de pé" (ícone em cima, texto embaixo),
    ação no canto, para o email caber inteiro em meia largura */
@@ -1569,7 +1694,7 @@
   .ccard { align-items: flex-start; padding: 1rem 1.1rem 1.1rem; }
   .ccard__link { flex-direction: column; align-items: flex-start; gap: 0.7rem; }
   .ccard__arrow { position: absolute; top: 1rem; right: 1rem; }
-  .ccard__action { position: absolute; top: 0.75rem; right: 0.75rem; }
+  .ccard__action { position: absolute; top: 0.5rem; right: 0.5rem; }
   .ccard__value { font-size: var(--text-base); }
 }
 
@@ -1587,6 +1712,16 @@
     color: var(--accent);
     background: color-mix(in srgb, var(--accent) 14%, transparent);
   }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ccard,
+  .ccard__icon,
+  .ccard__arrow { transition-property: border-color, box-shadow, opacity; }
+  .contact3d:not(.contact3d--live) .ccard:not(.ccard--soon):hover { translate: none; }
+  .ccard:not(.ccard--soon):hover .ccard__icon { transform: none; }
+  .ccard:hover .ccard__arrow { translate: none; }
+  .contact__pulse { animation: none; }
 }
 
 /* ==========================================================
