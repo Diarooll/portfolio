@@ -1,0 +1,104 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<title>Diego Alejandro Olalla · Currículo</title>
+<!-- Fonte do assets/cv.pdf. Para gerar o PDF de novo:
+     "/Applications/Brave Browser.app/Contents/MacOS/Brave Browser" --headless --no-pdf-header-footer \
+       --print-to-pdf=assets/cv.pdf cv/curriculo.html
+     Modelo: uma página, seções em ordem (Educação, Experiência, Projetos,
+     Habilidades), bullets curtos com ação + tecnologia. Sem telefone/endereço. -->
+<style>
+  @page { size: A4; margin: 14mm 15mm; }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    font-family: "Times New Roman", Times, Georgia, serif;
+    font-size: 10.6pt;
+    line-height: 1.3;
+    color: #000;
+  }
+  header { text-align: center; margin-bottom: 6pt; }
+  h1 { font-size: 24pt; font-weight: normal; font-variant: small-caps; letter-spacing: 0.5pt; margin: 0 0 3pt; }
+  .contact { font-size: 10pt; }
+  .contact a { color: #000; text-decoration: underline; }
+  .contact span + span::before { content: " | "; }
+  h2 {
+    font-size: 12pt; font-weight: normal; font-variant: small-caps; letter-spacing: 0.4pt;
+    margin: 10pt 0 4pt; padding-bottom: 1pt; border-bottom: 0.8pt solid #000;
+  }
+  .item { margin-bottom: 5pt; }
+  .row { display: flex; justify-content: space-between; align-items: baseline; gap: 12pt; }
+  .row b { font-weight: bold; }
+  .row i { font-style: italic; }
+  .sub { font-size: 10pt; }
+  ul { margin: 2pt 0 0; padding-left: 16pt; }
+  li { margin-bottom: 1.5pt; }
+  .skills p { margin: 0 0 2pt; }
+  code { font-family: inherit; }
+</style>
+</head>
+<body>
+  <header>
+    <h1>Diego Alejandro Olalla</h1>
+    <div class="contact">
+      <span><a href="mailto:diego.aleola@gmail.com">diego.aleola@gmail.com</a></span><span><a href="https://www.linkedin.com/in/diego-olalla/">linkedin.com/in/diego-olalla</a></span><span><a href="https://github.com/Diarooll">github.com/Diarooll</a></span><span><a href="https://diego-olalla.vercel.app">diego-olalla.vercel.app</a></span>
+    </div>
+  </header>
+
+  <h2>Educação</h2>
+  <div class="item">
+    <div class="row"><b>FIAP</b><span>Rio de Janeiro, RJ</span></div>
+    <div class="row sub"><i>Bacharelado em Engenharia de Software</i><span>ago. 2026 – ago. 2030 (previsão)</span></div>
+    <ul>
+      <li>Foco em desenvolvimento back-end. Cursos complementares de Estrutura de Dados e Algoritmos.</li>
+    </ul>
+  </div>
+
+  <h2>Experiência</h2>
+  <div class="item">
+    <div class="row"><b>$ents</b><span>Remoto</span></div>
+    <div class="row sub"><i>Responsável pelo desenvolvimento (startup com amigos)</i><span>nov. 2026 – atual</span></div>
+    <ul>
+      <li>Desenvolvo o back-end de um app que mostra quanto do salário já está comprometido com assinaturas e parcelas, para deixar mais transparente o dinheiro de casais e de quem divide a casa.</li>
+      <li>Defini a arquitetura em <b>Python</b>: <b>Django</b> para autenticação, painel admin e banco de dados, e <b>FastAPI</b> para as APIs.</li>
+    </ul>
+  </div>
+
+  <h2>Projetos</h2>
+  <div class="item">
+    <div class="row"><span><b>ALERA</b> | <i>Python, Django, Django REST Framework, PostgreSQL</i></span><span>FIAP Challenge 2026</span></div>
+    <ul>
+      <li>Back-end, em equipe de 4 pessoas, de um sistema de alerta para moradores das 142 áreas de risco de Juiz de Fora.</li>
+      <li>Áreas de risco cadastradas no banco, alertas gerados a partir dos avisos da Defesa Civil e login de usuários.</li>
+      <li>Próximo passo do projeto: script em Python que envia os alertas pelo WhatsApp com o nome da rua.</li>
+    </ul>
+  </div>
+  <div class="item">
+    <div class="row"><span><b>Sito's Estacionamento</b> | <i>HTML, CSS, JavaScript</i></span><span>Freelance</span></div>
+    <ul>
+      <li>Landing page para um estacionamento com duas unidades no Méier (RJ): preços por unidade, mapas com tour 360° e aviso de "Aberto agora" calculado no fuso de São Paulo.</li>
+      <li>SEO local com JSON-LD, módulos JavaScript carregados sob demanda com <code>import()</code> e modo leve para máquinas fracas.</li>
+    </ul>
+  </div>
+  <div class="item">
+    <div class="row"><span><b>Portfólio</b> | <i>HTML, CSS, JavaScript, three.js</i></span><span>diego-olalla.vercel.app</span></div>
+    <ul>
+      <li>Site bilíngue (português e inglês), sem framework, com tema claro e escuro e envelope 3D em three.js.</li>
+    </ul>
+  </div>
+
+  <h2>Habilidades técnicas</h2>
+  <div class="skills">
+    <p><b>Linguagens:</b> Python, Java, JavaScript, SQL, HTML, CSS</p>
+    <p><b>Frameworks:</b> FastAPI, Django, Django REST Framework, Spring Boot (estudando)</p>
+    <p><b>Banco de dados e ferramentas:</b> PostgreSQL, Docker, Git, GitHub, GitHub Actions</p>
+  </div>
+
+  <h2>Certificações e idiomas</h2>
+  <div class="skills">
+    <p><b>Alura (2026):</b> Java: aplicando Orientação a Objetos; Java: listas e estruturas de dados; Java: criando seu primeiro app; Pensamento Computacional e Lógica de Programação</p>
+    <p><b>Idiomas:</b> Português (nativo), Inglês (intermediário)</p>
+  </div>
+</body>
+</html>

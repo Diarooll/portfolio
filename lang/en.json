@@ -117,7 +117,7 @@
     "copied": "Email copied",
     "copyFail": "Couldn't copy. Select the email and copy it manually.",
     "cvLabel": "Résumé",
-    "cvSoon": "not available yet"
+    "cvDownload": "download PDF"
   },
   "footer": {
     "text": "Built with HTML, CSS and JavaScript, with the help of artificial intelligence"

@@ -117,7 +117,7 @@
     "copied": "Email copiado",
     "copyFail": "Não deu para copiar. Selecione o email e copie manualmente.",
     "cvLabel": "Currículo",
-    "cvSoon": "ainda não disponível"
+    "cvDownload": "baixar PDF"
   },
   "footer": {
     "text": "Feito com HTML, CSS e JavaScript, com ajuda de inteligência artificial"

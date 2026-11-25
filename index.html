@@ -404,18 +404,15 @@
                   <svg class="ccard__arrow" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 17 17 7M8 7h9v9"/></svg>
                 </a>
               </li>
-              <!-- Currículo ainda não disponível: o card não é link.
-                   TODO: quando existir assets/cv.pdf (versão sem telefone/endereço),
-                   trocar o <div> por <a class="ccard__link" href="assets/cv.pdf" download>
-                   e tirar .ccard--soon e o atributo hidden. -->
-              <li class="ccard ccard--cv ccard--soon" hidden>
-                <div class="ccard__link">
+              <li class="ccard ccard--cv">
+                <a class="ccard__link" href="assets/cv.pdf" download="Diego-Olalla-Curriculo.pdf">
                   <span class="ccard__icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5M12 11v6M9 14.5l3 3 3-3"/></svg></span>
                   <span class="ccard__body">
                     <span class="ccard__label" data-i18n="contact.cvLabel">Currículo</span>
-                    <span class="ccard__value" data-i18n="contact.cvSoon">ainda não disponível</span>
+                    <span class="ccard__value" data-i18n="contact.cvDownload">baixar PDF</span>
                   </span>
-                </div>
+                  <svg class="ccard__arrow" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M6 13l6 6 6-6"/></svg>
+                </a>
               </li>
             </ul>
           </div>
