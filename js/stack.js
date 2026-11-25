@@ -1,5 +1,5 @@
 /* =====================================================================
- * stack.js: seletor Java | Python
+ * stack.js: seletor Python | Java
  * ---------------------------------------------------------------------
  * Muda data-stack no <html> (independente de data-theme) e lembra a
  * escolha em localStorage "stack". A troca é animada por um círculo
