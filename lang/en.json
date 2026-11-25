@@ -40,7 +40,7 @@
   "about": {
     "photoAlt": "Diego wearing glasses and a black T-shirt, resting his head on his hand",
     "p1": "I study Software Engineering and the back-end is the part I like most, the side behind the screen: APIs, business rules and data.",
-    "p2": "I currently work as a freelancer building landing pages, and soon I'll move on to more complex systems. At the same time, I'm building a solid base in Python and studying FastAPI and Django, as well as Java and Spring Boot. I learn best by building projects, and their code is here."
+    "p2": "I currently work as a freelancer building landing pages, and soon I'll move on to more complex systems. My focus is Python: I'm studying FastAPI and Django, and later on I'll learn Java and Spring Boot to broaden my knowledge. I learn best by building projects, and their code is here."
   },
   "stack": {
     "focus": "Focus",
@@ -72,14 +72,14 @@
     },
     "p4": {
       "title": "$ents",
-      "desc": "A personal finance app. The twist: it shows how much of your salary is already committed to subscriptions and installments.",
+      "desc": "A personal finance app I'm building with friends. It shows how much of your salary is already committed to subscriptions and installments, which makes money talk more honest between couples and housemates.",
       "status": "IN PROGRESS",
       "kind": "Personal project"
     },
     "p5": {
       "title": "ALERA",
-      "desc": "Rain alerts with your street's name, delivered on WhatsApp. It crosses the weather forecast with Juiz de Fora's 142 risk areas and warns residents before the water rises. Built as a team (MonkeyNerds).",
-      "status": "PROTOTYPE · IN PROGRESS",
+      "desc": "An alert system for people living in Juiz de Fora's 142 risk areas. The back-end already runs with the risk areas registered and raises alerts based on Civil Defense warnings. Future plans: a Python script that sends the alerts on WhatsApp, with the street name. Built as a team (MonkeyNerds).",
+      "status": "IN PROGRESS",
       "kind": "FIAP Challenge 2026 · university project"
     }
   },
@@ -107,12 +107,12 @@
     },
     "next": {
       "date": "next step",
-      "title": "Back-end internship or junior role",
+      "title": "Junior back-end role",
       "desc": "I want to join a team where I can learn from more experienced people and help on the back-end with Python, FastAPI and Django."
     }
   },
   "contact": {
-    "text": "I'm looking for an internship or a junior role, and I'm always up for talking about back-end.",
+    "text": "I'm looking for my first junior role, and I'm always up for talking about back-end.",
     "copy": "copy",
     "copied": "Email copied",
     "copyFail": "Couldn't copy. Select the email and copy it manually.",

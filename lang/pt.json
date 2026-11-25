@@ -40,7 +40,7 @@
   "about": {
     "photoAlt": "Diego de óculos e camiseta preta, com a cabeça apoiada na mão",
     "p1": "Estudo Engenharia de Software e gosto mais do back-end, a parte que fica por trás da tela: APIs, regras de negócio e dados.",
-    "p2": "Hoje trabalho como freelancer fazendo landing pages e, em breve, vou partir para sistemas mais complexos. Ao mesmo tempo, firmo a base em Python e estudo FastAPI e Django, além de Java e Spring Boot. Aprendo melhor construindo projetos, e o código deles está aqui."
+    "p2": "Hoje trabalho como freelancer fazendo landing pages e, em breve, vou partir para sistemas mais complexos. Meu foco é Python: estudo FastAPI e Django e, mais pra frente, vou estudar Java e Spring Boot para ampliar meu repertório. Aprendo melhor construindo projetos, e o código deles está aqui."
   },
   "stack": {
     "focus": "Foco",
@@ -72,14 +72,14 @@
     },
     "p4": {
       "title": "$ents",
-      "desc": "App de gestão financeira. A diferença: mostra quanto do seu salário já está comprometido com assinaturas e parcelas.",
+      "desc": "App de gestão financeira que estou criando com amigos. Mostra quanto do seu salário já está comprometido com assinaturas e parcelas e, com isso, deixa a conversa sobre dinheiro mais honesta entre o casal e quem divide a casa.",
       "status": "EM ANDAMENTO",
       "kind": "Projeto pessoal"
     },
     "p5": {
       "title": "ALERA",
-      "desc": "Alerta de chuva com o nome da sua rua, entregue no WhatsApp. Cruza a previsão do tempo com as 142 áreas de risco de Juiz de Fora e avisa o morador antes da água subir. Feito em equipe (MonkeyNerds).",
-      "status": "PROTÓTIPO · EM ANDAMENTO",
+      "desc": "Sistema de alerta para quem mora nas 142 áreas de risco de Juiz de Fora. O back-end já roda com as áreas de risco cadastradas e gera alertas conforme os avisos da Defesa Civil. Nos planos futuros: um script em Python que envia os alertas pelo WhatsApp, com o nome da rua. Feito em equipe (MonkeyNerds).",
+      "status": "EM ANDAMENTO",
       "kind": "FIAP Challenge 2026 · projeto da faculdade"
     }
   },
@@ -107,12 +107,12 @@
     },
     "next": {
       "date": "próximo passo",
-      "title": "Estágio ou vaga júnior em back-end",
+      "title": "Vaga júnior em back-end",
       "desc": "Quero entrar num time em que eu aprenda com pessoas mais experientes e ajude no back-end com Python, FastAPI e Django."
     }
   },
   "contact": {
-    "text": "Procuro estágio ou vaga júnior, e também gosto de conversar sobre back-end.",
+    "text": "Procuro minha primeira vaga júnior e também gosto de conversar sobre back-end.",
     "copy": "copiar",
     "copied": "Email copiado",
     "copyFail": "Não deu para copiar. Selecione o email e copie manualmente.",
